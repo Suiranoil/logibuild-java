@@ -19,7 +19,6 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.22.0'
     implementation 'org.fusesource.jansi:jansi:2.4.1'
 
-
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'

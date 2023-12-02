@@ -1,5 +1,6 @@
 package io.github.lionarius.engine;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,7 +10,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
-public class Window {
+public final class Window {
 	private static final Logger LOGGER = LogManager.getLogger("Window");
 	@Getter
 	private int width;
@@ -18,6 +19,7 @@ public class Window {
 	@Getter
 	private String title;
 
+	@Getter(AccessLevel.PROTECTED)
 	private long handle;
 
 	public Window(int width, int height, String title) {
@@ -41,7 +43,7 @@ public class Window {
 	}
 
 	public void init() {
-		LOGGER.info("Starting with LWJGL " + Version.getVersion());
+		LOGGER.info("Starting with LWJGL {}", Version.getVersion());
 		GLFWErrorCallback.createPrint(System.err).set();
 
 		if (!GLFW.glfwInit())
