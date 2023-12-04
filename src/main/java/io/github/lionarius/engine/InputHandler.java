@@ -1,6 +1,7 @@
 package io.github.lionarius.engine;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.*;
@@ -8,7 +9,8 @@ import org.lwjgl.glfw.*;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
-public final class InputHandler {
+public class InputHandler {
+	@NonNull
 	private final Window window;
 
 	// Mouse

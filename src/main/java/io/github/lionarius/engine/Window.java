@@ -8,9 +8,13 @@ import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryUtil;
 
-public final class Window {
+import java.io.Closeable;
+import java.lang.ref.Cleaner;
+
+public class Window implements Closeable {
 	private static final Logger LOGGER = LogManager.getLogger("Window");
 	@Getter
 	private int width;
@@ -18,6 +22,8 @@ public final class Window {
 	private int height;
 	@Getter
 	private String title;
+	@Getter
+	private boolean isVSync;
 
 	@Getter(AccessLevel.PROTECTED)
 	private long handle;
@@ -31,6 +37,15 @@ public final class Window {
 	public void setTitle(String title) {
 		this.title = title;
 		GLFW.glfwSetWindowTitle(this.handle, this.title);
+	}
+
+	public void setVSync(boolean vSync) {
+		this.isVSync = vSync;
+
+		if (this.isVSync)
+			GLFW.glfwSwapInterval(1);
+		else
+			GLFW.glfwSwapInterval(0);
 	}
 
 	public boolean shouldClose() {
@@ -59,7 +74,7 @@ public final class Window {
 			throw new IllegalStateException("Could not create GLFW window");
 
 		GLFW.glfwMakeContextCurrent(this.handle);
-		GLFW.glfwSwapInterval(1);
+		this.setVSync(true);
 
 		GLFW.glfwShowWindow(this.handle);
 
@@ -74,9 +89,12 @@ public final class Window {
 		GLFW.glfwSetFramebufferSizeCallback(this.handle, (window, width, height) -> {
 			this.width = width;
 			this.height = height;
+
+			GL46.glViewport(0, 0, this.width, this.height);
 		});
 	}
 
+	@Override
 	public void close() {
 		GLFW.glfwDestroyWindow(this.handle);
 		GLFW.glfwTerminate();
