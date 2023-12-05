@@ -7,14 +7,14 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public abstract class Component implements Updatable, Renderable {
-	@NonNull
-	private final GameObject gameObject;
+    @NonNull
+    private final GameObject gameObject;
 
-	@Override
-	public void update(double delta) {
-	}
+    @Override
+    public void update(double delta) {
+    }
 
-	@Override
-	public void render(double delta) {
-	}
+    @Override
+    public void render(double delta) {
+    }
 }

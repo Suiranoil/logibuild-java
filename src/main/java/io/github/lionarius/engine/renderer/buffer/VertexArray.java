@@ -4,36 +4,46 @@ import io.github.lionarius.engine.renderer.OpenGLObject;
 import org.lwjgl.opengl.GL46;
 
 public class VertexArray extends OpenGLObject {
-	public VertexArray() {
-		this.id = GL46.glCreateVertexArrays();
-	}
+    private int enabledAttributes = 0;
 
-	@Override
-	public void bind() {
-		GL46.glBindVertexArray(this.id);
-	}
+    public VertexArray() {
+        this.id = GL46.glCreateVertexArrays();
+    }
 
-	@Override
-	public void unbind() {
-		GL46.glBindVertexArray(0);
-	}
+    @Override
+    public void bind() {
+        GL46.glBindVertexArray(this.id);
+    }
 
-	@Override
-	public void close() {
-		GL46.glDeleteVertexArrays(this.id);
-	}
+    @Override
+    public void unbind() {
+        GL46.glBindVertexArray(0);
+    }
 
-	public void addBuffer(VertexBuffer buffer, VertexBufferLayout layout) {
-		this.bind();
-		buffer.bind();
+    @Override
+    public void close() {
+        GL46.glDeleteVertexArrays(this.id);
+    }
 
-		var elements = layout.getElements();
-		var offset = 0;
-		for (int i = 0; i < elements.size(); i++) {
-			var element = elements.get(i);
-			GL46.glEnableVertexAttribArray(i);
-			GL46.glVertexAttribPointer(i, element.getCount(), element.getType(), element.isNormalized(), layout.getStride(), offset);
-			offset += element.getCount() * element.getSize();
-		}
-	}
+    public void addBuffer(VertexBuffer buffer, VertexBufferLayout layout) {
+        this.addBuffer(0, 0, buffer, layout);
+    }
+
+    public void addBuffer(int bindingIndex, int divisor, VertexBuffer buffer, VertexBufferLayout layout) {
+        this.bind();
+        GL46.glBindVertexBuffer(bindingIndex, buffer.getId(), 0, layout.getStride());
+
+        var elements = layout.getElements();
+        var offset = 0;
+        for (var element : elements) {
+            GL46.glEnableVertexAttribArray(this.enabledAttributes);
+            GL46.glVertexAttribFormat(this.enabledAttributes, element.getCount(), element.getType(), element.isNormalized(), offset);
+            GL46.glVertexAttribBinding(this.enabledAttributes, bindingIndex);
+            this.enabledAttributes += 1;
+
+            offset += element.getCount() * element.getSize();
+        }
+
+        GL46.glVertexBindingDivisor(bindingIndex, divisor);
+    }
 }

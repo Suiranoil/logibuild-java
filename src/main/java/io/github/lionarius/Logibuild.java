@@ -2,27 +2,20 @@ package io.github.lionarius;
 
 import io.github.lionarius.engine.InputHandler;
 import io.github.lionarius.engine.Window;
-import io.github.lionarius.engine.renderer.rectangle.Vertex;
-import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.keybind.KeybindHandler;
 import io.github.lionarius.engine.renderer.Renderer;
-import io.github.lionarius.engine.renderer.buffer.*;
 import io.github.lionarius.engine.renderer.shader.Shader;
 import io.github.lionarius.engine.renderer.shader.ShaderLoader;
 import io.github.lionarius.engine.renderer.texture.Texture;
 import io.github.lionarius.engine.renderer.texture.TextureLoader;
-import io.github.lionarius.engine.util.BufferUtil;
+import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.util.ProjectionUtil;
 import io.github.lionarius.engine.util.TimeUtil;
-import lombok.Cleanup;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
-import org.joml.Vector2f;
 import org.joml.Vector4f;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL46;
 
 public final class Logibuild {
 	private static final Logger LOGGER = LogManager.getLogger("Logibuild");
@@ -46,6 +39,7 @@ public final class Logibuild {
 		instance = this;
 
 		this.window.init();
+		this.window.setVSync(false);
 		this.inputHandler.init();
 
 		this.resourceManager.register(Shader.class, new ShaderLoader());
@@ -89,8 +83,8 @@ public final class Logibuild {
 	private void render(double delta) {
 		this.renderer.beginFrame();
 
-		this.renderer.renderQuad(0, 0, 0, 500, 500, new Vector4f(1, 1, 0, 1));
+		this.renderer.renderQuad((float) (0.5f / delta), 20, 0, 10, 250, new Vector4f(1, 0, 1, 1));
 
-		this.renderer.endFrame(ProjectionUtil.getOrthoProjectionCentered(0, 0, this.window.getWidth(), this.window.getHeight()), new Matrix4f());
+		this.renderer.endFrame(ProjectionUtil.getOrthoProjection(0, 0, this.window.getWidth(), this.window.getHeight()), new Matrix4f());
 	}
 }

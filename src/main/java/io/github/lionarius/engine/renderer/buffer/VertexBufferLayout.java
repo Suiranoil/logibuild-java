@@ -1,7 +1,8 @@
 package io.github.lionarius.engine.renderer.buffer;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL46;
 
 import java.util.ArrayList;
@@ -9,41 +10,43 @@ import java.util.List;
 
 @Getter
 public class VertexBufferLayout {
-	private final List<LayoutElement> elements = new ArrayList<>();
-	private int stride = 0;
+    private final List<LayoutElement> elements = new ArrayList<>();
 
-	public <T> void push(Class<T> clazz, int count) {
-		this.push(clazz, count, false);
-	}
+    private int stride = 0;
 
-	public <T> void push(Class<T> clazz, int count, boolean normalized) {
-		var type = 0;
-		var size = 0;
-		if (clazz == Boolean.class) {
-			type = GL46.GL_BOOL;
-			size = 1;
-		} else if (clazz == Byte.class) {
-			type = GL46.GL_UNSIGNED_BYTE;
-			size = Byte.BYTES;
-		} else if (clazz == Integer.class) {
-			type = GL46.GL_UNSIGNED_INT;
-			size = Integer.BYTES;
-		} else if (clazz == Float.class) {
-			type = GL46.GL_FLOAT;
-			size = Float.BYTES;
-		} else
-			throw new IllegalArgumentException("Type is not supported");
+    public <T> void push(Class<T> clazz, int count) {
+        this.push(clazz, count, false);
+    }
 
-		this.elements.add(new LayoutElement(type, count, size, normalized));
-		this.stride += count * size;
-	}
+    public <T> void push(Class<T> clazz, int count, boolean normalized) {
+        if (clazz == Boolean.class)
+            this.push(new LayoutElement(GL46.GL_BOOL, count, 1, normalized));
+        else if (clazz == Byte.class)
+            this.push(new LayoutElement(GL46.GL_UNSIGNED_BYTE, count, Byte.BYTES, normalized));
+        else if (clazz == Integer.class)
+            this.push(new LayoutElement(GL46.GL_UNSIGNED_INT, count, Integer.BYTES, normalized));
+        else if (clazz == Float.class)
+            this.push(new LayoutElement(GL46.GL_FLOAT, count, Float.BYTES, normalized));
+        else if (clazz == Matrix4f.class) {
+            this.push(Float.class, 4 * count);
+            this.push(Float.class, 4 * count);
+            this.push(Float.class, 4 * count);
+            this.push(Float.class, 4 * count);
+        } else
+            throw new IllegalArgumentException("Type is not supported");
+    }
 
-	@Getter
-	@AllArgsConstructor
-	protected static class LayoutElement {
-		private int type;
-		private int count;
-		private int size;
-		private boolean normalized;
-	}
+    private void push(LayoutElement layoutElement) {
+        this.elements.add(layoutElement);
+        this.stride += layoutElement.count * layoutElement.size;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    protected static class LayoutElement {
+        private final int type;
+        private final int count;
+        private final int size;
+        private final boolean normalized;
+    }
 }

@@ -5,11 +5,11 @@ import lombok.Getter;
 
 @Getter(AccessLevel.PACKAGE)
 public class Keybind {
-	private final int[] keys;
-	private final KeybindCallback callback;
+    private final int[] keys;
+    private final KeybindCallback callback;
 
-	public Keybind(int[] keys, KeybindCallback callback) {
-		this.keys = keys.clone();
-		this.callback = callback;
-	}
+    public Keybind(int[] keys, KeybindCallback callback) {
+        this.keys = keys.clone();
+        this.callback = callback;
+    }
 }

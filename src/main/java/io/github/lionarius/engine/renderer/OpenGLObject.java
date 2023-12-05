@@ -5,8 +5,9 @@ import lombok.Getter;
 
 @Getter
 public abstract class OpenGLObject implements Closeable {
-	protected int id;
+    protected int id;
 
-	public abstract void bind();
-	public abstract void unbind();
+    public abstract void bind();
+
+    public abstract void unbind();
 }

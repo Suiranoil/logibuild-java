@@ -8,19 +8,19 @@ import java.util.ArrayList;
 
 @RequiredArgsConstructor
 public class KeybindHandler {
-	@NonNull
-	private final InputHandler inputHandler;
-	private final ArrayList<Keybind> keybinds = new ArrayList<>();
+    @NonNull
+    private final InputHandler inputHandler;
+    private final ArrayList<Keybind> keybinds = new ArrayList<>();
 
-	public void update() {
+    public void update() {
 
-	}
+    }
 
-	public void register(Keybind keybind) {
+    public void register(Keybind keybind) {
 
-	}
+    }
 
-	private static class KeybindState {
+    private static class KeybindState {
 
-	}
+    }
 }
