@@ -6,7 +6,7 @@ import io.github.lionarius.engine.util.Closeable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4fc;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL46;
 
@@ -26,8 +26,8 @@ public class Renderer implements Closeable {
         this.quadBatch.beginFrame();
     }
 
-    public void renderQuad(float x, float y, float z, float width, float height, Vector4f color) {
-        this.quadBatch.renderQuad(x, y, z, 0, new Vector3f(), width, height, color);
+    public void renderQuad(float x, float y, float z, float angle, Vector3fc axis, float width, float height, Vector4f color) {
+        this.quadBatch.renderQuad(x, y, z, angle, axis, width, height, color);
     }
 
     public void endFrame(Matrix4fc projection, Matrix4fc view) {

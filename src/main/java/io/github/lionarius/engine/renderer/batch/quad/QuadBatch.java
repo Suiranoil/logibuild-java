@@ -70,11 +70,11 @@ public class QuadBatch implements RenderBatch {
         commonData.position(0);
         this.commonVbo = new VertexBuffer(BufferUsage.STATIC_DRAW, commonData);
 
-        this.instanceVbo = new VertexBuffer(BufferUsage.STREAM_DRAW, QuadBatch.INSTANCE_SIZE * this.size);
+        this.instanceVbo = new VertexBuffer(BufferUsage.DYNAMIC_DRAW, QuadBatch.INSTANCE_SIZE * this.size);
 
         this.vao = new VertexArray();
-        this.vao.addBuffer(0, 0, this.commonVbo, QuadVertexCommon.getLayout());
-        this.vao.addBuffer(1, 1, this.instanceVbo, QuadVertexInstance.getLayout());
+        this.vao.setBuffer(0, 0, this.commonVbo, QuadVertexCommon.getLayout());
+        this.vao.setBuffer(1, 1, this.instanceVbo, QuadVertexInstance.getLayout());
     }
 
     @Override
@@ -86,7 +86,7 @@ public class QuadBatch implements RenderBatch {
     public void renderQuad(float x, float y, float z, float angle, Vector3fc axis, float width, float height, Vector4fc color) {
         assert this.renderedCount < this.size : "exceeded batch size for quad batch";
 
-        var model = new Matrix4f().translate(x, y, z).scale(width, height, 0).rotate(angle, axis);
+        var model = new Matrix4f().translate(x, y, z).rotate(angle, axis).scale(width, height, 0);
 
         this.vertexInstance.setModel(model);
         this.vertexInstance.setColor(color);

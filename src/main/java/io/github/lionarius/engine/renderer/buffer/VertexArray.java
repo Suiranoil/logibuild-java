@@ -25,11 +25,11 @@ public class VertexArray extends OpenGLObject {
         GL46.glDeleteVertexArrays(this.id);
     }
 
-    public void addBuffer(VertexBuffer buffer, VertexBufferLayout layout) {
-        this.addBuffer(0, 0, buffer, layout);
+    public void setBuffer(VertexBuffer buffer, VertexBufferLayout layout) {
+        this.setBuffer(0, 0, buffer, layout);
     }
 
-    public void addBuffer(int bindingIndex, int divisor, VertexBuffer buffer, VertexBufferLayout layout) {
+    public void setBuffer(int bindingIndex, int divisor, VertexBuffer buffer, VertexBufferLayout layout) {
         this.bind();
         GL46.glBindVertexBuffer(bindingIndex, buffer.getId(), 0, layout.getStride());
 
