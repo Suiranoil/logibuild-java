@@ -1,20 +1,40 @@
 // #type vertex
 #version 460 core
 layout (location = 0) in vec4 a_Position;
+layout (location = 1) in vec4 a_Color;
+layout (location = 2) in vec2 a_UV;
+layout (location = 3) in int a_TextureId;
 
+uniform mat4 u_Projection;
 uniform mat4 u_View;
+
+layout (location = 0) out vec4 o_Color;
+layout (location = 1) out vec2 o_UV;
+layout (location = 2) flat out int o_TextureId;
 
 void main()
 {
-    gl_Position = u_View * a_Position;
+    o_Color = a_Color;
+    o_UV = a_UV;
+    o_TextureId = a_TextureId;
+
+    gl_Position = (u_Projection * u_View) * a_Position;
 }
 
 // #type fragment
 #version 460 core
 
-out vec4 color;
+layout (location = 0) in vec4 i_Color;
+layout (location = 1) in vec2 i_UV;
+layout (location = 2) flat in int i_TextureId;
+
+//uniform sampler2D u_Texture[8];
+
+out vec4 FragColor;
 
 void main()
 {
-    color = vec4(1.0, 0.0, 0.0, 1.0);
+    FragColor = i_Color;
+//    if (i_TextureId != -1)
+//            FragColor *= texture(u_Texture[i_TextureId], i_UV);
 }

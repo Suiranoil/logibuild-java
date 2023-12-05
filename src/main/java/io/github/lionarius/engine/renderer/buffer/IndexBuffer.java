@@ -2,11 +2,19 @@ package io.github.lionarius.engine.renderer.buffer;
 
 import io.github.lionarius.engine.renderer.OpenGLObject;
 import lombok.Getter;
+import lombok.Setter;
 import org.lwjgl.opengl.GL46;
 
+@Setter
 @Getter
 public class IndexBuffer extends OpenGLObject {
-	private final int count;
+	private int count;
+
+	public IndexBuffer(BufferUsage usage, int size) {
+		this.id = GL46.glCreateBuffers();
+		this.count = 0;
+		GL46.glNamedBufferData(this.id, (long) size * Integer.BYTES, usage.getInner());
+	}
 
 	public IndexBuffer(int[] data) {
 		this(BufferUsage.STATIC_DRAW, data);
@@ -16,6 +24,11 @@ public class IndexBuffer extends OpenGLObject {
 		this.id = GL46.glCreateBuffers();
 		this.count = data.length;
 		GL46.glNamedBufferData(this.id, data, usage.getInner());
+	}
+
+	public void uploadData(int[] data) {
+		this.count = data.length;
+		GL46.glNamedBufferSubData(this.id, 0, data);
 	}
 
 	@Override

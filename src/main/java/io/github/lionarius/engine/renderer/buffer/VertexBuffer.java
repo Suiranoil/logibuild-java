@@ -32,6 +32,7 @@ public class VertexBuffer extends OpenGLObject {
 	}
 
 	public void uploadData(ByteBuffer data) {
+		data.flip();
 		GL46.glNamedBufferSubData(this.id, 0, data);
 	}
 

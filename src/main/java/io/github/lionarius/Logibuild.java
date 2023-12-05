@@ -2,6 +2,7 @@ package io.github.lionarius;
 
 import io.github.lionarius.engine.InputHandler;
 import io.github.lionarius.engine.Window;
+import io.github.lionarius.engine.renderer.rectangle.Vertex;
 import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.keybind.KeybindHandler;
 import io.github.lionarius.engine.renderer.Renderer;
@@ -17,7 +18,10 @@ import lombok.Cleanup;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
+import org.joml.Vector4f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
 public final class Logibuild {
@@ -51,50 +55,18 @@ public final class Logibuild {
 	}
 
 	public void run() {
-		Vector2f[] positions = {
-				new Vector2f(0, 0),
-				new Vector2f(500, 0),
-				new Vector2f(500, 500),
-				new Vector2f(0, 500)
-		};
-		var buffer = BufferUtil.vectorArrayToBuffer(positions);
-		@Cleanup var vbo = new VertexBuffer(buffer);
-
-		int[] indices = {
-				0, 1, 2,
-				2, 3, 0
-		};
-		@Cleanup var ibo = new IndexBuffer(indices);
-
-		var layout = new VertexBufferLayout();
-		layout.push(Float.class, 2, false);
-
-		@Cleanup var vao = new VertexArray();
-		vao.addBuffer(vbo, layout);
-
-		var shader = this.resourceManager.get(Shader.class, "shader/rectangle.shader");
-
 		double prevTime;
 		double currentTime = TimeUtil.getApplicationTime();
 		double dt = -1.0;
-
-		vbo.unbind();
-		ibo.unbind();
-		vao.unbind();
 
 		while (!this.window.shouldClose()) {
 			this.inputHandler.update();
 			this.keybindHandler.update();
 
 			if (dt >= 0) {
-				GL46.glClear(GL46.GL_COLOR_BUFFER_BIT);
+				this.update(dt);
 
-				vao.bind();
-				ibo.bind();
-				shader.bind();
-				shader.setUniform("u_View", ProjectionUtil.getOrthoProjectionCentered(0, 0, this.window.getWidth(), this.window.getHeight()));
-
-				GL46.glDrawElements(GL46.GL_TRIANGLES, ibo.getCount(), GL46.GL_UNSIGNED_INT, 0);
+				this.render(dt);
 
 				LOGGER.info("FPS {}", 1 / dt);
 			}
@@ -106,14 +78,19 @@ public final class Logibuild {
 			dt = currentTime - prevTime;
 		}
 
+		this.renderer.close();
 		this.window.close();
 	}
 
-	private void update() {
+	private void update(double delta) {
 
 	}
 
-	private void render() {
+	private void render(double delta) {
+		this.renderer.beginFrame();
 
+		this.renderer.renderQuad(0, 0, 0, 500, 500, new Vector4f(1, 1, 0, 1));
+
+		this.renderer.endFrame(ProjectionUtil.getOrthoProjectionCentered(0, 0, this.window.getWidth(), this.window.getHeight()), new Matrix4f());
 	}
 }

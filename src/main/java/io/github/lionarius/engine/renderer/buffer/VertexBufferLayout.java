@@ -12,12 +12,16 @@ public class VertexBufferLayout {
 	private final List<LayoutElement> elements = new ArrayList<>();
 	private int stride = 0;
 
+	public <T> void push(Class<T> clazz, int count) {
+		this.push(clazz, count, false);
+	}
+
 	public <T> void push(Class<T> clazz, int count, boolean normalized) {
 		var type = 0;
 		var size = 0;
 		if (clazz == Boolean.class) {
 			type = GL46.GL_BOOL;
-			size += 1;
+			size = 1;
 		} else if (clazz == Byte.class) {
 			type = GL46.GL_UNSIGNED_BYTE;
 			size = Byte.BYTES;
