@@ -86,6 +86,6 @@ public final class Logibuild {
 
 		this.renderer.renderQuad( 0.5f / (float) delta, 80, 0, 1.0f / (float) delta, new Vector3f(0, 0, 1), 40, 250, new Vector4f(1, 0, 1, 1));
 
-		this.renderer.endFrame(ProjectionUtil.getOrthoProjection(0, 0, this.window.getWidth(), this.window.getHeight()), new Matrix4f());
+		this.renderer.endFrame(ProjectionUtil.getOrthoProjectionCentered(0, 0, this.window.getWidth(), this.window.getHeight()), new Matrix4f());
 	}
 }
