@@ -1,12 +1,13 @@
 package io.github.lionarius.engine.scene;
 
-import lombok.NonNull;
+import io.github.lionarius.engine.Renderable;
+import io.github.lionarius.engine.Updatable;
 
 public class SceneManager implements Updatable, Renderable {
 	private Scene currentScene = null;
 	private Scene queuedScene = null;
 
-	public void transitionScene(Scene newScene) {
+    public void transitionTo(Scene newScene) {
 		this.queuedScene = newScene;
 	}
 

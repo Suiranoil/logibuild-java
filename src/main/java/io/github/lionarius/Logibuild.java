@@ -9,83 +9,85 @@ import io.github.lionarius.engine.renderer.shader.ShaderLoader;
 import io.github.lionarius.engine.renderer.texture.Texture;
 import io.github.lionarius.engine.renderer.texture.TextureLoader;
 import io.github.lionarius.engine.resource.ResourceManager;
+import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.ProjectionUtil;
 import io.github.lionarius.engine.util.TimeUtil;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public final class Logibuild {
-	private static final Logger LOGGER = LogManager.getLogger("Logibuild");
-	@Getter
-	private static Logibuild instance;
+    private static final Logger LOGGER = LogManager.getLogger("Logibuild");
+    @Getter
+    private static Logibuild instance;
 
-	private final Window window = new Window(1280, 720, "Logibuild");
+    private final Window window = new Window(1280, 720, "Logibuild");
 
-	@Getter
-	private final ResourceManager resourceManager = new ResourceManager("assets");
-	@Getter
-	private final InputHandler inputHandler = new InputHandler(this.window);
-	@Getter
-	private final KeybindHandler keybindHandler = new KeybindHandler(this.inputHandler);
-	@Getter
-	private final Renderer renderer = new Renderer(this.resourceManager);
+    @Getter
+    private final ResourceManager resourceManager = new ResourceManager("assets");
+    @Getter
+    private final InputHandler inputHandler = new InputHandler(this.window);
+    @Getter
+    private final KeybindHandler keybindHandler = new KeybindHandler(this.inputHandler);
+    @Getter
+    private final Renderer renderer = new Renderer(this.resourceManager);
 
-	public Logibuild(String[] args) {
-		if (instance != null)
-			throw new IllegalStateException("Cannot create more than one game instance");
-		instance = this;
+    @Getter
+    private final SceneManager sceneManager = new SceneManager();
 
-		this.window.init();
-		this.window.setVSync(false);
-		this.inputHandler.init();
+    public Logibuild(String[] args) {
+        if (instance != null)
+            throw new IllegalStateException("Cannot create more than one game instance");
+        instance = this;
 
-		this.resourceManager.register(Shader.class, new ShaderLoader());
-		this.resourceManager.register(Texture.class, new TextureLoader());
+        this.window.init();
+        this.window.setVSync(false);
+        this.inputHandler.init();
 
-		this.renderer.init();
-	}
+        this.resourceManager.register(Shader.class, new ShaderLoader());
+        this.resourceManager.register(Texture.class, new TextureLoader());
 
-	public void run() {
-		double prevTime;
-		double currentTime = TimeUtil.getApplicationTime();
-		double dt = -1.0;
+        this.renderer.init();
+    }
 
-		while (!this.window.shouldClose()) {
-			this.inputHandler.update();
-			this.keybindHandler.update();
+    public void run() {
+        double prevTime;
+        double currentTime = TimeUtil.getApplicationTime();
+        double dt = -1.0;
 
-			if (dt >= 0) {
-				this.update(dt);
+        while (!this.window.shouldClose()) {
+            if (dt >= 0) {
+                this.update(dt);
 
-				this.render(dt);
+                this.render(dt);
 
-				LOGGER.info("FPS {}", 1 / dt);
-			}
+                LOGGER.info("FPS {}", 1 / dt);
+            }
 
-			this.window.update();
+            this.window.update();
 
-			prevTime = currentTime;
-			currentTime = TimeUtil.getApplicationTime();
-			dt = currentTime - prevTime;
-		}
+            prevTime = currentTime;
+            currentTime = TimeUtil.getApplicationTime();
+            dt = currentTime - prevTime;
+        }
 
-		this.renderer.close();
-		this.window.close();
-	}
+        this.renderer.close();
+        this.window.close();
+    }
 
-	private void update(double delta) {
+    private void update(double delta) {
+        this.inputHandler.update(delta);
+        this.keybindHandler.update(delta);
 
-	}
+        this.sceneManager.update(delta);
+    }
 
-	private void render(double delta) {
-		this.renderer.beginFrame();
+    private void render(double delta) {
+        this.renderer.beginFrame();
 
-		this.renderer.renderQuad( 0.5f / (float) delta, 80, 0, 1.0f / (float) delta, new Vector3f(0, 0, 1), 40, 250, new Vector4f(1, 0, 1, 1));
+        this.sceneManager.render(delta);
 
-		this.renderer.endFrame(ProjectionUtil.getOrthoProjectionCentered(0, 0, this.window.getWidth(), this.window.getHeight()), new Matrix4f());
-	}
+        this.renderer.endFrame(ProjectionUtil.getOrthoProjectionCentered(0, 0, this.window.getWidth(), this.window.getHeight()), new Matrix4f());
+    }
 }

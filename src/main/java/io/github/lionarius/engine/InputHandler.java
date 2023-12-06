@@ -9,7 +9,7 @@ import org.lwjgl.glfw.*;
 import java.util.Arrays;
 
 @RequiredArgsConstructor
-public class InputHandler {
+public class InputHandler implements Updatable {
     @NonNull
     private final Window window;
 
@@ -93,7 +93,8 @@ public class InputHandler {
         GLFW.glfwSetCursorEnterCallback(this.window.getHandle(), this.CURSOR_ENTER_CALLBACK);
     }
 
-    public void update() {
+    @Override
+    public void update(double delta) {
         for (int button = 0; button <= GLFW.GLFW_MOUSE_BUTTON_LAST; button++) {
             if (this.mousePressed[button])
                 this.mousePressedFrame[button] += 1;
