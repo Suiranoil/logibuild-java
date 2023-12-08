@@ -5,8 +5,8 @@ import io.github.lionarius.engine.renderer.buffer.BufferUsage;
 import io.github.lionarius.engine.renderer.buffer.IndexBuffer;
 import io.github.lionarius.engine.renderer.buffer.VertexArray;
 import io.github.lionarius.engine.renderer.buffer.VertexBuffer;
-import io.github.lionarius.engine.renderer.shader.Shader;
 import io.github.lionarius.engine.resource.ResourceManager;
+import io.github.lionarius.engine.resource.shader.Shader;
 import io.github.lionarius.engine.util.BufferUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -28,36 +28,19 @@ public class QuadRenderer implements Renderer {
 
     private int renderedCount;
     private Shader shader;
+
     private ByteBuffer buffer;
     private VertexBuffer commonVbo;
     private VertexBuffer instanceVbo;
     private IndexBuffer ibo;
     private VertexArray vao;
 
-    private static int[] generateIndices(int size) {
-        var count = QuadRenderer.INDICES_PER_QUAD * size;
-        var indices = new int[count];
-        var vertex = 0;
-        for (int i = 0; i < count; i += 6) {
-            indices[i + 0] = 0 + vertex;
-            indices[i + 1] = 1 + vertex;
-            indices[i + 2] = 2 + vertex;
-            indices[i + 3] = 2 + vertex;
-            indices[i + 4] = 3 + vertex;
-            indices[i + 5] = 0 + vertex;
-
-            vertex += 4;
-        }
-
-        return indices;
-    }
-
     @Override
     public void init() {
         this.shader = this.resourceManager.get(Shader.class, "shader/quad.shader");
         this.buffer = BufferUtils.createByteBuffer(QuadRenderer.INSTANCE_SIZE * this.size);
 
-        this.ibo = new IndexBuffer(QuadRenderer.generateIndices(1));
+        this.ibo = new IndexBuffer(new int[]{0, 1, 2, 2, 3, 0});
 
         var vertices = new QuadVertexCommon[]{
                 new QuadVertexCommon(new Vector3f(0, 0, 0), new Vector2f(0, 0)),
@@ -117,14 +100,13 @@ public class QuadRenderer implements Renderer {
         var bufferSlice = this.buffer.slice(0, QuadRenderer.INSTANCE_SIZE * this.renderedCount);
         this.instanceVbo.uploadData(bufferSlice);
 
-//        this.ibo.bind();
         this.vao.bind();
         this.shader.bind();
 
         this.shader.setUniform("u_Projection", projection);
         this.shader.setUniform("u_View", view);
 
-        GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, QuadRenderer.INDICES_PER_QUAD, GL46.GL_UNSIGNED_INT, 0, this.renderedCount);
+        GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, QuadRenderer.INDICES_PER_QUAD * this.renderedCount, GL46.GL_UNSIGNED_INT, 0, this.renderedCount);
     }
 
     @Override

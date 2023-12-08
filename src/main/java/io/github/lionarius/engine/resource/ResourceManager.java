@@ -13,26 +13,38 @@ import java.util.Map;
 public class ResourceManager {
     @NonNull
     private final String folder;
-    private final Map<Class<?>, AssetData<?>> assets = new HashMap<>();
+    private final Map<Class<?>, ResourceData<?>> resources = new HashMap<>();
 
     public <T extends Resource> void register(@NonNull Class<T> clazz, @NonNull ResourceLoader<T> loader) {
-        this.assets.put(clazz, new AssetData<>(loader));
+        this.resources.put(clazz, new ResourceData<>(loader));
     }
 
     public <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String name) {
-        return this.get(clazz, this.folder, name);
+        return this.get(clazz, this.folder, name, null);
+    }
+
+    public <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String name, Object parameters) {
+        return this.get(clazz, this.folder, name, parameters);
     }
 
     public <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name) {
+        return this.get(clazz, folder, name, null);
+    }
+
+    public <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name, Object parameters) {
         var data = this.getAssetData(clazz);
-        var file = new File(folder, name);
+        File file;
+        if (folder.isEmpty())
+            file = new File(name);
+        else
+            file = new File(folder, name);
         var path = file.getAbsolutePath();
 
         if (data.getCache().containsKey(path))
             return data.getCache().get(path);
 
         try {
-            var asset = data.getLoader().loadFromFile(path);
+            var asset = data.getLoader().loadFromFile(path, parameters);
             data.getCache().put(path, asset);
             return asset;
         } catch (IOException e) {
@@ -55,16 +67,16 @@ public class ResourceManager {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Resource> AssetData<T> getAssetData(Class<T> clazz) {
-        if (!this.assets.containsKey(clazz))
+    private <T extends Resource> ResourceData<T> getAssetData(Class<T> clazz) {
+        if (!this.resources.containsKey(clazz))
             throw new IllegalArgumentException("Asset loader for '" + clazz.getSimpleName() + "' is not registered");
 
-        return (AssetData<T>) this.assets.get(clazz);
+        return (ResourceData<T>) this.resources.get(clazz);
     }
 
     @Getter
     @RequiredArgsConstructor
-    private static class AssetData<T extends Resource> {
+    private static class ResourceData<T extends Resource> {
         private final ResourceLoader<T> loader;
         private final Map<String, T> cache = new HashMap<>();
     }

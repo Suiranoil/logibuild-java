@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.renderer.texture;
+package io.github.lionarius.engine.resource.texture;
 
 import io.github.lionarius.engine.resource.ResourceLoader;
 import org.lwjgl.BufferUtils;
@@ -8,7 +8,7 @@ import java.io.IOException;
 
 public class TextureLoader implements ResourceLoader<Texture> {
     @Override
-    public Texture loadFromFile(String filepath) throws IOException {
+    public Texture loadFromFile(String filepath, Object parameters) throws IOException {
         var width = BufferUtils.createIntBuffer(1);
         var height = BufferUtils.createIntBuffer(1);
         var channels = BufferUtils.createIntBuffer(1);
@@ -19,8 +19,14 @@ public class TextureLoader implements ResourceLoader<Texture> {
         if (data == null)
             throw new IOException("Could not load image on path " + filepath);
 
+        TextureLoadParameters params;
+        if (parameters == null)
+            params = TextureLoadParameters.DEFAULT_PARAMETERS;
+        else
+            params = (TextureLoadParameters) parameters;
+
         var texture = new Texture(width.get(), height.get(), channels.get());
-        texture.init(data);
+        texture.init(params, data);
         STBImage.stbi_image_free(data);
 
         return texture;

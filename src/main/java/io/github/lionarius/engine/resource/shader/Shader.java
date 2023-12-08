@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.renderer.shader;
+package io.github.lionarius.engine.resource.shader;
 
 import io.github.lionarius.engine.renderer.OpenGLObject;
 import io.github.lionarius.engine.resource.Resource;

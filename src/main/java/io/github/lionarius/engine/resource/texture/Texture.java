@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.renderer.texture;
+package io.github.lionarius.engine.resource.texture;
 
 import io.github.lionarius.engine.renderer.OpenGLObject;
 import io.github.lionarius.engine.resource.Resource;
@@ -17,14 +17,13 @@ public class Texture extends OpenGLObject implements Resource {
     private final int height;
     private final int channels;
 
-    protected void init(@NonNull ByteBuffer data) {
+    protected void init(@NonNull TextureLoadParameters parameters, @NonNull ByteBuffer data) {
         this.id = GL46.glCreateTextures(GL46.GL_TEXTURE_2D);
 
-        this.bind();
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_S, GL46.GL_REPEAT);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_WRAP_T, GL46.GL_REPEAT);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MIN_FILTER, GL46.GL_NEAREST);
-        GL46.glTexParameteri(GL46.GL_TEXTURE_2D, GL46.GL_TEXTURE_MAG_FILTER, GL46.GL_NEAREST);
+        GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_WRAP_S, parameters.wrap());
+        GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_WRAP_T, parameters.wrap());
+        GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_MIN_FILTER, parameters.filter());
+        GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_MAG_FILTER, parameters.filter());
 
         var format = switch (this.channels) {
             case 1 -> GL46.GL_R;
@@ -34,7 +33,12 @@ public class Texture extends OpenGLObject implements Resource {
             default -> throw new IllegalStateException("Unknown number of texture channels " + this.channels);
         };
 
-        GL46.glTexImage2D(GL46.GL_TEXTURE_2D, 0, format, this.width, this.height, 0, format, GL46.GL_UNSIGNED_BYTE, data);
+        GL46.glTextureStorage2D(this.id, 0, format, this.width, this.height);
+        GL46.glTextureSubImage2D(this.id, 0, 0, 0, this.width, this.height, format, GL46.GL_UNSIGNED_BYTE, data);
+    }
+
+    public void bindUnit(int slot) {
+        GL46.glBindTextureUnit(slot, this.id);
     }
 
     @Override
