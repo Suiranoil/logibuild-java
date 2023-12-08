@@ -2,6 +2,7 @@ package io.github.lionarius.engine.scene;
 
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
+import io.github.lionarius.engine.scene.builtin.Camera;
 import lombok.Getter;
 
 import java.util.ArrayDeque;
@@ -15,6 +16,8 @@ public class Scene implements Updatable, Renderable {
     private final Queue<GameObject> removedObjects = new ArrayDeque<>();
     @Getter
     private boolean isEntered = false;
+    @Getter
+    private Camera mainCamera = null;
 
     public void addGameObject(GameObject gameObject) {
         if (this.isEntered)
@@ -54,6 +57,8 @@ public class Scene implements Updatable, Renderable {
     public void enter() {
         for (var gameObject : this.gameObjects)
             gameObject.awake();
+
+        this.mainCamera = this.findFirst(Camera.class);
 
         for (var gameObject : this.gameObjects)
             gameObject.start();

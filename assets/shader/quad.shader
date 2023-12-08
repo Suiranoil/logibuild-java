@@ -19,7 +19,7 @@ void main()
     o_UV = a_UV;
     o_TextureId = a_TextureId;
 
-    gl_Position = (u_Projection * u_View) * a_Model * a_Position;
+    gl_Position = u_Projection * u_View * a_Model * a_Position;
 }
 
 // #type fragment

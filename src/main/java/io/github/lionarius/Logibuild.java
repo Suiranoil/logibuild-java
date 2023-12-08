@@ -3,19 +3,25 @@ package io.github.lionarius;
 import io.github.lionarius.engine.InputHandler;
 import io.github.lionarius.engine.Window;
 import io.github.lionarius.engine.keybind.KeybindHandler;
-import io.github.lionarius.engine.renderer.Renderer;
+import io.github.lionarius.engine.renderer.EngineRenderer;
 import io.github.lionarius.engine.renderer.shader.Shader;
 import io.github.lionarius.engine.renderer.shader.ShaderLoader;
 import io.github.lionarius.engine.renderer.texture.Texture;
 import io.github.lionarius.engine.renderer.texture.TextureLoader;
 import io.github.lionarius.engine.resource.ResourceManager;
+import io.github.lionarius.engine.scene.GameObject;
+import io.github.lionarius.engine.scene.Scene;
 import io.github.lionarius.engine.scene.SceneManager;
-import io.github.lionarius.engine.util.ProjectionUtil;
+import io.github.lionarius.engine.scene.builtin.Box2DRenderer;
+import io.github.lionarius.engine.scene.builtin.OrthoCamera;
+import io.github.lionarius.engine.scene.builtin.Transform;
 import io.github.lionarius.engine.util.TimeUtil;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joml.Matrix4f;
+import org.joml.Vector4f;
+
+import java.util.List;
 
 public final class Logibuild {
     private static final Logger LOGGER = LogManager.getLogger("Logibuild");
@@ -31,7 +37,7 @@ public final class Logibuild {
     @Getter
     private final KeybindHandler keybindHandler = new KeybindHandler(this.inputHandler);
     @Getter
-    private final Renderer renderer = new Renderer(this.resourceManager);
+    private final EngineRenderer engineRenderer = new EngineRenderer(this.resourceManager);
 
     @Getter
     private final SceneManager sceneManager = new SceneManager();
@@ -48,13 +54,15 @@ public final class Logibuild {
         this.resourceManager.register(Shader.class, new ShaderLoader());
         this.resourceManager.register(Texture.class, new TextureLoader());
 
-        this.renderer.init();
+        this.engineRenderer.init();
     }
 
     public void run() {
         double prevTime;
         double currentTime = TimeUtil.getApplicationTime();
         double dt = -1.0;
+
+        this.sceneManager.transitionTo(this.setupInitialScene());
 
         while (!this.window.shouldClose()) {
             if (dt >= 0) {
@@ -72,7 +80,7 @@ public final class Logibuild {
             dt = currentTime - prevTime;
         }
 
-        this.renderer.close();
+        this.engineRenderer.close();
         this.window.close();
     }
 
@@ -84,10 +92,37 @@ public final class Logibuild {
     }
 
     private void render(double delta) {
-        this.renderer.beginFrame();
+        this.engineRenderer.beginFrame();
+
+//        var mousePosition = this.inputHandler.getMousePosition();
+//        this.engineRenderer.getQuadRenderer().renderQuad(new Vector3f(mousePosition, 0), new Quaternionf(), new Vector3f(10, 10, 0), new Vector3f(1), new Vector4f(1));
 
         this.sceneManager.render(delta);
 
-        this.renderer.endFrame(ProjectionUtil.getOrthoProjectionCentered(0, 0, this.window.getWidth(), this.window.getHeight()), new Matrix4f());
+        var sceneCamera = this.sceneManager.getSceneCamera();
+        if (sceneCamera == null)
+            LOGGER.warn("Scene does not have a camera!");
+        else
+            this.engineRenderer.endFrame(sceneCamera.getProjection(), sceneCamera.getView());
+    }
+
+    private Scene setupInitialScene() {
+        var scene = new Scene();
+        var camera = new GameObject(List.of(new OrthoCamera(this.window)));
+        var cameraTransform = camera.getComponent(Transform.class);
+        cameraTransform.getPosition().set(0, 300, 0);
+        cameraTransform.getScale().set(1, -1, 1);
+        scene.addGameObject(camera);
+
+        var testObject = new GameObject();
+        var renderComponent = new Box2DRenderer(this.engineRenderer.getQuadRenderer(), new Vector4f(1, 0, 0, 1));
+        var transformComponent = testObject.getComponent(Transform.class);
+        assert transformComponent != null;
+        transformComponent.getSize().set(250, 300, 1);
+        transformComponent.getPosition().set(0, 300, 0);
+        testObject.addComponent(renderComponent);
+        scene.addGameObject(testObject);
+
+        return scene;
     }
 }

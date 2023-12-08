@@ -1,6 +1,6 @@
-package io.github.lionarius.engine.renderer.batch.quad;
+package io.github.lionarius.engine.renderer.quad;
 
-import io.github.lionarius.engine.renderer.batch.RenderBatch;
+import io.github.lionarius.engine.renderer.Renderer;
 import io.github.lionarius.engine.renderer.buffer.BufferUsage;
 import io.github.lionarius.engine.renderer.buffer.IndexBuffer;
 import io.github.lionarius.engine.renderer.buffer.VertexArray;
@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL46;
 import java.nio.ByteBuffer;
 
 @RequiredArgsConstructor
-public class QuadBatch implements RenderBatch {
+public class QuadRenderer implements Renderer {
     private static final int INDICES_PER_QUAD = 6;
     private static final int INSTANCE_SIZE = QuadVertexInstance.getLayout().getStride();
 
@@ -35,7 +35,7 @@ public class QuadBatch implements RenderBatch {
     private VertexArray vao;
 
     private static int[] generateIndices(int size) {
-        var count = QuadBatch.INDICES_PER_QUAD * size;
+        var count = QuadRenderer.INDICES_PER_QUAD * size;
         var indices = new int[count];
         var vertex = 0;
         for (int i = 0; i < count; i += 6) {
@@ -55,9 +55,9 @@ public class QuadBatch implements RenderBatch {
     @Override
     public void init() {
         this.shader = this.resourceManager.get(Shader.class, "shader/quad.shader");
-        this.buffer = BufferUtils.createByteBuffer(QuadBatch.INSTANCE_SIZE * this.size);
+        this.buffer = BufferUtils.createByteBuffer(QuadRenderer.INSTANCE_SIZE * this.size);
 
-        this.ibo = new IndexBuffer(QuadBatch.generateIndices(1));
+        this.ibo = new IndexBuffer(QuadRenderer.generateIndices(1));
 
         var vertices = new QuadVertexCommon[]{
                 new QuadVertexCommon(new Vector3f(0, 0, 0), new Vector2f(0, 0)),
@@ -70,11 +70,12 @@ public class QuadBatch implements RenderBatch {
         commonData.position(0);
         this.commonVbo = new VertexBuffer(BufferUsage.STATIC_DRAW, commonData);
 
-        this.instanceVbo = new VertexBuffer(BufferUsage.DYNAMIC_DRAW, QuadBatch.INSTANCE_SIZE * this.size);
+        this.instanceVbo = new VertexBuffer(BufferUsage.DYNAMIC_DRAW, QuadRenderer.INSTANCE_SIZE * this.size);
 
         this.vao = new VertexArray();
-        this.vao.setBuffer(0, 0, this.commonVbo, QuadVertexCommon.getLayout());
-        this.vao.setBuffer(1, 1, this.instanceVbo, QuadVertexInstance.getLayout());
+        this.vao.setIndexBuffer(this.ibo);
+        this.vao.setVertexBuffer(0, 0, this.commonVbo, QuadVertexCommon.getLayout());
+        this.vao.setVertexBuffer(1, 1, this.instanceVbo, QuadVertexInstance.getLayout());
     }
 
     @Override
@@ -83,14 +84,26 @@ public class QuadBatch implements RenderBatch {
         this.buffer.position(0);
     }
 
-    public void renderQuad(float x, float y, float z, float angle, Vector3fc axis, float width, float height, Vector4fc color) {
-        assert this.renderedCount < this.size : "exceeded batch size for quad batch";
+    public void renderQuad(Vector3fc position, Quaternionfc quaternion, Vector3fc size, Vector3fc scale, Vector4fc color) {
+        var model = new Matrix4f().translate(position).rotate(quaternion).scale(scale).scale(size);
 
-        var model = new Matrix4f().translate(x, y, z).rotate(angle, axis).scale(width, height, 0);
+        this.renderQuad(model, color, -1);
+    }
+
+    public void renderQuad(Matrix4f model, Vector3fc size, Vector4fc color) {
+        this.renderQuad(model.scale(size), color, -1);
+    }
+
+    private void renderQuad(Matrix4fc model, Vector4fc color, int textureId) {
+        this.renderQuad(model, color.x(), color.y(), color.z(), color.w(), textureId);
+    }
+
+    private void renderQuad(Matrix4fc model, float r, float g, float b, float a, int textureId) {
+        assert this.renderedCount < this.size : "exceeded batch size for quad renderer";
 
         this.vertexInstance.setModel(model);
-        this.vertexInstance.setColor(color);
-        this.vertexInstance.setTextureId(-1);
+        this.vertexInstance.setColor(r, g, b, a);
+        this.vertexInstance.setTextureId(textureId);
         this.vertexInstance.get(this.buffer);
 
         this.renderedCount += 1;
@@ -101,16 +114,17 @@ public class QuadBatch implements RenderBatch {
         if (this.renderedCount <= 0)
             return;
 
-        this.ibo.bind();
+        var bufferSlice = this.buffer.slice(0, QuadRenderer.INSTANCE_SIZE * this.renderedCount);
+        this.instanceVbo.uploadData(bufferSlice);
+
+//        this.ibo.bind();
         this.vao.bind();
         this.shader.bind();
-        var bufferSlice = this.buffer.slice(0, QuadBatch.INSTANCE_SIZE * this.renderedCount);
-        this.instanceVbo.uploadData(bufferSlice);
 
         this.shader.setUniform("u_Projection", projection);
         this.shader.setUniform("u_View", view);
 
-        GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, QuadBatch.INDICES_PER_QUAD, GL46.GL_UNSIGNED_INT, 0, this.renderedCount);
+        GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, QuadRenderer.INDICES_PER_QUAD, GL46.GL_UNSIGNED_INT, 0, this.renderedCount);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.github.lionarius.engine.renderer.buffer;
 
 import io.github.lionarius.engine.renderer.OpenGLObject;
+import org.lwjgl.opengl.GL45;
 import org.lwjgl.opengl.GL46;
 
 public class VertexArray extends OpenGLObject {
@@ -25,25 +26,28 @@ public class VertexArray extends OpenGLObject {
         GL46.glDeleteVertexArrays(this.id);
     }
 
-    public void setBuffer(VertexBuffer buffer, VertexBufferLayout layout) {
-        this.setBuffer(0, 0, buffer, layout);
+    public void setIndexBuffer(IndexBuffer buffer) {
+        GL45.glVertexArrayElementBuffer(this.id, buffer.getId());
     }
 
-    public void setBuffer(int bindingIndex, int divisor, VertexBuffer buffer, VertexBufferLayout layout) {
-        this.bind();
-        GL46.glBindVertexBuffer(bindingIndex, buffer.getId(), 0, layout.getStride());
+    public void setVertexBuffer(VertexBuffer buffer, VertexBufferLayout layout) {
+        this.setVertexBuffer(0, 0, buffer, layout);
+    }
+
+    public void setVertexBuffer(int bindingIndex, int divisor, VertexBuffer buffer, VertexBufferLayout layout) {
+        GL46.glVertexArrayVertexBuffer(this.id, bindingIndex, buffer.getId(), 0, layout.getStride());
 
         var elements = layout.getElements();
         var offset = 0;
         for (var element : elements) {
-            GL46.glEnableVertexAttribArray(this.enabledAttributes);
-            GL46.glVertexAttribFormat(this.enabledAttributes, element.getCount(), element.getType(), element.isNormalized(), offset);
-            GL46.glVertexAttribBinding(this.enabledAttributes, bindingIndex);
+            GL46.glEnableVertexArrayAttrib(this.id, this.enabledAttributes);
+            GL46.glVertexArrayAttribFormat(this.id, this.enabledAttributes, element.getCount(), element.getType(), element.isNormalized(), offset);
+            GL46.glVertexArrayAttribBinding(this.id, this.enabledAttributes, bindingIndex);
             this.enabledAttributes += 1;
 
             offset += element.getCount() * element.getSize();
         }
 
-        GL46.glVertexBindingDivisor(bindingIndex, divisor);
+        GL46.glVertexArrayBindingDivisor(this.id, bindingIndex, divisor);
     }
 }

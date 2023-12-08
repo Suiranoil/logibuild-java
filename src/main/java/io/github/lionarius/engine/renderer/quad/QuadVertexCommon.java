@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.renderer.batch.quad;
+package io.github.lionarius.engine.renderer.quad;
 
 import io.github.lionarius.engine.renderer.buffer.VertexBufferLayout;
 import io.github.lionarius.engine.util.BufferUtil;

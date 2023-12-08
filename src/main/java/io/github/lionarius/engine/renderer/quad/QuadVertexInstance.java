@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.renderer.batch.quad;
+package io.github.lionarius.engine.renderer.quad;
 
 import io.github.lionarius.engine.renderer.buffer.VertexBufferLayout;
 import io.github.lionarius.engine.util.BufferUtil;
@@ -8,7 +8,6 @@ import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
-import org.joml.Vector4fc;
 
 import java.nio.ByteBuffer;
 
@@ -36,8 +35,8 @@ public class QuadVertexInstance implements GetToByteBuffer {
         this.model.set(model);
     }
 
-    public void setColor(Vector4fc color) {
-        this.color.set(color);
+    public void setColor(float r, float g, float b, float a) {
+        this.color.set(r, g, b, a);
     }
 
     @Override
