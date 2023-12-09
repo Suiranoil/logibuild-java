@@ -3,25 +3,24 @@ package io.github.lionarius.engine.resource.font;
 import io.github.lionarius.engine.resource.Resource;
 import io.github.lionarius.engine.resource.texture.Texture;
 import lombok.*;
+import org.javatuples.Pair;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 @RequiredArgsConstructor
 public class Font implements Resource {
-    @Getter
     @NonNull
     private final Atlas atlas;
-    @Getter
     @NonNull
     private final Metrics metrics;
-    @Getter
     private final Map<Integer, Glyph> glyphs = new HashMap<>();
+    private final Map<Pair<Integer, Integer>, Kerning> kerning = new HashMap<>();
     @Getter(lazy = true)
     private final Vector2fc unitRange = this.calculateUnitRange();
-    @Getter
     @Setter(AccessLevel.PROTECTED)
     private Texture atlasTexture;
 
@@ -35,7 +34,7 @@ public class Font implements Resource {
 
     protected void init() {
         for (var glyph : this.glyphs.values())
-            glyph.init(this.atlasTexture.getWidth(), this.atlasTexture.getHeight());
+            glyph.init(this.metrics, this.atlasTexture.getWidth(), this.atlasTexture.getHeight());
     }
 
     private Vector2fc calculateUnitRange() {
@@ -50,5 +49,8 @@ public class Font implements Resource {
 
     public record Metrics(float emSize, float lineHeight, float ascender, float descender, float underlineY,
                           float underlineThickness) {
+    }
+
+    public record Kerning(int unicode1, int unicode2, float advance) {
     }
 }

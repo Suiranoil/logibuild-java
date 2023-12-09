@@ -7,7 +7,6 @@ import io.github.lionarius.engine.renderer.buffer.VertexArray;
 import io.github.lionarius.engine.renderer.buffer.VertexBuffer;
 import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.resource.font.Font;
-import io.github.lionarius.engine.resource.font.Glyph;
 import io.github.lionarius.engine.resource.font.TextGlyphIterator;
 import io.github.lionarius.engine.resource.shader.Shader;
 import lombok.NonNull;
@@ -21,6 +20,7 @@ import java.nio.ByteBuffer;
 @RequiredArgsConstructor
 public class TextRenderer implements Renderer {
     private static final int INDICES_PER_CHAR = 6;
+    private static final int VERTICES_PER_CHAR = 4;
     private static final int VERTEX_SIZE = TextVertex.getLayout().getStride();
 
     private final int size;
@@ -58,12 +58,12 @@ public class TextRenderer implements Renderer {
     @Override
     public void init() {
         this.shader = this.resourceManager.get(Shader.class, "shader/text.shader");
-        this.defaultFont = this.resourceManager.get(Font.class, "font/cascadia");
+        this.defaultFont = this.resourceManager.get(Font.class, "font/minecraft");
 
-        this.buffer = BufferUtils.createByteBuffer(TextRenderer.VERTEX_SIZE * this.size);
+        this.buffer = BufferUtils.createByteBuffer(TextRenderer.VERTEX_SIZE * TextRenderer.VERTICES_PER_CHAR * this.size);
 
         this.ibo = new IndexBuffer(TextRenderer.generateIndices(this.size));
-        this.vbo = new VertexBuffer(BufferUsage.DYNAMIC_DRAW, TextRenderer.VERTEX_SIZE * this.size);
+        this.vbo = new VertexBuffer(BufferUsage.DYNAMIC_DRAW, TextRenderer.VERTEX_SIZE * TextRenderer.VERTICES_PER_CHAR * this.size);
 
         this.vao = new VertexArray();
         this.vao.setIndexBuffer(this.ibo);
@@ -85,27 +85,26 @@ public class TextRenderer implements Renderer {
     private void renderText(String text, Matrix4fc model, Vector4fc color) {
         this.textVertex.setModel(model);
         this.textVertex.setColor(color.x(), color.y(), color.z(), color.w());
+        this.textVertex.setAtlasId(0);
 
-        var cursorX = 0.0f;
-        var cursorY = 0.0f;
         var it = new TextGlyphIterator(this.defaultFont, text);
         while (it.hasNext()) {
             var glyph = it.next();
             if (glyph == null)
                 continue;
 
-            this.renderGlyph(model, cursorX, cursorY, glyph);
-            cursorY += glyph.getAdvance();
+            this.renderGlyph(model, glyph);
         }
     }
 
-    private void renderGlyph(Matrix4fc model, float xOffset, float yOffset, Glyph glyph) {
+    private void renderGlyph(Matrix4fc model, TextGlyphIterator.NextGlyph glyph) {
         assert this.renderedCharsCount < this.size : "exceeded batch size for text renderer";
 
-        var positions = glyph.getPositions();
-        var uvs = glyph.getUvs();
+        var positions = glyph.positions();
+        var uvs = glyph.uvs();
+        var offset = glyph.offset();
         for (int i = 0; i < 4; i++) {
-            this.textVertex.setPosition(xOffset + positions[i].x(), yOffset + positions[i].y());
+            this.textVertex.setPosition(offset.x() + positions[i].x(), offset.y() + positions[i].y());
             this.textVertex.setUV(uvs[i].x(), uvs[i].y());
             this.textVertex.get(this.buffer);
         }
@@ -118,7 +117,7 @@ public class TextRenderer implements Renderer {
         if (this.renderedCharsCount <= 0)
             return;
 
-        var bufferSlice = this.buffer.slice(0, TextRenderer.VERTEX_SIZE * this.renderedCharsCount);
+        var bufferSlice = this.buffer.slice(0, TextRenderer.VERTEX_SIZE * TextRenderer.VERTICES_PER_CHAR * this.renderedCharsCount);
         this.vbo.uploadData(bufferSlice);
 
         this.ibo.bind();
@@ -128,12 +127,10 @@ public class TextRenderer implements Renderer {
 
         this.shader.setUniform("u_Projection", projection);
         this.shader.setUniform("u_View", view);
-        this.shader.setUniform("u_unitRange", this.defaultFont.getUnitRange());
+        this.shader.setUniform("u_UnitRange", this.defaultFont.getUnitRange());
         this.shader.setUniform("u_Atlas", 0);
 
         GL46.glDrawElements(GL46.GL_TRIANGLES, TextRenderer.INDICES_PER_CHAR * this.renderedCharsCount, GL46.GL_UNSIGNED_INT, 0);
-
-//        GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, TextRenderer.INDICES_PER_CHAR, GL46.GL_UNSIGNED_INT, 0, this.renderedCharsCount);
     }
 
     @Override

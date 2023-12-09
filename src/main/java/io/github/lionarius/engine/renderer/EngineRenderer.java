@@ -21,12 +21,13 @@ public class EngineRenderer implements Renderer {
 
 
     public void init() {
-//        GL46.gl
+        GL46.glEnable(GL46.GL_BLEND);
+        GL46.glBlendFunc(GL46.GL_ONE, GL46.GL_ONE_MINUS_SRC_ALPHA);
 
         this.quadRenderer = new QuadRenderer(8192 * 4, this.resourceManager);
         this.quadRenderer.init();
 
-        this.textRenderer = new TextRenderer(8192 * 4, this.resourceManager);
+        this.textRenderer = new TextRenderer(8192 * 16, this.resourceManager);
         this.textRenderer.init();
     }
 

@@ -31,7 +31,7 @@ public class VertexArray extends OpenGLObject {
     }
 
     public void setVertexBuffer(VertexBuffer buffer, VertexBufferLayout layout) {
-        this.setVertexBuffer(0, 0, buffer, layout);
+        this.setVertexBuffer(0, -1, buffer, layout);
     }
 
     public void setVertexBuffer(int bindingIndex, int divisor, VertexBuffer buffer, VertexBufferLayout layout) {
@@ -48,6 +48,7 @@ public class VertexArray extends OpenGLObject {
             offset += element.getCount() * element.getSize();
         }
 
-        GL46.glVertexArrayBindingDivisor(this.id, bindingIndex, divisor);
+        if (divisor >= 0)
+            GL46.glVertexArrayBindingDivisor(this.id, bindingIndex, divisor);
     }
 }

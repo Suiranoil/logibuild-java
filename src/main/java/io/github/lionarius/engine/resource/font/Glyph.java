@@ -20,7 +20,7 @@ public class Glyph {
     // 1 - right top vertex
     // 2 - right bottom vertex
     // 3 - left bottom vertex
-    protected void init(int width, int height) {
+    protected void init(Font.Metrics metrics, int width, int height) {
         if (this.atlasBounds == null)
             return;
 
@@ -28,15 +28,15 @@ public class Glyph {
 
         this.uvs = new Vector2fc[4];
         this.uvs[0] = new Vector2f(this.atlasBounds.left, this.atlasBounds.top).div(size);
-        this.uvs[1] = new Vector2f(this.atlasBounds.right, this.atlasBounds.top).div(size);
+        this.uvs[1] = new Vector2f(this.atlasBounds.left, this.atlasBounds.bottom).div(size);
         this.uvs[2] = new Vector2f(this.atlasBounds.right, this.atlasBounds.bottom).div(size);
-        this.uvs[3] = new Vector2f(this.atlasBounds.left, this.atlasBounds.bottom).div(size);
+        this.uvs[3] = new Vector2f(this.atlasBounds.right, this.atlasBounds.top).div(size);
 
         this.positions = new Vector2fc[4];
-        this.positions[0] = new Vector2f(this.planeBounds.left, this.planeBounds.top);
-        this.positions[1] = new Vector2f(this.planeBounds.right, this.planeBounds.top);
-        this.positions[2] = new Vector2f(this.planeBounds.left, this.planeBounds.top);
-        this.positions[3] = new Vector2f(this.planeBounds.left, this.planeBounds.top);
+        this.positions[0] = new Vector2f(this.planeBounds.left, metrics.ascender() - this.planeBounds.top);
+        this.positions[1] = new Vector2f(this.planeBounds.left, metrics.ascender() - this.planeBounds.bottom);
+        this.positions[2] = new Vector2f(this.planeBounds.right, metrics.ascender() - this.planeBounds.bottom);
+        this.positions[3] = new Vector2f(this.planeBounds.right, metrics.ascender() - this.planeBounds.top);
     }
 
     public record Bounds(float left, float bottom, float right, float top) {

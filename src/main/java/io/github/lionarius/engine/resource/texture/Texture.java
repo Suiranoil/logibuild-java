@@ -25,6 +25,14 @@ public class Texture extends OpenGLObject implements Resource {
         GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_MIN_FILTER, parameters.filter());
         GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_MAG_FILTER, parameters.filter());
 
+        var internalFormat = switch (this.channels) {
+            case 1 -> GL46.GL_R8;
+            case 2 -> GL46.GL_RG8;
+            case 3 -> GL46.GL_RGB8;
+            case 4 -> GL46.GL_RGBA8;
+            default -> throw new IllegalStateException("Unknown number of texture channels " + this.channels);
+        };
+
         var format = switch (this.channels) {
             case 1 -> GL46.GL_R;
             case 2 -> GL46.GL_RG;
@@ -33,7 +41,7 @@ public class Texture extends OpenGLObject implements Resource {
             default -> throw new IllegalStateException("Unknown number of texture channels " + this.channels);
         };
 
-        GL46.glTextureStorage2D(this.id, 0, format, this.width, this.height);
+        GL46.glTextureStorage2D(this.id, 1, internalFormat, this.width, this.height);
         GL46.glTextureSubImage2D(this.id, 0, 0, 0, this.width, this.height, format, GL46.GL_UNSIGNED_BYTE, data);
     }
 

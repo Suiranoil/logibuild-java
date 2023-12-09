@@ -14,7 +14,9 @@ import io.github.lionarius.engine.resource.texture.TextureLoader;
 import io.github.lionarius.engine.scene.GameObject;
 import io.github.lionarius.engine.scene.Scene;
 import io.github.lionarius.engine.scene.SceneManager;
+import io.github.lionarius.engine.scene.builtin.Box2DRenderer;
 import io.github.lionarius.engine.scene.builtin.OrthoCamera;
+import io.github.lionarius.engine.scene.builtin.SimpleMovement;
 import io.github.lionarius.engine.scene.builtin.Transform;
 import io.github.lionarius.engine.util.TimeUtil;
 import lombok.Getter;
@@ -101,7 +103,46 @@ public final class Logibuild {
 //        var mousePosition = this.inputHandler.getMousePosition();
 //        this.engineRenderer.getQuadRenderer().renderQuad(new Vector3f(mousePosition, 0), new Quaternionf(), new Vector3f(10, 10, 0), new Vector3f(1), new Vector4f(1));
 
-        this.engineRenderer.getTextRenderer().renderText("Test", new Vector3f(0, -60, 0), new Quaternionf(), 40, new Vector4f(1));
+        this.engineRenderer.getTextRenderer().renderText(
+                """
+                        No one shall be subjected to arbitrary arrest, detention or exile.
+                        Everyone is entitled in full equality to a fair and public hearing by an independent and
+                        impartial tribunal, in the determination of his rights and obligations and of any criminal
+                        charge against him. No one shall be subjected to arbitrary interference with his privacy,
+                        family, home or correspondence, nor to attacks upon his honour and reputation. Everyone has
+                        the right to the protection of the law against such interference or attacks.
+                        No one shall be subjected to arbitrary arrest, detention or exile.
+                        Everyone is entitled in full equality to a fair and public hearing by an independent and
+                        impartial tribunal, in the determination of his rights and obligations and of any criminal
+                        charge against him. No one shall be subjected to arbitrary interference with his privacy,
+                        family, home or correspondence, nor to attacks upon his honour and reputation. Everyone has
+                        the right to the protection of the law against such interference or attacks.
+                        No one shall be subjected to arbitrary arrest, detention or exile.
+                        Everyone is entitled in full equality to a fair and public hearing by an independent and
+                        impartial tribunal, in the determination of his rights and obligations and of any criminal
+                        charge against him. No one shall be subjected to arbitrary interference with his privacy,
+                        family, home or correspondence, nor to attacks upon his honour and reputation. Everyone has
+                        the right to the protection of the law against such interference or attacks.
+                        No one shall be subjected to arbitrary arrest, detention or exile.
+                        Everyone is entitled in full equality to a fair and public hearing by an independent and
+                        impartial tribunal, in the determination of his rights and obligations and of any criminal
+                        charge against him. No one shall be subjected to arbitrary interference with his privacy,
+                        family, home or correspondence, nor to attacks upon his honour and reputation. Everyone has
+                        the right to the protection of the law against such interference or attacks.
+                        No one shall be subjected to arbitrary arrest, detention or exile.
+                        Everyone is entitled in full equality to a fair and public hearing by an independent and
+                        impartial tribunal, in the determination of his rights and obligations and of any criminal
+                        charge against him. No one shall be subjected to arbitrary interference with his privacy,
+                        family, home or correspondence, nor to attacks upon his honour and reputation. Everyone has
+                        the right to the protection of the law against such interference or attacks.
+                        No one shall be subjected to arbitrary arrest, detention or exile.
+                        Everyone is entitled in full equality to a fair and public hearing by an independent and
+                        impartial tribunal, in the determination of his rights and obligations and of any criminal
+                        charge against him. No one shall be subjected to arbitrary interference with his privacy,
+                        family, home or correspondence, nor to attacks upon his honour and reputation. Everyone has
+                        the right to the protection of the law against such interference or attacks.
+                        """,
+                new Vector3f(-900, -300, 0), new Quaternionf(), 50, new Vector4f(1));
 
         this.sceneManager.render(delta);
 
@@ -114,20 +155,20 @@ public final class Logibuild {
 
     private Scene setupInitialScene() {
         var scene = new Scene();
-        var camera = new GameObject(List.of(new OrthoCamera(this.window)));
+        var camera = new GameObject(List.of(new OrthoCamera(this.window), new SimpleMovement(this.inputHandler, 800, 90)));
         var cameraTransform = camera.getComponent(Transform.class);
-        cameraTransform.getPosition().set(0, 300, 0);
-//        cameraTransform.getScale().set(1, 1, 1);
+//        cameraTransform.getPosition().set(0, 300, 0);
+        cameraTransform.getScale().set(2);
         scene.addGameObject(camera);
 
-//        var testObject = new GameObject();
-//        var renderComponent = new Box2DRenderer(this.engineRenderer.getQuadRenderer(), new Vector4f(1, 0, 0, 1));
-//        var transformComponent = testObject.getComponent(Transform.class);
-//        assert transformComponent != null;
-//        transformComponent.getSize().set(250, 300, 1);
+        var testObject = new GameObject();
+        var renderComponent = new Box2DRenderer(this.engineRenderer.getQuadRenderer(), new Vector4f(1, 0, 0, 1));
+        var transformComponent = testObject.getComponent(Transform.class);
+        assert transformComponent != null;
+        transformComponent.getSize().set(100, 100, 0);
 //        transformComponent.getPosition().set(0, 300, 0);
-//        testObject.addComponent(renderComponent);
-//        scene.addGameObject(testObject);
+        testObject.addComponent(renderComponent);
+        scene.addGameObject(testObject);
 
         return scene;
     }

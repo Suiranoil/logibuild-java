@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import io.github.lionarius.engine.resource.font.Font;
 import io.github.lionarius.engine.resource.font.Glyph;
+import org.javatuples.Pair;
 
 import java.lang.reflect.Type;
 
@@ -21,6 +22,10 @@ public class FontDeserializer implements JsonDeserializer<Font> {
         Glyph[] glyphs = context.deserialize(jsonObject.get("glyphs"), Glyph[].class);
         for (var glyph : glyphs)
             font.getGlyphs().put(glyph.getUnicode(), glyph);
+
+        Font.Kerning[] kerning = context.deserialize(jsonObject.get("kerning"), Font.Kerning[].class);
+        for (var k : kerning)
+            font.getKerning().put(Pair.with(k.unicode1(), k.unicode2()), k);
 
         return font;
     }
