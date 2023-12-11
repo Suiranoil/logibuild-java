@@ -3,6 +3,8 @@ package io.github.lionarius.engine.resource;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +13,8 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class ResourceManager {
+    private static final Logger LOGGER = LogManager.getLogger("ResourceLoader");
+
     @NonNull
     private final String folder;
     private final Map<Class<?>, ResourceData<?>> resources = new HashMap<>();
@@ -48,7 +52,8 @@ public class ResourceManager {
             data.getCache().put(path, asset);
             return asset;
         } catch (IOException e) {
-            throw new IllegalArgumentException("Could not find asset at " + file.getPath());
+            LOGGER.error("Could not load resource {}", name);
+            return null;
         }
     }
 

@@ -1,36 +1,55 @@
 package io.github.lionarius.engine;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector2i;
+import org.joml.Vector2ic;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL46;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.Closeable;
 
 public class Window implements Closeable {
     private static final Logger LOGGER = LogManager.getLogger("Window");
-    @Getter
-    private int width;
-    @Getter
-    private int height;
+    private final Vector2i size = new Vector2i();
+    //    @Getter
+//    private int width;
+//    @Getter
+//    private int height;
     @Getter
     private String title;
     @Getter
     private boolean isVSync;
+    @Getter
+    private boolean isFullscreen = false;
 
-    @Getter(AccessLevel.PROTECTED)
+    private final Vector2i preFullscreenPosition = new Vector2i();
+    private final Vector2i preFullscreenSize = new Vector2i();
+
+    @Getter
     private long handle;
 
     public Window(int width, int height, String title) {
-        this.height = height;
-        this.width = width;
+        this.size.set(width, height);
         this.title = title;
+    }
+
+    public Vector2ic getSize() {
+        return this.size;
+    }
+
+    public int getWidth() {
+        return this.size.x();
+    }
+
+    public int getHeight() {
+        return this.size.y();
     }
 
     public void setTitle(String title) {
@@ -47,13 +66,34 @@ public class Window implements Closeable {
             GLFW.glfwSwapInterval(0);
     }
 
-    public boolean shouldClose() {
-        return GLFW.glfwWindowShouldClose(this.handle);
+    public void setFullscreen(boolean fullscreen) {
+        if (this.isFullscreen == fullscreen)
+            return;
+
+        if (fullscreen) {
+            try (var stack = MemoryStack.stackPush()) {
+                var i1 = stack.callocInt(1);
+                var i2 = stack.callocInt(1);
+
+                GLFW.glfwGetWindowPos(this.handle, i1, i2);
+                this.preFullscreenPosition.set(i1.get(), i2.get());
+                this.preFullscreenSize.set(this.size);
+            }
+
+            var monitor = GLFW.glfwGetPrimaryMonitor();
+            var mode = GLFW.glfwGetVideoMode(monitor);
+            assert mode != null;
+
+            GLFW.glfwSetWindowMonitor(this.handle, monitor, 0, 0, mode.width(), mode.height(), mode.refreshRate());
+        } else {
+            GLFW.glfwSetWindowMonitor(this.handle, 0, this.preFullscreenPosition.x(), this.preFullscreenPosition.y(), this.preFullscreenSize.x(), this.preFullscreenSize.y(), 0);
+        }
+
+        this.isFullscreen = fullscreen;
     }
 
-    public void update() {
-        GLFW.glfwSwapBuffers(this.handle);
-        GLFW.glfwPollEvents();
+    public boolean shouldClose() {
+        return GLFW.glfwWindowShouldClose(this.handle);
     }
 
     public void init() {
@@ -68,7 +108,7 @@ public class Window implements Closeable {
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
 //		GLFW.glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW.GLFW_TRUE);
 
-        this.handle = GLFW.glfwCreateWindow(this.width, this.height, this.title, MemoryUtil.NULL, MemoryUtil.NULL);
+        this.handle = GLFW.glfwCreateWindow(this.size.x(), this.size.y(), this.title, MemoryUtil.NULL, MemoryUtil.NULL);
         if (this.handle == MemoryUtil.NULL)
             throw new IllegalStateException("Could not create GLFW window");
 
@@ -84,18 +124,22 @@ public class Window implements Closeable {
         LOGGER.info("Initialized GLFW window");
     }
 
-    private void initCallbacks() {
-        GLFW.glfwSetFramebufferSizeCallback(this.handle, (window, width, height) -> {
-            this.width = width;
-            this.height = height;
-
-            GL46.glViewport(0, 0, this.width, this.height);
-        });
+    public void update() {
+        GLFW.glfwSwapBuffers(this.handle);
+        GLFW.glfwPollEvents();
     }
 
     @Override
     public void close() {
         GLFW.glfwDestroyWindow(this.handle);
         GLFW.glfwTerminate();
+    }
+
+    private void initCallbacks() {
+        GLFW.glfwSetFramebufferSizeCallback(this.handle, (window, width, height) -> {
+            this.size.set(width, height);
+
+            GL46.glViewport(0, 0, width, height);
+        });
     }
 }

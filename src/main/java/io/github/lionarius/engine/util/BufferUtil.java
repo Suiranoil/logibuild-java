@@ -31,7 +31,7 @@ public final class BufferUtil {
         }
     }
 
-    public static <T extends Vector2fc> ByteBuffer vectorArrayToBuffer(T[] array) {
+    public static <T extends Vector2fc> ByteBuffer objectArrayToBuffer(T[] array) {
         var buffer = BufferUtils.createByteBuffer(2 * array.length * Float.BYTES);
         var position = 0;
         for (T element : array) {
@@ -43,7 +43,7 @@ public final class BufferUtil {
         return buffer;
     }
 
-    public static <T extends Vector3fc> ByteBuffer vectorArrayToBuffer(T[] array) {
+    public static <T extends Vector3fc> ByteBuffer objectArrayToBuffer(T[] array) {
         var buffer = BufferUtils.createByteBuffer(3 * array.length * Float.BYTES);
         var position = 0;
         for (T element : array) {

@@ -28,13 +28,13 @@ public class Font implements Resource {
         return this.glyphs.get(codePoint);
     }
 
-    @Override
-    public void close() {
-    }
-
     protected void init() {
         for (var glyph : this.glyphs.values())
             glyph.init(this.metrics, this.atlasTexture.getWidth(), this.atlasTexture.getHeight());
+    }
+
+    @Override
+    public void close() {
     }
 
     private Vector2fc calculateUnitRange() {

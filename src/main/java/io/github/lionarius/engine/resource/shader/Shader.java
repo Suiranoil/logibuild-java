@@ -20,50 +20,6 @@ public class Shader extends OpenGLObject implements Resource {
     private final String fragmentSource;
     private final Map<String, Integer> uniforms = new HashMap<>();
 
-    private static int compileSource(String source, int type) {
-        int id;
-        id = GL46.glCreateShader(type);
-        GL46.glShaderSource(id, source);
-        GL46.glCompileShader(id);
-        int success = GL46.glGetShaderi(id, GL46.GL_COMPILE_STATUS);
-        if (success == GL46.GL_FALSE) {
-            String info = GL46.glGetShaderInfoLog(id);
-            LOGGER.error("Error compiling shader source: {}", info);
-            throw new IllegalStateException("Error compiling shader source");
-        }
-
-        return id;
-    }
-
-    private static int linkProgram(int vertexId, int fragmentId) {
-        int id = GL46.glCreateProgram();
-        GL46.glAttachShader(id, vertexId);
-        GL46.glAttachShader(id, fragmentId);
-        GL46.glLinkProgram(id);
-
-        int success = GL46.glGetProgrami(id, GL46.GL_LINK_STATUS);
-        if (success == GL46.GL_FALSE) {
-            String info = GL46.glGetProgramInfoLog(id);
-            LOGGER.error("Error linking program: {}", info);
-
-            throw new IllegalStateException("Error linking program");
-        }
-
-        GL46.glValidateProgram(id);
-        success = GL46.glGetProgrami(id, GL46.GL_VALIDATE_STATUS);
-        if (success == GL46.GL_FALSE) {
-            String info = GL46.glGetProgramInfoLog(id);
-            LOGGER.error("Error validating program: {}", info);
-
-            throw new IllegalStateException("Error validating program");
-        }
-
-        GL46.glDeleteShader(vertexId);
-        GL46.glDeleteShader(fragmentId);
-
-        return id;
-    }
-
     @Override
     public void bind() {
         GL46.glUseProgram(this.id);
@@ -131,6 +87,57 @@ public class Shader extends OpenGLObject implements Resource {
             GL46.glProgramUniformMatrix4fv(this.id, location, false, buffer);
     }
 
+    protected void init() {
+        int vertexId = Shader.compileSource(this.vertexSource, GL46.GL_VERTEX_SHADER);
+        int fragmentId = Shader.compileSource(this.fragmentSource, GL46.GL_FRAGMENT_SHADER);
+
+        this.id = Shader.linkProgram(vertexId, fragmentId);
+    }
+
+    private static int compileSource(String source, int type) {
+        int id;
+        id = GL46.glCreateShader(type);
+        GL46.glShaderSource(id, source);
+        GL46.glCompileShader(id);
+        int success = GL46.glGetShaderi(id, GL46.GL_COMPILE_STATUS);
+        if (success == GL46.GL_FALSE) {
+            String info = GL46.glGetShaderInfoLog(id);
+            LOGGER.error("Error compiling shader source: {}", info);
+            throw new IllegalStateException("Error compiling shader source");
+        }
+
+        return id;
+    }
+
+    private static int linkProgram(int vertexId, int fragmentId) {
+        int id = GL46.glCreateProgram();
+        GL46.glAttachShader(id, vertexId);
+        GL46.glAttachShader(id, fragmentId);
+        GL46.glLinkProgram(id);
+
+        int success = GL46.glGetProgrami(id, GL46.GL_LINK_STATUS);
+        if (success == GL46.GL_FALSE) {
+            String info = GL46.glGetProgramInfoLog(id);
+            LOGGER.error("Error linking program: {}", info);
+
+            throw new IllegalStateException("Error linking program");
+        }
+
+        GL46.glValidateProgram(id);
+        success = GL46.glGetProgrami(id, GL46.GL_VALIDATE_STATUS);
+        if (success == GL46.GL_FALSE) {
+            String info = GL46.glGetProgramInfoLog(id);
+            LOGGER.error("Error validating program: {}", info);
+
+            throw new IllegalStateException("Error validating program");
+        }
+
+        GL46.glDeleteShader(vertexId);
+        GL46.glDeleteShader(fragmentId);
+
+        return id;
+    }
+
     private int getUniformLocation(String name) {
         if (this.uniforms.containsKey(name))
             return this.uniforms.get(name);
@@ -138,12 +145,5 @@ public class Shader extends OpenGLObject implements Resource {
         var location = GL46.glGetUniformLocation(this.id, name);
         this.uniforms.put(name, location);
         return location;
-    }
-
-    protected void compile() {
-        int vertexId = Shader.compileSource(this.vertexSource, GL46.GL_VERTEX_SHADER);
-        int fragmentId = Shader.compileSource(this.fragmentSource, GL46.GL_FRAGMENT_SHADER);
-
-        this.id = Shader.linkProgram(vertexId, fragmentId);
     }
 }

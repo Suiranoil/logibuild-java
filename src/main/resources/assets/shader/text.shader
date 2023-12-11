@@ -3,7 +3,7 @@
 layout (location = 0) in vec4 a_Position;
 layout (location = 1) in vec2 a_UV;
 layout (location = 2) in vec4 a_Color;
-layout (location = 3) in int a_AtlasId;
+layout (location = 3) in float a_AtlasId;
 layout (location = 4) in mat4 a_Model;
 
 uniform mat4 u_Projection;
@@ -11,7 +11,7 @@ uniform mat4 u_View;
 
 layout (location = 0) out vec4 o_Color;
 layout (location = 1) out vec2 o_UV;
-layout (location = 2) flat out int o_AtlasId;
+layout (location = 2) out float o_AtlasId;
 
 void main()
 {
@@ -27,12 +27,12 @@ void main()
 
 layout (location = 0) in vec4 i_Color;
 layout (location = 1) in vec2 i_UV;
-layout (location = 2) flat in int i_AtlasId;
+layout (location = 2) in float i_AtlasId;
 
 uniform vec2 u_UnitRange;
-uniform sampler2D u_Atlas;
+layout (binding = 0) uniform sampler2D u_Atlas[16];
 
-out vec4 FragColor;
+out vec4 gl_FragColor;
 
 float median(float r, float g, float b) {
     return max(min(r, g), min(max(r, g), b));
@@ -45,10 +45,9 @@ float screenPxRange() {
 
 void main()
 {
-    vec3 msd = texture(u_Atlas, i_UV).rgb;
+    vec3 msd = texture(u_Atlas[int(i_AtlasId)], i_UV).rgb;
     float sd = median(msd.r, msd.g, msd.b);
     float screenPxDistance = screenPxRange() * (sd - 0.5);
     float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
-    FragColor = mix(vec4(0), i_Color, opacity);
-    //    FragColor = vec4(i_UV, 0, 1);
+    gl_FragColor = mix(vec4(0), i_Color, opacity);
 }

@@ -19,7 +19,7 @@ public class TextVertex implements GetToByteBuffer {
         LAYOUT.push(Float.class, 2); // vec2 position
         LAYOUT.push(Float.class, 2); // vec2 uv
         LAYOUT.push(Float.class, 4); // vec4 color
-        LAYOUT.push(Integer.class, 1); // int atlasId
+        LAYOUT.push(Float.class, 1); // float atlasId
         LAYOUT.push(Matrix4f.class, 1); // mat4 model
     }
 
@@ -32,7 +32,7 @@ public class TextVertex implements GetToByteBuffer {
     private final Vector2f uv = new Vector2f();
     private final Vector4f color = new Vector4f();
     @Setter
-    private int atlasId = 0;
+    private float atlasId = 0.0f;
     private final Matrix4f model = new Matrix4f();
 
     public void setPosition(float x, float y) {
@@ -62,8 +62,8 @@ public class TextVertex implements GetToByteBuffer {
         this.color.get(byteBuffer);
         BufferUtil.movePosition(byteBuffer, 4 * Float.BYTES);
 
-        byteBuffer.asIntBuffer().put(this.atlasId);
-        BufferUtil.movePosition(byteBuffer, Integer.BYTES);
+        byteBuffer.asFloatBuffer().put(this.atlasId);
+        BufferUtil.movePosition(byteBuffer, Float.BYTES);
 
         this.model.get(byteBuffer);
         BufferUtil.movePosition(byteBuffer, 4 * 4 * Float.BYTES);

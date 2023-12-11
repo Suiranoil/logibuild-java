@@ -1,5 +1,6 @@
 package io.github.lionarius.engine;
 
+import imgui.ImGui;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 public class InputHandler implements Updatable {
     @NonNull
     private final Window window;
+    private boolean hasImGui = false;
 
     // Mouse
     @Getter
@@ -27,6 +29,11 @@ public class InputHandler implements Updatable {
     private final GLFWMouseButtonCallback MOUSE_BUTTON_CALLBACK = new GLFWMouseButtonCallback() {
         @Override
         public void invoke(long window, int button, int action, int mods) {
+            if (InputHandler.this.hasImGui && ImGui.getIO().getWantCaptureMouse()) {
+                InputHandler.this.resetMouse();
+                return;
+            }
+
             if (InputHandler.isMouseNotInBound(button))
                 return;
 
@@ -41,6 +48,11 @@ public class InputHandler implements Updatable {
     private final GLFWCursorPosCallback CURSOR_POS_CALLBACK = new GLFWCursorPosCallback() {
         @Override
         public void invoke(long window, double xPos, double yPos) {
+            if (InputHandler.this.hasImGui && ImGui.getIO().getWantCaptureMouse()) {
+                InputHandler.this.resetMouse();
+                return;
+            }
+
             InputHandler.this.mousePosition.set(xPos, yPos);
             InputHandler.this.mousePosition.div(
                     InputHandler.this.window.getWidth(),
@@ -52,12 +64,20 @@ public class InputHandler implements Updatable {
     private final GLFWKeyCallback KEY_CALLBACK = new GLFWKeyCallback() {
         @Override
         public void invoke(long window, int key, int scancode, int action, int mods) {
+            if (InputHandler.this.hasImGui && ImGui.getIO().getWantCaptureKeyboard()) {
+                InputHandler.this.resetKeyboard();
+                return;
+            }
+
             if (InputHandler.isKeyNotInBound(key))
                 return;
 
             switch (action) {
                 case GLFW.GLFW_PRESS -> InputHandler.this.keyPressed[key] = true;
-                case GLFW.GLFW_REPEAT -> InputHandler.this.keyRepeat[key] = true;
+                case GLFW.GLFW_REPEAT -> {
+                    InputHandler.this.keyPressed[key] = true;
+                    InputHandler.this.keyRepeat[key] = true;
+                }
                 default -> {
                     InputHandler.this.keyPressed[key] = false;
                     InputHandler.this.keyPressedFrame[key] = 0;
@@ -75,17 +95,13 @@ public class InputHandler implements Updatable {
         }
     };
 
-    private static boolean isMouseNotInBound(int button) {
-        return button < 0 || button > GLFW.GLFW_MOUSE_BUTTON_LAST;
-    }
-
-    private static boolean isKeyNotInBound(int key) {
-        return key < 0 || key > GLFW.GLFW_KEY_LAST;
-    }
-
     public void init() {
-        Arrays.fill(this.mousePressedFrame, 0);
-        Arrays.fill(this.keyPressedFrame, 0);
+        this.init(false);
+    }
+
+    public void init(boolean hasImGui) {
+        this.hasImGui = hasImGui;
+        this.reset();
 
         GLFW.glfwSetKeyCallback(this.window.getHandle(), this.KEY_CALLBACK);
         GLFW.glfwSetMouseButtonCallback(this.window.getHandle(), this.MOUSE_BUTTON_CALLBACK);
@@ -139,5 +155,29 @@ public class InputHandler implements Updatable {
             return false;
 
         return this.keyRepeat[key];
+    }
+
+    private static boolean isMouseNotInBound(int button) {
+        return button < 0 || button > GLFW.GLFW_MOUSE_BUTTON_LAST;
+    }
+
+    private static boolean isKeyNotInBound(int key) {
+        return key < 0 || key > GLFW.GLFW_KEY_LAST;
+    }
+
+    private void reset() {
+        this.resetMouse();
+        this.resetKeyboard();
+    }
+
+    private void resetMouse() {
+        Arrays.fill(this.mousePressed, false);
+        Arrays.fill(this.mousePressedFrame, 0);
+    }
+
+    private void resetKeyboard() {
+        Arrays.fill(this.keyPressed, false);
+        Arrays.fill(this.keyRepeat, false);
+        Arrays.fill(this.keyPressedFrame, 0);
     }
 }

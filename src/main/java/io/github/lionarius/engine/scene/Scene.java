@@ -19,6 +19,38 @@ public class Scene implements Updatable, Renderable {
     @Getter
     private Camera mainCamera = null;
 
+    public void enter() {
+        for (var gameObject : this.gameObjects)
+            gameObject.awake();
+
+        this.mainCamera = this.findFirst(Camera.class);
+
+        for (var gameObject : this.gameObjects)
+            gameObject.start();
+
+        this.isEntered = true;
+    }
+
+    @Override
+    public final void update(double delta) {
+        this.removeQueuedObjects();
+        this.addQueuedObjects();
+
+        for (var gameObject : this.gameObjects)
+            gameObject.update(delta);
+    }
+
+    @Override
+    public final void render(double delta) {
+        for (var gameObject : this.gameObjects)
+            gameObject.render(delta);
+    }
+
+    public void leave() {
+        for (var gameObject : this.gameObjects)
+            gameObject.destroy();
+    }
+
     public void addGameObject(GameObject gameObject) {
         if (this.isEntered)
             this.addedObjects.add(gameObject);
@@ -54,46 +86,17 @@ public class Scene implements Updatable, Renderable {
         return components;
     }
 
-    public void enter() {
+    protected void verifyIntegrity() {
         for (var gameObject : this.gameObjects)
-            gameObject.awake();
-
-        this.mainCamera = this.findFirst(Camera.class);
-
-        for (var gameObject : this.gameObjects)
-            gameObject.start();
-
-        this.isEntered = true;
+            this.verifyGameObjectIntegrity(gameObject);
     }
 
-    public void leave() {
-        for (var gameObject : this.gameObjects)
-            gameObject.destroy();
-    }
+    private void verifyGameObjectIntegrity(GameObject gameObject) {
+        if (gameObject.getScene() != this)
+            throw new IllegalStateException("There are game objects that do not belong to this scene");
 
-    @Override
-    public final void update(double delta) {
-        this.removeQueuedObjects();
-        this.addQueuedObjects();
-
-        for (var gameObject : this.gameObjects)
-            gameObject.update(delta);
-    }
-
-    @Override
-    public final void render(double delta) {
-        for (var gameObject : this.gameObjects)
-            gameObject.render(delta);
-    }
-
-    private void processAddGameObject(GameObject gameObject) {
-        this.gameObjects.add(gameObject);
-        gameObject.setScene(this);
-    }
-
-    private void processRemoveGameObject(GameObject gameObject) {
-        this.gameObjects.remove(gameObject);
-        gameObject.setScene(null);
+        for (var child : gameObject.getChildren())
+            this.verifyGameObjectIntegrity(child);
     }
 
     private void addQueuedObjects() {
@@ -117,5 +120,15 @@ public class Scene implements Updatable, Renderable {
                 this.processRemoveGameObject(gameObject);
             }
         }
+    }
+
+    private void processAddGameObject(GameObject gameObject) {
+        this.gameObjects.add(gameObject);
+        gameObject.setScene(this);
+    }
+
+    private void processRemoveGameObject(GameObject gameObject) {
+        this.gameObjects.remove(gameObject);
+        gameObject.setScene(null);
     }
 }

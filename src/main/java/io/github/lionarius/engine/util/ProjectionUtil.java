@@ -11,7 +11,7 @@ public class ProjectionUtil {
     }
 
     public static Matrix4f getOrthoProjection(float x, float y, float width, float height) {
-        return ProjectionUtil.getOrthoProjection(x, x + width, y, y + height, 100, -100);
+        return ProjectionUtil.getOrthoProjection(x, x + width, y, y + height, 10000, -10000);
     }
 
     public static Matrix4f getOrthoProjectionCentered(float centerX, float centerY, float width, float height) {

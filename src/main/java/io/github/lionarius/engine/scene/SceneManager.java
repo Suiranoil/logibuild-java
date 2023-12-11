@@ -8,6 +8,12 @@ public class SceneManager implements Updatable, Renderable {
     private Scene currentScene = null;
     private Scene queuedScene = null;
 
+    public Camera getSceneCamera() {
+        if (this.currentScene != null)
+            return this.currentScene.getMainCamera();
+        return null;
+    }
+
     public void transitionTo(Scene newScene) {
         this.queuedScene = newScene;
     }
@@ -27,12 +33,6 @@ public class SceneManager implements Updatable, Renderable {
             this.currentScene.render(delta);
     }
 
-    public Camera getSceneCamera() {
-        if (this.currentScene != null)
-            return this.currentScene.getMainCamera();
-        return null;
-    }
-
     private void performTransition() {
         if (this.currentScene != null) {
             this.currentScene.leave();
@@ -42,6 +42,7 @@ public class SceneManager implements Updatable, Renderable {
         this.queuedScene = null;
 
         if (this.currentScene != null) {
+            this.currentScene.verifyIntegrity();
             this.currentScene.enter();
         }
     }

@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @NoArgsConstructor
 public abstract class Component {
-    @Getter @Setter(AccessLevel.PACKAGE)
+    @Getter @Setter(AccessLevel.PROTECTED)
     private GameObject gameObject;
 
     public void onAwake() {

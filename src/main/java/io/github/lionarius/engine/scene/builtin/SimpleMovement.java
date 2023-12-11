@@ -15,7 +15,7 @@ public class SimpleMovement extends Component {
 
     @Override
     public void onAwake() {
-        this.transform = this.getGameObject().getComponent(Transform.class);
+        this.transform = this.getGameObject().getTransform();
     }
 
     @Override

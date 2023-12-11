@@ -9,13 +9,18 @@ import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.resource.font.Font;
 import io.github.lionarius.engine.resource.font.TextGlyphIterator;
 import io.github.lionarius.engine.resource.shader.Shader;
+import io.github.lionarius.engine.resource.texture.Texture;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.joml.*;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector4fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 public class TextRenderer implements Renderer {
@@ -26,11 +31,13 @@ public class TextRenderer implements Renderer {
     private final int size;
     @NonNull
     private final ResourceManager resourceManager;
+    @NonNull
+    private final Font defaultFont;
     private final TextVertex textVertex = new TextVertex();
+    private final Map<Texture, Integer> textureUnits = new HashMap<>();
 
     private int renderedCharsCount;
     private Shader shader;
-    private Font defaultFont;
 
     private ByteBuffer buffer;
     private VertexBuffer vbo;
@@ -58,7 +65,7 @@ public class TextRenderer implements Renderer {
     @Override
     public void init() {
         this.shader = this.resourceManager.get(Shader.class, "shader/text.shader");
-        this.defaultFont = this.resourceManager.get(Font.class, "font/minecraft");
+        assert this.shader != null;
 
         this.buffer = BufferUtils.createByteBuffer(TextRenderer.VERTEX_SIZE * TextRenderer.VERTICES_PER_CHAR * this.size);
 
@@ -74,30 +81,59 @@ public class TextRenderer implements Renderer {
     public void beginFrame() {
         this.renderedCharsCount = 0;
         this.buffer.position(0);
+        this.textureUnits.clear();
     }
 
-    public void renderText(String text, Vector3fc position, Quaternionfc quaternion, float height, Vector4fc color) {
-        var model = new Matrix4f().translate(position).rotate(quaternion).scale(height / this.defaultFont.getMetrics().lineHeight());
+//    public void renderText(String text, Matrix4f model, float height, Vector4fc color) {
+//        model.scale(height / this.defaultFont.getMetrics().lineHeight());
+//
+//        this.renderText(text, this.defaultFont, model, height, color);
+//    }
+//
+//    public void renderText(String text, Vector3fc position, Quaternionfc quaternion, float height, Vector4fc color) {
+//        var model = new Matrix4f().translate(position).rotate(quaternion).scale(height / this.defaultFont.getMetrics().lineHeight());
+//
+//        this.renderText(text, this.defaultFont, position, quaternion, height, color);
+//    }
+//
+//    public void renderText(String text, Font font, Matrix4f model, float height, Vector4fc color) {
+//        model.scale(height / this.defaultFont.getMetrics().lineHeight());
+//
+//        this.renderText(text, font, model, color);
+//    }
+//
+//    public void renderText(String text, Font font, Vector3fc position, Quaternionfc quaternion, float height, Vector4fc color) {
+//        var model = new Matrix4f().translate(position).rotate(quaternion).scale(height / this.defaultFont.getMetrics().lineHeight());
+//
+//        this.renderText(text, font, model, color);
+//    }
 
-        this.renderText(text, model, color);
+    public void renderText(String text, Matrix4f model, float height, Vector4fc color) {
+        this.renderText(text, this.defaultFont, model, height, color);
     }
 
-    private void renderText(String text, Matrix4fc model, Vector4fc color) {
+    public void renderText(String text, Font font, Matrix4f model, float height, Vector4fc color) {
+        if (font == null)
+            font = this.defaultFont;
+
+        model.scale(height / font.getMetrics().lineHeight());
+
         this.textVertex.setModel(model);
         this.textVertex.setColor(color.x(), color.y(), color.z(), color.w());
-        this.textVertex.setAtlasId(0);
+        var unit = this.addOrGetUnitByTexture(font.getAtlasTexture());
+        this.textVertex.setAtlasId(unit);
 
-        var it = new TextGlyphIterator(this.defaultFont, text);
+        var it = new TextGlyphIterator(font, text);
         while (it.hasNext()) {
             var glyph = it.next();
             if (glyph == null)
                 continue;
 
-            this.renderGlyph(model, glyph);
+            this.renderGlyph(glyph);
         }
     }
 
-    private void renderGlyph(Matrix4fc model, TextGlyphIterator.NextGlyph glyph) {
+    private void renderGlyph(TextGlyphIterator.NextGlyph glyph) {
         assert this.renderedCharsCount < this.size : "exceeded batch size for text renderer";
 
         var positions = glyph.positions();
@@ -122,13 +158,21 @@ public class TextRenderer implements Renderer {
 
         this.ibo.bind();
         this.vao.bind();
-        this.defaultFont.getAtlasTexture().bindUnit(0);
+
+        var samplers = new int[16];
+        for (var textureUnit : this.textureUnits.entrySet()) {
+            var unit = textureUnit.getValue();
+            textureUnit.getKey().bindUnit(unit);
+            samplers[unit] = unit;
+        }
+
+
         this.shader.bind();
 
         this.shader.setUniform("u_Projection", projection);
         this.shader.setUniform("u_View", view);
         this.shader.setUniform("u_UnitRange", this.defaultFont.getUnitRange());
-        this.shader.setUniform("u_Atlas", 0);
+        this.shader.setUniform("u_Atlas", samplers);
 
         GL46.glDrawElements(GL46.GL_TRIANGLES, TextRenderer.INDICES_PER_CHAR * this.renderedCharsCount, GL46.GL_UNSIGNED_INT, 0);
     }
@@ -138,5 +182,12 @@ public class TextRenderer implements Renderer {
         this.vao.close();
         this.vbo.close();
         this.ibo.close();
+    }
+
+    private int addOrGetUnitByTexture(Texture texture) {
+        if (!this.textureUnits.containsKey(texture))
+            this.textureUnits.put(texture, this.textureUnits.size());
+
+        return this.textureUnits.get(texture);
     }
 }

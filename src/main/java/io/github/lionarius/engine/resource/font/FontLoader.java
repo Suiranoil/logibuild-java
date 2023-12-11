@@ -17,7 +17,7 @@ import java.nio.file.Path;
 @RequiredArgsConstructor
 public class FontLoader implements ResourceLoader<Font> {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Font.class, new FontDeserializer()).create();
-    private static final TextureLoadParameters TEXTURE_LOAD_PARAMETERS = new TextureLoadParameters(GL46.GL_REPEAT, GL46.GL_LINEAR);
+    private static final TextureLoadParameters TEXTURE_LOAD_PARAMETERS = new TextureLoadParameters(GL46.GL_CLAMP_TO_EDGE, GL46.GL_LINEAR);
     private static final String METADATA_EXTENSION = ".metadata.json";
     private static final String ATLAS_EXTENSION = ".atlas.png";
     private final ResourceManager resourceManager;

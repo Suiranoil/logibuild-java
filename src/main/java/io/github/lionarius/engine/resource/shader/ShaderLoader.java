@@ -28,12 +28,12 @@ public class ShaderLoader implements ResourceLoader<Shader> {
                 case "vertex" -> vertexSource.append(line).append("\n");
                 case "fragment" -> fragmentSource.append(line).append("\n");
                 default -> {
-                    assert false;
+                    assert false : "Unknown shader type " + currentSource;
                 }
             }
         }
         var shader = new Shader(vertexSource.toString(), fragmentSource.toString());
-        shader.compile();
+        shader.init();
 
         return shader;
     }

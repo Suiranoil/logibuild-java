@@ -15,7 +15,25 @@ public class Transform extends Component {
     private final Vector3f scale = new Vector3f(1);
     private final Vector3f size = new Vector3f();
 
+    public void setPosition(float x, float y, float z) {
+        this.position.set(x, y, z);
+    }
+
+    public void setScale(float x, float y, float z) {
+        this.scale.set(x, y, z);
+    }
+
+    public void setSize(float x, float y, float z) {
+        this.size.set(x, y, z);
+    }
+
     public Matrix4f getTransformMatrix() {
-        return new Matrix4f().translate(this.position).rotate(this.rotation).scale(this.scale);
+        var matrix = new Matrix4f().translate(this.position).rotate(this.rotation).scale(this.scale);
+        if (this.getGameObject().getParent() != null) {
+            var parentTransform = this.getGameObject().getParent().getTransform();
+
+            parentTransform.getTransformMatrix().mul(matrix, matrix);
+        }
+        return matrix;
     }
 }

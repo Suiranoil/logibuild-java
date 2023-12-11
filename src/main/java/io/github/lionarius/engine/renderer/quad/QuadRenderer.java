@@ -38,6 +38,8 @@ public class QuadRenderer implements Renderer {
     @Override
     public void init() {
         this.shader = this.resourceManager.get(Shader.class, "shader/quad.shader");
+        assert this.shader != null;
+
         this.buffer = BufferUtils.createByteBuffer(QuadRenderer.INSTANCE_SIZE * this.size);
 
         this.ibo = new IndexBuffer(new int[]{0, 1, 2, 2, 3, 0});
