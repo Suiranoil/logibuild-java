@@ -106,7 +106,7 @@ public class Window implements Closeable {
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE);
-//		GLFW.glfwWindowHint(GLFW.GLFW_MAXIMIZED, GLFW.GLFW_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_SAMPLES, 16);
 
         this.handle = GLFW.glfwCreateWindow(this.size.x(), this.size.y(), this.title, MemoryUtil.NULL, MemoryUtil.NULL);
         if (this.handle == MemoryUtil.NULL)

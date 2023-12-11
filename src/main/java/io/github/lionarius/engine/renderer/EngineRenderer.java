@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.renderer;
 
+import io.github.lionarius.engine.renderer.circle.CircleRenderer;
 import io.github.lionarius.engine.renderer.quad.QuadRenderer;
 import io.github.lionarius.engine.renderer.text.TextRenderer;
 import io.github.lionarius.engine.resource.ResourceManager;
@@ -18,6 +19,8 @@ public class EngineRenderer implements Renderer {
     @Getter
     private QuadRenderer quadRenderer;
     @Getter
+    CircleRenderer circleRenderer;
+    @Getter
     private TextRenderer textRenderer;
 
 
@@ -29,12 +32,16 @@ public class EngineRenderer implements Renderer {
         this.quadRenderer = new QuadRenderer(8192 * 4, this.resourceManager);
         this.quadRenderer.init();
 
+        this.circleRenderer = new CircleRenderer(8192, this.resourceManager);
+        this.circleRenderer.init();
+
         this.textRenderer = new TextRenderer(8192 * 16, this.resourceManager, this.resourceManager.get(Font.class, "font/roboto"));
         this.textRenderer.init();
     }
 
     public void beginFrame() {
         this.quadRenderer.beginFrame();
+        this.circleRenderer.beginFrame();
         this.textRenderer.beginFrame();
     }
 
@@ -42,11 +49,14 @@ public class EngineRenderer implements Renderer {
         GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
 
         this.quadRenderer.endFrame(projection, view);
+        this.circleRenderer.endFrame(projection, view);
         this.textRenderer.endFrame(projection, view);
     }
 
     @Override
     public void close() {
         this.quadRenderer.close();
+        this.circleRenderer.close();
+        this.textRenderer.close();
     }
 }

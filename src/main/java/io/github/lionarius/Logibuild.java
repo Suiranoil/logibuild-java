@@ -16,7 +16,7 @@ import io.github.lionarius.engine.resource.texture.TextureLoader;
 import io.github.lionarius.engine.scene.GameObject;
 import io.github.lionarius.engine.scene.Scene;
 import io.github.lionarius.engine.scene.SceneManager;
-import io.github.lionarius.engine.scene.builtin.Box2DRenderer;
+import io.github.lionarius.engine.scene.builtin.Circle2DRenderer;
 import io.github.lionarius.engine.scene.builtin.OrthoCamera;
 import io.github.lionarius.engine.scene.builtin.SimpleMovement;
 import io.github.lionarius.engine.scene.builtin.Text2DRenderer;
@@ -112,9 +112,6 @@ public final class Logibuild implements Closeable {
     private void render(double delta) {
         this.engineRenderer.beginFrame();
 
-//        this.engineRenderer.getTextRenderer().renderText(String.format("%f", 1 / delta),
-//                new Vector3f(-900, -300, 0), new Quaternionf(), 50, new Vector4f(1));
-
         this.sceneManager.render(delta);
 
         var sceneCamera = this.sceneManager.getSceneCamera();
@@ -129,10 +126,10 @@ public final class Logibuild implements Closeable {
     private Scene setupInitialScene() {
         var scene = new Scene();
 
-        var testObject = new GameObject(List.of(new Box2DRenderer(this.engineRenderer.getQuadRenderer(), new Vector4f(1, 0, 0, 1))));
+        var testObject = new GameObject(List.of(new Circle2DRenderer(this.engineRenderer.getCircleRenderer(), new Vector4f(1, 0, 0, 1))));
         {
             var transformComponent = testObject.getTransform();
-            transformComponent.getSize().set(100, 100, 0);
+            transformComponent.getSize().set(100, 50, 0);
         }
 
         var camera = new GameObject(List.of(
