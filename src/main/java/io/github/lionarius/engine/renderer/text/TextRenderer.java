@@ -166,7 +166,6 @@ public class TextRenderer implements Renderer {
             samplers[unit] = unit;
         }
 
-
         this.shader.bind();
 
         this.shader.setUniform("u_Projection", projection);

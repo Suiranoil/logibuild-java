@@ -3,7 +3,9 @@ package io.github.lionarius.engine.scene.builtin;
 import io.github.lionarius.engine.scene.Component;
 import lombok.*;
 import org.joml.Matrix4fc;
+import org.joml.Vector2fc;
 import org.joml.Vector2ic;
+import org.joml.Vector3f;
 
 @RequiredArgsConstructor
 public abstract class Camera extends Component {
@@ -25,4 +27,6 @@ public abstract class Camera extends Component {
     public abstract Matrix4fc getProjection();
 
     public abstract Matrix4fc getView();
+
+    public abstract Vector3f screenToWorldPosition(Vector2fc screenPosition);
 }

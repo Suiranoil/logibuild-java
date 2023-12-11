@@ -129,7 +129,7 @@ public final class Logibuild implements Closeable {
         var testObject = new GameObject(List.of(new Circle2DRenderer(this.engineRenderer.getCircleRenderer(), new Vector4f(1, 0, 0, 1))));
         {
             var transformComponent = testObject.getTransform();
-            transformComponent.getSize().set(100, 50, 0);
+            transformComponent.setSize(100, 100, 0);
         }
 
         var camera = new GameObject(List.of(
@@ -142,18 +142,18 @@ public final class Logibuild implements Closeable {
         {
             var textComponent = new Text2DRenderer(this.engineRenderer.getTextRenderer(), "Hello world!", new Vector4f(1));
             testObject2.addComponent(textComponent);
-            textComponent.setFont(this.resourceManager.get(Font.class, "font/shizuru"));
+            textComponent.setFont(this.resourceManager.get(Font.class, "font/minecraft"));
             var transform = testObject2.getTransform();
             transform.setPosition(0, 0, -1);
             transform.getSize().set(0, 100, 0);
         }
 
         var fpsDisplay = new GameObject(List.of(
-                new FpsDisplay()
+                new FpsDisplay(0.025)
         ));
         {
             var textComponent = new Text2DRenderer(this.engineRenderer.getTextRenderer(), "", new Vector4f(0, 1, 0, 1));
-            textComponent.setFont(this.resourceManager.get(Font.class, "font/minecraft"));
+            textComponent.setFont(this.resourceManager.get(Font.class, "font/cascadia"));
             fpsDisplay.addComponent(textComponent);
             var transform = fpsDisplay.getTransform();
             transform.setPosition(-600, -300, 0);

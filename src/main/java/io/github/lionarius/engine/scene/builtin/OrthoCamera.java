@@ -1,8 +1,7 @@
 package io.github.lionarius.engine.scene.builtin;
 
 import io.github.lionarius.engine.util.ProjectionUtil;
-import org.joml.Matrix4fc;
-import org.joml.Vector2ic;
+import org.joml.*;
 
 public class OrthoCamera extends Camera {
     public OrthoCamera(Vector2ic frameSize) {
@@ -17,5 +16,12 @@ public class OrthoCamera extends Camera {
     @Override
     public Matrix4fc getView() {
         return this.getTransform().getTransformMatrix().invertAffine();
+    }
+
+    @Override
+    public Vector3f screenToWorldPosition(Vector2fc screenPosition) {
+        var offsetPosition = new Vector2f(this.getFrameSize()).div(2);
+
+        return new Vector3f(screenPosition.sub(offsetPosition, offsetPosition), 0).mulProject(this.getTransform().getTransformMatrix());
     }
 }

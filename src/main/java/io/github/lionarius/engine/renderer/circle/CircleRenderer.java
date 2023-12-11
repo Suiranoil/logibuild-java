@@ -14,6 +14,7 @@ import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
+import java.lang.Math;
 import java.nio.ByteBuffer;
 
 @RequiredArgsConstructor
@@ -42,13 +43,12 @@ public class CircleRenderer implements Renderer {
 
         this.buffer = BufferUtils.createByteBuffer(CircleRenderer.INSTANCE_SIZE * this.size);
 
-        this.ibo = new IndexBuffer(new int[]{0, 1, 2, 2, 3, 0});
+        this.ibo = new IndexBuffer(new int[]{0, 1, 2});
 
         var vertices = new CircleVertexCommon[]{
-                new CircleVertexCommon(new Vector3f(0, 0, 0)),
-                new CircleVertexCommon(new Vector3f(1, 0, 0)),
-                new CircleVertexCommon(new Vector3f(1, 1, 0)),
-                new CircleVertexCommon(new Vector3f(0, 1, 0))
+                new CircleVertexCommon(new Vector3f(0.5f, 1.5f, 0)),
+                new CircleVertexCommon(new Vector3f((float) (Math.sqrt(3) / 2.0 + 0.5), 0, 0)),
+                new CircleVertexCommon(new Vector3f((float) (-Math.sqrt(3) / 2.0 + 0.5), 0, 0)),
         };
         var commonData = BufferUtils.createByteBuffer(vertices.length * CircleVertexCommon.getLayout().getStride());
         BufferUtil.objectArrayToBuffer(vertices, commonData);
