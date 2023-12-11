@@ -31,11 +31,11 @@ layout (location = 2) in float i_TextureId;
 
 //uniform sampler2D u_Texture[16];
 
-out vec4 gl_FragColor;
+out vec4 FragColor;
 
 void main()
 {
-    gl_FragColor = i_Color;
+    FragColor = i_Color;
     //if (i_TextureId != -1)
     //FragColor *= texture(u_Texture[i_TextureId], i_UV);
 }

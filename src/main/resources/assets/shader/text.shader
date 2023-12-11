@@ -32,7 +32,7 @@ layout (location = 2) in float i_AtlasId;
 uniform vec2 u_UnitRange;
 layout (binding = 0) uniform sampler2D u_Atlas[16];
 
-out vec4 gl_FragColor;
+out vec4 FragColor;
 
 float median(float r, float g, float b) {
     return max(min(r, g), min(max(r, g), b));
@@ -51,5 +51,5 @@ void main()
     float opacity = clamp(screenPxDistance + 0.5, 0.0, 1.0);
     if (opacity == 0.0) // this is a temporary solution for TODO: fix depth test self discard on overlap
     discard;
-    gl_FragColor = mix(vec4(0), i_Color, opacity);
+    FragColor = mix(vec4(0), i_Color, opacity);
 }

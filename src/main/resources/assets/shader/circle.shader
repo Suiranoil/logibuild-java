@@ -24,7 +24,7 @@ void main()
 layout (location = 0) in vec2 i_Position;
 layout (location = 1) in vec4 i_Color;
 
-out vec4 gl_FragColor;
+out vec4 FragColor;
 
 void main()
 {
@@ -33,5 +33,5 @@ void main()
     discard;
     float delta = fwidth(radius);
     float opacity = smoothstep(1.0, 1.0 - 2 * delta, radius);
-    gl_FragColor = mix(vec4(0), i_Color, opacity);
+    FragColor = mix(vec4(0), i_Color, opacity);
 }
