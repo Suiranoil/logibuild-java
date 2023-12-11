@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.scene.builtin;
 
+import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.renderer.text.TextRenderer;
 import io.github.lionarius.engine.resource.font.Font;
 import io.github.lionarius.engine.scene.Component;
@@ -11,7 +12,7 @@ import org.joml.Vector4f;
 
 @RequiredArgsConstructor
 public class Text2DRenderer extends Component {
-    private final TextRenderer renderer;
+    private final TextRenderer renderer = Logibuild.getInstance().getEngineRenderer().getTextRenderer();
     private Transform transform;
 
     @NonNull @Getter @Setter
@@ -21,8 +22,8 @@ public class Text2DRenderer extends Component {
     @Getter @Setter
     private Font font = null;
 
-    public Text2DRenderer(TextRenderer renderer) {
-        this(renderer, "", new Vector4f(1));
+    public Text2DRenderer() {
+        this("", new Vector4f(1));
     }
 
     @Override

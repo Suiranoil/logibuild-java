@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.scene.builtin;
 
+import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.renderer.quad.QuadRenderer;
 import io.github.lionarius.engine.scene.Component;
 import lombok.Getter;
@@ -10,15 +11,11 @@ import org.joml.Vector4f;
 
 @RequiredArgsConstructor
 public class Box2DRenderer extends Component {
-    private final QuadRenderer renderer;
+    private final QuadRenderer renderer = Logibuild.getInstance().getEngineRenderer().getQuadRenderer();
     private Transform transform;
 
     @NonNull @Getter @Setter
     private Vector4f color;
-
-    public Box2DRenderer(QuadRenderer renderer) {
-        this(renderer, new Vector4f(1));
-    }
 
     @Override
     public void onAwake() {

@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.scene.builtin;
 
+import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.InputHandler;
 import io.github.lionarius.engine.scene.Component;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,7 @@ import org.lwjgl.glfw.GLFW;
 
 @RequiredArgsConstructor
 public class SimpleMovement extends Component {
-    private final InputHandler inputHandler;
+    private final InputHandler inputHandler = Logibuild.getInstance().getInputHandler();
     private final float movementSpeed;
     private final float rotationSpeed;
     private Transform transform;
