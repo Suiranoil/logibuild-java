@@ -6,7 +6,7 @@ import io.github.lionarius.engine.resource.ResourceLoader;
 import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.resource.font.json.FontDeserializer;
 import io.github.lionarius.engine.resource.texture.Texture;
-import io.github.lionarius.engine.resource.texture.TextureLoadParameters;
+import io.github.lionarius.engine.resource.texture.TextureCreateParameters;
 import lombok.RequiredArgsConstructor;
 import org.lwjgl.opengl.GL46;
 
@@ -17,7 +17,7 @@ import java.nio.file.Path;
 @RequiredArgsConstructor
 public class FontLoader implements ResourceLoader<Font> {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Font.class, new FontDeserializer()).create();
-    private static final TextureLoadParameters TEXTURE_LOAD_PARAMETERS = new TextureLoadParameters(GL46.GL_CLAMP_TO_EDGE, GL46.GL_LINEAR);
+    private static final TextureCreateParameters TEXTURE_LOAD_PARAMETERS = new TextureCreateParameters(GL46.GL_CLAMP_TO_EDGE, GL46.GL_LINEAR);
     private static final String METADATA_EXTENSION = ".metadata.json";
     private static final String ATLAS_EXTENSION = ".atlas.png";
     private final ResourceManager resourceManager;

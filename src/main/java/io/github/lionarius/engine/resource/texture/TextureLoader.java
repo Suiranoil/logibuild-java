@@ -24,11 +24,11 @@ public class TextureLoader implements ResourceLoader<Texture> {
         if (data == null)
             throw new IOException("Could not load image on path " + filepath);
 
-        TextureLoadParameters params;
+        TextureCreateParameters params;
         if (parameters == null)
-            params = TextureLoadParameters.DEFAULT;
+            params = TextureCreateParameters.DEFAULT;
         else
-            params = (TextureLoadParameters) parameters;
+            params = (TextureCreateParameters) parameters;
 
         var internalFormat = getInternalFormat(channels);
         var format = getFormat(channels);
