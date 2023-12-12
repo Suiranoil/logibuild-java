@@ -3,25 +3,27 @@ package io.github.lionarius.engine.scene;
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
 import io.github.lionarius.engine.scene.builtin.Transform;
+import io.github.lionarius.engine.util.AddRemoveQueue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public final class GameObject implements Updatable, Renderable {
     @Getter @Setter(AccessLevel.PROTECTED)
     private Scene scene = null;
-    @Getter @Setter(AccessLevel.PRIVATE)
+    @Getter
     private GameObject parent = null;
     private final Set<GameObject> children = new HashSet<>();
     @Getter
     private final Transform transform;
     private final List<Component> components = new ArrayList<>();
-
-    private final Queue<Component> addedComponents = new ArrayDeque<>();
-    private final Queue<Component> removedComponents = new ArrayDeque<>();
+    private final AddRemoveQueue<Component> componentQueue = new AddRemoveQueue<>();
 
     public GameObject() {
         this.transform = new Transform();
@@ -113,51 +115,53 @@ public final class GameObject implements Updatable, Renderable {
             return;
 
         this.children.add(gameObject);
-        gameObject.setParent(this);
+        gameObject.parent = this;
     }
 
     public void removeChild(GameObject gameObject) {
         if (!this.children.contains(gameObject))
             return;
 
-        gameObject.setParent(null);
+        gameObject.parent = null;
         this.children.remove(gameObject);
     }
 
     public void addComponent(@NonNull Component component) {
+        if (component.getGameObject() != null)
+            return;
+
         if (this.scene == null || !this.scene.isEntered())
             this.processAddComponent(component);
         else
-            this.addedComponents.add(component);
+            this.componentQueue.add(component);
     }
 
     public void removeComponent(@NonNull Component component) {
+        if (component.getGameObject() != this)
+            return;
+
         if (this.scene == null || !this.scene.isEntered())
             this.processRemoveComponent(component);
         else
-            this.removedComponents.add(component);
+            this.componentQueue.remove(component);
     }
 
     private void addQueuedComponents() {
-        if (!this.addedComponents.isEmpty()) {
-            Component component;
-            while ((component = this.addedComponents.poll()) != null) {
-                this.processAddComponent(component);
+        Component component;
+        while ((component = this.componentQueue.pollAdded()) != null) {
+            this.processAddComponent(component);
 
-                component.onAwake();
-                component.onStart();
-            }
+            component.onAwake();
+            component.onStart();
         }
     }
 
     private void removeQueuedComponents() {
-        if (!this.removedComponents.isEmpty()) {
-            Component component;
-            while ((component = this.removedComponents.poll()) != null) {
-                component.onDestroy();
+        Component component;
+        while ((component = this.componentQueue.pollRemoved()) != null) {
+            component.onDestroy();
 
-                this.processRemoveComponent(component);
-            }
+            this.processRemoveComponent(component);
         }
     }
 

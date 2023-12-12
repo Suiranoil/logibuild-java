@@ -3,17 +3,15 @@ package io.github.lionarius.engine.scene;
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
 import io.github.lionarius.engine.scene.builtin.Camera;
+import io.github.lionarius.engine.util.AddRemoveQueue;
 import lombok.Getter;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 public class Scene implements Updatable, Renderable {
     private final List<GameObject> gameObjects = new ArrayList<>();
-    private final Queue<GameObject> addedObjects = new ArrayDeque<>();
-    private final Queue<GameObject> removedObjects = new ArrayDeque<>();
+    private final AddRemoveQueue<GameObject> objectsQueue = new AddRemoveQueue<>();
     @Getter
     private boolean isEntered = false;
     @Getter
@@ -52,15 +50,21 @@ public class Scene implements Updatable, Renderable {
     }
 
     public void addGameObject(GameObject gameObject) {
+        if (gameObject.getScene() != null)
+            return;
+
         if (this.isEntered)
-            this.addedObjects.add(gameObject);
+            this.objectsQueue.add(gameObject);
         else
             this.processAddGameObject(gameObject);
     }
 
     public void removeGameObject(GameObject gameObject) {
+        if (gameObject.getScene() != this)
+            return;
+
         if (this.isEntered)
-            this.removedObjects.add(gameObject);
+            this.objectsQueue.remove(gameObject);
         else
             this.processAddGameObject(gameObject);
     }
@@ -100,25 +104,21 @@ public class Scene implements Updatable, Renderable {
     }
 
     private void addQueuedObjects() {
-        if (!this.addedObjects.isEmpty()) {
-            GameObject gameObject;
-            while ((gameObject = this.addedObjects.poll()) != null) {
-                this.processAddGameObject(gameObject);
+        GameObject gameObject;
+        while ((gameObject = this.objectsQueue.pollAdded()) != null) {
+            this.processAddGameObject(gameObject);
 
-                gameObject.awake();
-                gameObject.start();
-            }
+            gameObject.awake();
+            gameObject.start();
         }
     }
 
     private void removeQueuedObjects() {
-        if (!this.removedObjects.isEmpty()) {
-            GameObject gameObject;
-            while ((gameObject = this.removedObjects.poll()) != null) {
-                gameObject.destroy();
+        GameObject gameObject;
+        while ((gameObject = this.objectsQueue.pollRemoved()) != null) {
+            gameObject.destroy();
 
-                this.processRemoveGameObject(gameObject);
-            }
+            this.processRemoveGameObject(gameObject);
         }
     }
 
