@@ -20,11 +20,11 @@ public class FontLoader implements ResourceLoader<Font> {
     private final ResourceManager resourceManager;
 
     @Override
-    public Font loadFromFile(String filepath, Object parameters) throws IOException {
+    public Font loadFromFile(String name, String filepath, Object parameters) throws IOException {
         var metadata = Files.readString(Path.of(filepath + FontLoader.METADATA_EXTENSION));
         try {
             var font = GSON.fromJson(metadata, Font.class);
-            var atlasTexture = this.resourceManager.get(Texture.class, "", filepath + FontLoader.ATLAS_EXTENSION);
+            var atlasTexture = this.resourceManager.get(Texture.class, name + FontLoader.ATLAS_EXTENSION);
             font.setAtlasTexture(atlasTexture);
             font.init();
 

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class ShaderLoader implements ResourceLoader<Shader> {
     private static final Pattern TYPE_REGEX = Pattern.compile("^//\\s+#type\\s+(?<type>[a-z]+)$");
 
-    public Shader loadFromFile(String filepath, Object parameters) throws IOException {
+    public Shader loadFromFile(String name, String filepath, Object parameters) throws IOException {
         StringBuilder vertexSource = new StringBuilder();
         StringBuilder fragmentSource = new StringBuilder();
         var reader = Files.newBufferedReader(Path.of(filepath));

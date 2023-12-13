@@ -13,6 +13,9 @@ import java.util.Map;
 @Getter
 @RequiredArgsConstructor
 public class Font implements Resource {
+    @Getter @Setter
+    private String resourceName;
+
     @NonNull
     private final Atlas atlas;
     @NonNull

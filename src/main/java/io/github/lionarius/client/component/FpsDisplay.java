@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FpsDisplay extends Component {
     private Text2DRenderer text2DRenderer;
-    private final double updateTime;
-    private double time = 0;
+    private double updateTime = 0.025;
+    private transient double time = 0;
 
     @Override
     public void onAwake() {

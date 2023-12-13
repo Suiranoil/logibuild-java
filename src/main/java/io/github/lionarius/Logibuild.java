@@ -178,7 +178,7 @@ public final class Logibuild implements Closeable {
         }
 
         var fpsDisplay = new GameObject(List.of(
-                new FpsDisplay(0.025)
+                new FpsDisplay()
         ));
         {
             var textComponent = new Text2DRenderer("", new Vector4f(0, 1, 0, 1));

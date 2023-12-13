@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class TextureLoader implements ResourceLoader<Texture> {
     @Override
-    public Texture loadFromFile(String filepath, Object parameters) throws IOException {
+    public Texture loadFromFile(String name, String filepath, Object parameters) throws IOException {
         var widthBuffer = BufferUtils.createIntBuffer(1);
         var heightBuffer = BufferUtils.createIntBuffer(1);
         var channelsBuffer = BufferUtils.createIntBuffer(1);

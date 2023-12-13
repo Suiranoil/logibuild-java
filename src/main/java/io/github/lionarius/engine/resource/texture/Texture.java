@@ -4,12 +4,16 @@ import io.github.lionarius.engine.renderer.OpenGLObject;
 import io.github.lionarius.engine.resource.Resource;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
 
 @Getter
 public class Texture extends OpenGLObject implements Resource {
+    @Getter @Setter
+    private String resourceName;
+
     private int width;
     private int height;
 

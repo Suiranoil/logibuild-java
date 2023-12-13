@@ -2,10 +2,14 @@ package io.github.lionarius.engine.editor;
 
 import imgui.internal.ImGui;
 import imgui.type.ImString;
+import io.github.lionarius.Logibuild;
+import io.github.lionarius.engine.resource.Resource;
 import lombok.experimental.UtilityClass;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.util.Objects;
 
 @UtilityClass
 public class ImGuiUtil {
@@ -100,5 +104,17 @@ public class ImGuiUtil {
         value.set(out);
 
         ImGui.popID();
+    }
+
+    public <T extends Resource> Resource inputResource(String label, Resource value) {
+        var name = value.getResourceName();
+        var newName = ImGuiUtil.inputText(label, name);
+        if (!Objects.equals(newName, name)) {
+            var newResource = Logibuild.getInstance().getResourceManager().get(value.getClass(), newName);
+            if (newResource != null)
+                return newResource;
+        }
+
+        return value;
     }
 }

@@ -3,7 +3,9 @@ package io.github.lionarius.engine.resource.shader;
 import io.github.lionarius.engine.renderer.OpenGLObject;
 import io.github.lionarius.engine.resource.Resource;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.*;
@@ -15,6 +17,9 @@ import java.util.Map;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class Shader extends OpenGLObject implements Resource {
+    @Getter @Setter
+    private String resourceName;
+
     private static final Logger LOGGER = LogManager.getLogger("Shader");
     private final String vertexSource;
     private final String fragmentSource;

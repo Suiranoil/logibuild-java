@@ -31,11 +31,11 @@ public class ResourceManager {
         return this.get(clazz, this.folder, name, parameters);
     }
 
-    public <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name) {
+    private <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name) {
         return this.get(clazz, folder, name, null);
     }
 
-    public <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name, Object parameters) {
+    private  <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name, Object parameters) {
         var data = this.getAssetData(clazz);
         File file;
         if (folder.isEmpty())
@@ -48,8 +48,9 @@ public class ResourceManager {
             return data.getCache().get(path);
 
         try {
-            var asset = data.getLoader().loadFromFile(path, parameters);
+            var asset = data.getLoader().loadFromFile(name, path, parameters);
             data.getCache().put(path, asset);
+            asset.setResourceName(name);
             return asset;
         } catch (IOException e) {
             LOGGER.error("Could not load resource {}", name);

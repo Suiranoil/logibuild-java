@@ -3,6 +3,7 @@ package io.github.lionarius.engine.scene;
 import imgui.ImGui;
 import imgui.flag.ImGuiTreeNodeFlags;
 import io.github.lionarius.engine.editor.ImGuiUtil;
+import io.github.lionarius.engine.resource.Resource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,6 +63,10 @@ public abstract class Component {
                     } else if (type.equals(float.class)) {
                         var out = ImGuiUtil.dragFloat(name, (float) value);
                         field.set(this, out);
+                    } else if (type.equals(double.class)) {
+                        var val = ((Double) value).doubleValue();
+                        var out = ImGuiUtil.dragFloat(name, (float) val);
+                        field.set(this, (double) out);
                     } else if (type.equals(Vector2f.class)) {
                         ImGuiUtil.dragFloat2(name, (Vector2f) value);
                     } else if (type.equals(Vector3f.class)) {
@@ -70,6 +75,9 @@ public abstract class Component {
                         ImGuiUtil.dragFloat4(name, (Vector4f) value, true);
                     } else if (type.equals(String.class)) {
                         var out = ImGuiUtil.inputText(name, (String) value);
+                        field.set(this, out);
+                    } else if (Resource.class.isAssignableFrom(type)) {
+                        var out = ImGuiUtil.inputResource(name, (Resource) value);
                         field.set(this, out);
                     } else if (type.isEnum()) {
 
