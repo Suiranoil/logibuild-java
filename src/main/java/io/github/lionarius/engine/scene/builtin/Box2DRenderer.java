@@ -2,6 +2,7 @@ package io.github.lionarius.engine.scene.builtin;
 
 import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.renderer.quad.QuadRenderer;
+import io.github.lionarius.engine.resource.texture.Texture;
 import io.github.lionarius.engine.scene.Component;
 import lombok.Getter;
 import lombok.NonNull;
@@ -16,6 +17,8 @@ public class Box2DRenderer extends Component {
 
     @NonNull @Getter @Setter
     private Vector4f color;
+    @Getter @Setter
+    private Texture texture;
 
     @Override
     public void onAwake() {
@@ -24,6 +27,6 @@ public class Box2DRenderer extends Component {
 
     @Override
     public void onRender(double delta) {
-        this.renderer.renderQuad(this.transform.getTransformMatrix(), this.transform.getSize(), this.color);
+        this.renderer.renderQuad(this.transform.getTransformMatrix(), this.transform.getSize(), this.color, this.texture);
     }
 }

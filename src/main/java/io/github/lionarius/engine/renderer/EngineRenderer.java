@@ -35,7 +35,7 @@ public class EngineRenderer implements Renderer {
         this.circleRenderer = new CircleRenderer(8192, this.resourceManager);
         this.circleRenderer.init();
 
-        this.textRenderer = new TextRenderer(8192 * 16, this.resourceManager, this.resourceManager.get(Font.class, "font/roboto"));
+        this.textRenderer = new TextRenderer(8192 * 16, this.resourceManager, this.resourceManager.get(Font.class, "font/atlas/roboto"));
         this.textRenderer.init();
     }
 
@@ -46,11 +46,15 @@ public class EngineRenderer implements Renderer {
     }
 
     public void endFrame(Matrix4fc projection, Matrix4fc view) {
-        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
+        this.clear();
 
         this.quadRenderer.endFrame(projection, view);
         this.circleRenderer.endFrame(projection, view);
         this.textRenderer.endFrame(projection, view);
+    }
+
+    public void clear() {
+        GL46.glClear(GL46.GL_COLOR_BUFFER_BIT | GL46.GL_DEPTH_BUFFER_BIT);
     }
 
     @Override

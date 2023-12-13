@@ -9,7 +9,6 @@ import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL46;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -138,7 +137,7 @@ public class Window implements Closeable {
         GLFW.glfwSetFramebufferSizeCallback(this.handle, (window, width, height) -> {
             this.size.set(width, height);
 
-            GL46.glViewport(0, 0, width, height);
+//            GL46.glViewport(0, 0, width, height);
         });
     }
 }

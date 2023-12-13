@@ -29,13 +29,13 @@ layout (location = 0) in vec4 i_Color;
 layout (location = 1) in vec2 i_UV;
 layout (location = 2) in float i_TextureId;
 
-//uniform sampler2D u_Texture[16];
+uniform sampler2D u_Texture[16];
 
 out vec4 FragColor;
 
 void main()
 {
     FragColor = i_Color;
-    //if (i_TextureId != -1)
-    //FragColor *= texture(u_Texture[i_TextureId], i_UV);
+    if (i_TextureId != -1)
+    FragColor *= texture(u_Texture[int(i_TextureId)], i_UV);
 }

@@ -4,13 +4,13 @@ import io.github.lionarius.engine.scene.Component;
 import lombok.*;
 import org.joml.Matrix4fc;
 import org.joml.Vector2fc;
-import org.joml.Vector2ic;
+import org.joml.Vector2i;
 import org.joml.Vector3f;
 
 @RequiredArgsConstructor
 public abstract class Camera extends Component {
     @NonNull @Getter @Setter
-    private Vector2ic frameSize;
+    private Vector2i frameSize;
     @Getter(AccessLevel.PROTECTED)
     private Transform transform;
 

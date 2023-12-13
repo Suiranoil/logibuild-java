@@ -1,7 +1,9 @@
 package io.github.lionarius.engine.scene;
 
+import imgui.ImGui;
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
+import io.github.lionarius.engine.editor.ImGuiUtil;
 import io.github.lionarius.engine.scene.builtin.Transform;
 import io.github.lionarius.engine.util.AddRemoveQueue;
 import lombok.AccessLevel;
@@ -10,20 +12,17 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public final class GameObject implements Updatable, Renderable {
-    @Getter @Setter(AccessLevel.PROTECTED)
-    private Scene scene = null;
-    @Getter
-    private GameObject parent = null;
-    private final Set<GameObject> children = new HashSet<>();
-    @Getter
-    private final Transform transform;
+    @Getter @Setter
+    private String name = "GameObject";
     private final List<Component> components = new ArrayList<>();
-    private final AddRemoveQueue<Component> componentQueue = new AddRemoveQueue<>();
+    @Getter @Setter(AccessLevel.PROTECTED)
+    private transient Scene scene = null;
+    @Getter
+    private transient final Transform transform;
+    private transient final AddRemoveQueue<Component> componentQueue = new AddRemoveQueue<>();
 
     public GameObject() {
         this.transform = new Transform();
@@ -48,17 +47,7 @@ public final class GameObject implements Updatable, Renderable {
     }
 
     public Iterable<GameObject> getChildren() {
-        return this.children;
-    }
-
-    public boolean isAncestor(GameObject gameObject) {
-        if (this.parent == null)
-            return false;
-
-        if (this.parent == gameObject)
-            return true;
-
-        return this.parent.isAncestor(gameObject);
+        return this.scene.getHierarchy().getChildren(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -101,29 +90,11 @@ public final class GameObject implements Updatable, Renderable {
             component.onDestroy();
     }
 
-    public void addChild(GameObject gameObject) {
-        if (this.scene != gameObject.getScene())
+    public void addChild(GameObject child) {
+        if (this.scene != child.getScene())
             return;
 
-        if (this == gameObject)
-            return;
-
-        if (gameObject.getParent() != null)
-            return;
-
-        if (this.isAncestor(gameObject))
-            return;
-
-        this.children.add(gameObject);
-        gameObject.parent = this;
-    }
-
-    public void removeChild(GameObject gameObject) {
-        if (!this.children.contains(gameObject))
-            return;
-
-        gameObject.parent = null;
-        this.children.remove(gameObject);
+        this.scene.getHierarchy().addChild(this, child);
     }
 
     public void addComponent(@NonNull Component component) {
@@ -166,9 +137,13 @@ public final class GameObject implements Updatable, Renderable {
     }
 
     private void processAddComponent(Component component) {
-        // Cannot add another transform component
-        if (Transform.class.isAssignableFrom(component.getClass()) && !this.components.isEmpty())
-            return;
+        for (var c : this.components) {
+            if (c.getClass().isNestmateOf(component.getClass()))
+                return;
+        }
+//        // Cannot add another transform component
+//        if (Transform.class.isAssignableFrom(component.getClass()) && !this.components.isEmpty())
+//            return;
 
         this.components.add(component);
         component.setGameObject(this);
@@ -181,5 +156,20 @@ public final class GameObject implements Updatable, Renderable {
 
         this.components.remove(component);
         component.setGameObject(null);
+    }
+
+    public GameObject getParent() {
+        return this.scene.getHierarchy().getParent(this);
+    }
+
+    public void imgui() {
+        var newName = ImGuiUtil.inputText("Name", this.name);
+        if (!newName.isEmpty())
+            this.name = newName;
+
+        for (var component : this.components) {
+            ImGui.separator();
+            component.imgui();
+        }
     }
 }

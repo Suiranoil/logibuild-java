@@ -4,7 +4,7 @@ import io.github.lionarius.engine.util.ProjectionUtil;
 import org.joml.*;
 
 public class OrthoCamera extends Camera {
-    public OrthoCamera(Vector2ic frameSize) {
+    public OrthoCamera(Vector2i frameSize) {
         super(frameSize);
     }
 

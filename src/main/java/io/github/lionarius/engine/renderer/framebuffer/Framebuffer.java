@@ -32,7 +32,7 @@ public class Framebuffer extends OpenGLObject {
         this.renderbuffer.init(GL46.GL_DEPTH24_STENCIL8);
         GL46.glNamedFramebufferRenderbuffer(this.id, GL46.GL_DEPTH_STENCIL_ATTACHMENT, GL46.GL_RENDERBUFFER, this.renderbuffer.getId());
 
-        if (GL46.glCheckFramebufferStatus(this.id) != GL46.GL_FRAMEBUFFER_COMPLETE)
+        if (GL46.glCheckNamedFramebufferStatus(this.id, GL46.GL_FRAMEBUFFER) != GL46.GL_FRAMEBUFFER_COMPLETE)
             throw new IllegalStateException("Could not create framebuffer");
     }
 

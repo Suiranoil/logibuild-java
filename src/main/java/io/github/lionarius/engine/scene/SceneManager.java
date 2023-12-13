@@ -3,8 +3,10 @@ package io.github.lionarius.engine.scene;
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
 import io.github.lionarius.engine.scene.builtin.Camera;
+import lombok.Getter;
 
 public class SceneManager implements Updatable, Renderable {
+    @Getter
     private Scene currentScene = null;
     private Scene queuedScene = null;
 

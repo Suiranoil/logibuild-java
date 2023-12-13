@@ -10,8 +10,8 @@ import org.lwjgl.glfw.GLFW;
 @RequiredArgsConstructor
 public class SimpleMovement extends Component {
     private final InputHandler inputHandler = Logibuild.getInstance().getInputHandler();
-    private final float movementSpeed;
-    private final float rotationSpeed;
+    private float movementSpeed = 800.0f;
+    private float rotationSpeed = 90.0f;
     private Transform transform;
 
     @Override
