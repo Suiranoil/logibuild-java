@@ -63,11 +63,11 @@ public abstract class Component {
                         var out = ImGuiUtil.dragFloat(name, (float) value);
                         field.set(this, out);
                     } else if (type.equals(Vector2f.class)) {
-                        ImGuiUtil.drawVec2(name, (Vector2f) value);
+                        ImGuiUtil.dragFloat2(name, (Vector2f) value);
                     } else if (type.equals(Vector3f.class)) {
-                        ImGuiUtil.drawVec3(name, (Vector3f) value);
+                        ImGuiUtil.dragFloat3(name, (Vector3f) value);
                     } else if (type.equals(Vector4f.class)) {
-
+                        ImGuiUtil.dragFloat4(name, (Vector4f) value, true);
                     } else if (type.equals(String.class)) {
                         var out = ImGuiUtil.inputText(name, (String) value);
                         field.set(this, out);

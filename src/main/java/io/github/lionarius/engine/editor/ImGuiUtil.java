@@ -1,11 +1,11 @@
 package io.github.lionarius.engine.editor;
 
-import imgui.flag.ImGuiTableFlags;
 import imgui.internal.ImGui;
 import imgui.type.ImString;
 import lombok.experimental.UtilityClass;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 @UtilityClass
 public class ImGuiUtil {
@@ -57,63 +57,47 @@ public class ImGuiUtil {
         return out[0];
     }
 
-    public void drawVec2(String label, Vector2f value) {
+    public void dragFloat2(String label, Vector2f value) {
         ImGui.pushID(label);
+
+        float[] out = {value.x(), value.y()};
 
         ImGui.alignTextToFramePadding();
         ImGui.text(label);
         ImGui.sameLine();
-        if (ImGui.beginTable("##table", 2, ImGuiTableFlags.SizingStretchProp)) {
-            ImGui.tableNextRow();
-
-            ImGui.tableNextColumn();
-            float[] x = {value.x()};
-            ImGui.dragFloat("##x" + label, x);
-
-            ImGui.tableNextColumn();
-            float[] y = {value.y()};
-            ImGui.dragFloat("##y" + label, y);
-
-            value.set(x[0], y[0]);
-
-            ImGui.endTable();
-        }
+        ImGui.dragFloat2("##" + label, out);
+        value.set(out);
 
         ImGui.popID();
     }
 
-    public void drawVec3(String label, Vector3f value) {
+    public void dragFloat3(String label, Vector3f value) {
         ImGui.pushID(label);
 
+        float[] out = {value.x(), value.y(), value.z()};
+
+        ImGui.alignTextToFramePadding();
         ImGui.text(label);
-        if (ImGui.beginTable("##table", 3, ImGuiTableFlags.SizingStretchProp)) {
-            ImGui.tableNextRow();
+        ImGui.sameLine();
+        ImGui.dragFloat3("##" + label, out);
+        value.set(out);
 
-            ImGui.tableNextColumn();
-            float[] x = {value.x()};
-            ImGui.alignTextToFramePadding();
-            ImGui.text("X");
-            ImGui.sameLine();
-            ImGui.dragFloat("##x" + label, x);
+        ImGui.popID();
+    }
 
-            ImGui.tableNextColumn();
-            float[] y = {value.y()};
-            ImGui.alignTextToFramePadding();
-            ImGui.text("Y");
-            ImGui.sameLine();
-            ImGui.dragFloat("##y" + label, y);
+    public void dragFloat4(String label, Vector4f value, boolean isColor) {
+        ImGui.pushID(label);
 
-            ImGui.tableNextColumn();
-            float[] z = {value.z()};
-            ImGui.alignTextToFramePadding();
-            ImGui.text("Z");
-            ImGui.sameLine();
-            ImGui.dragFloat("##z" + label, z);
+        float[] out = {value.x(), value.y(), value.z(), value.w()};
 
-            value.set(x[0], y[0], z[0]);
-
-            ImGui.endTable();
-        }
+        ImGui.alignTextToFramePadding();
+        ImGui.text(label);
+        ImGui.sameLine();
+        if (isColor)
+            ImGui.colorEdit4("##" + label, out);
+        else
+            ImGui.dragFloat4("##" + label, out);
+        value.set(out);
 
         ImGui.popID();
     }
