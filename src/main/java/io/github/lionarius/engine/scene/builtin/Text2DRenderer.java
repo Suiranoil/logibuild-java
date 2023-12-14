@@ -1,38 +1,33 @@
 package io.github.lionarius.engine.scene.builtin;
 
 import io.github.lionarius.Logibuild;
+import io.github.lionarius.engine.editor.property.SerializeField;
 import io.github.lionarius.engine.renderer.text.TextRenderer;
 import io.github.lionarius.engine.resource.font.Font;
 import io.github.lionarius.engine.scene.Component;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Vector4f;
 
-@RequiredArgsConstructor
 public class Text2DRenderer extends Component {
-    private final TextRenderer renderer = Logibuild.getInstance().getEngineRenderer().getTextRenderer();
-    private Transform transform;
+    private transient final TextRenderer renderer = Logibuild.getInstance().getEngineRenderer().getTextRenderer();
 
     @NonNull @Getter @Setter
-    private String text;
+    @SerializeField
+    private String text = "";
     @NonNull @Getter @Setter
-    private Vector4f color;
+    @SerializeField
+    private Vector4f color = new Vector4f(1);
     @Getter @Setter
+    @SerializeField
     private Font font = null;
 
-    public Text2DRenderer() {
-        this("", new Vector4f(1));
-    }
-
-    @Override
-    public void onAwake() {
-        this.transform = this.getGameObject().getTransform();
-    }
 
     @Override
     public void onRender(double delta) {
-        this.renderer.renderText(this.text, this.font, this.transform.getTransformMatrix(), this.transform.getSize().y(), this.color);
+        var transform = this.getGameObject().getTransform();
+        if (transform != null)
+            this.renderer.renderText(this.text, this.font, transform.getTransformMatrix(), transform.getSize().y(), this.color);
     }
 }

@@ -18,6 +18,10 @@ public class KeybindHandler implements Updatable {
 
     }
 
+    @Override
+    public void editorUpdate(double delta) {
+    }
+
     public void register(Keybind keybind) {
 
     }

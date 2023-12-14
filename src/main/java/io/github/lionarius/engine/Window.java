@@ -1,8 +1,6 @@
 package io.github.lionarius.engine;
 
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import org.lwjgl.Version;
@@ -11,11 +9,13 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 
 public class Window implements Closeable {
-    private static final Logger LOGGER = LogManager.getLogger("Window");
+    private static final Logger LOGGER = LoggerFactory.getLogger("Window");
     private final Vector2i size = new Vector2i();
     //    @Getter
 //    private int width;

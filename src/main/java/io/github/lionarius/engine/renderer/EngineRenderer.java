@@ -1,6 +1,7 @@
 package io.github.lionarius.engine.renderer;
 
 import io.github.lionarius.engine.renderer.circle.CircleRenderer;
+import io.github.lionarius.engine.renderer.framebuffer.Framebuffer;
 import io.github.lionarius.engine.renderer.quad.QuadRenderer;
 import io.github.lionarius.engine.renderer.text.TextRenderer;
 import io.github.lionarius.engine.resource.ResourceManager;
@@ -15,6 +16,8 @@ import org.lwjgl.opengl.GL46;
 public class EngineRenderer implements Renderer {
     @NonNull
     private final ResourceManager resourceManager;
+    @Getter
+    private Framebuffer framebuffer;
 
     @Getter
     private QuadRenderer quadRenderer;
@@ -24,6 +27,7 @@ public class EngineRenderer implements Renderer {
     private TextRenderer textRenderer;
 
 
+    @Override
     public void init() {
         GL46.glEnable(GL46.GL_DEPTH_TEST);
         GL46.glEnable(GL46.GL_BLEND);
@@ -37,20 +41,29 @@ public class EngineRenderer implements Renderer {
 
         this.textRenderer = new TextRenderer(8192 * 16, this.resourceManager, this.resourceManager.get(Font.class, "font/atlas/roboto"));
         this.textRenderer.init();
+
+        this.framebuffer = new Framebuffer(1, 1);
+        this.framebuffer.init();
     }
 
+    @Override
     public void beginFrame() {
         this.quadRenderer.beginFrame();
         this.circleRenderer.beginFrame();
         this.textRenderer.beginFrame();
+
+        this.framebuffer.bind();
     }
 
+    @Override
     public void endFrame(Matrix4fc projection, Matrix4fc view) {
         this.clear();
 
         this.quadRenderer.endFrame(projection, view);
         this.circleRenderer.endFrame(projection, view);
         this.textRenderer.endFrame(projection, view);
+
+        this.framebuffer.unbind();
     }
 
     public void clear() {
@@ -59,6 +72,8 @@ public class EngineRenderer implements Renderer {
 
     @Override
     public void close() {
+        this.framebuffer.close();
+
         this.quadRenderer.close();
         this.circleRenderer.close();
         this.textRenderer.close();

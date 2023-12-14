@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.editor;
+package io.github.lionarius.engine.editor.imgui;
 
 import imgui.ImGui;
 import imgui.flag.*;
@@ -6,15 +6,21 @@ import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
 import imgui.type.ImInt;
 import io.github.lionarius.engine.Window;
+import io.github.lionarius.engine.renderer.EngineRenderer;
+import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.Closeable;
 import lombok.RequiredArgsConstructor;
+import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL46;
 
 @RequiredArgsConstructor
 public class ImGuiLayer implements Closeable {
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final Window window;
+    private final SceneManager sceneManager;
+    private final EngineRenderer engineRenderer;
 
     private boolean isFirstFrame;
 
@@ -84,6 +90,36 @@ public class ImGuiLayer implements Closeable {
         ImGui.end();
     }
 
+    public void draw() {
+        ImGui.begin("Scene");
+        if (ImGui.button("Play")) {
+            if (!this.sceneManager.isPlaying())
+                this.sceneManager.startPlaying();
+            else
+                this.sceneManager.stopPlaying();
+        }
+        var viewportSize = ImGui.getContentRegionAvail();
+        GL46.glViewport(0, 0, (int) viewportSize.x, (int) viewportSize.y);
+        var camera = this.sceneManager.getSceneCamera();
+        var framebuffer = this.engineRenderer.getFramebuffer();
+        if (camera != null) {
+            camera.setFrameSize(new Vector2i((int) viewportSize.x, (int) viewportSize.y));
+            framebuffer.resize((int) viewportSize.x, (int) viewportSize.y);
+            ImGui.image(framebuffer.getTexture().getId(), framebuffer.getWidth(), framebuffer.getHeight(), 0, 1, 1, 0);
+        }
+        ImGui.end();
+
+        ImGui.begin("Hierarchy");
+        ImGuiScene.drawHierarchyTree(this.sceneManager.getCurrentScene());
+        ImGui.end();
+
+        ImGui.begin("Properties");
+        var selected = this.sceneManager.getCurrentScene().getSelectedGameObject();
+        if (selected != null)
+            ImGuiGameObject.drawProperties(selected);
+        ImGui.end();
+    }
+
     public void end() {
     }
 
@@ -146,7 +182,7 @@ public class ImGuiLayer implements Closeable {
         style.setColor(ImGuiCol.FrameBgHovered, 0.19f, 0.19f, 0.19f, 0.54f);
         style.setColor(ImGuiCol.FrameBgActive, 0.20f, 0.22f, 0.23f, 1.00f);
         style.setColor(ImGuiCol.TitleBg, 0.00f, 0.00f, 0.00f, 1.00f);
-        style.setColor(ImGuiCol.TitleBgActive, 0.06f, 0.06f, 0.06f, 1.00f);
+        style.setColor(ImGuiCol.TitleBgActive, 0.15f, 0.15f, 0.15f, 1.00f);
         style.setColor(ImGuiCol.TitleBgCollapsed, 0.00f, 0.00f, 0.00f, 1.00f);
         style.setColor(ImGuiCol.MenuBarBg, 0.14f, 0.14f, 0.14f, 1.00f);
         style.setColor(ImGuiCol.ScrollbarBg, 0.05f, 0.05f, 0.05f, 0.54f);
@@ -170,7 +206,7 @@ public class ImGuiLayer implements Closeable {
         style.setColor(ImGuiCol.ResizeGripActive, 0.40f, 0.44f, 0.47f, 1.00f);
         style.setColor(ImGuiCol.Tab, 0.00f, 0.00f, 0.00f, 0.52f);
         style.setColor(ImGuiCol.TabHovered, 0.14f, 0.14f, 0.14f, 1.00f);
-        style.setColor(ImGuiCol.TabActive, 0.20f, 0.20f, 0.20f, 0.36f);
+        style.setColor(ImGuiCol.TabActive, 0.25f, 0.25f, 0.25f, 0.36f);
         style.setColor(ImGuiCol.TabUnfocused, 0.00f, 0.00f, 0.00f, 0.52f);
         style.setColor(ImGuiCol.TabUnfocusedActive, 0.14f, 0.14f, 0.14f, 1.00f);
         style.setColor(ImGuiCol.DockingPreview, 0.35f, 0.35f, 0.35f, 1.00f);

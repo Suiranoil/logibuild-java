@@ -1,13 +1,11 @@
 package io.github.lionarius;
 
-import imgui.ImGui;
 import io.github.lionarius.client.component.FpsDisplay;
 import io.github.lionarius.engine.InputHandler;
 import io.github.lionarius.engine.Window;
-import io.github.lionarius.engine.editor.ImGuiLayer;
+import io.github.lionarius.engine.editor.imgui.ImGuiLayer;
 import io.github.lionarius.engine.keybind.KeybindHandler;
 import io.github.lionarius.engine.renderer.EngineRenderer;
-import io.github.lionarius.engine.renderer.framebuffer.Framebuffer;
 import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.resource.font.Font;
 import io.github.lionarius.engine.resource.font.FontLoader;
@@ -25,16 +23,13 @@ import io.github.lionarius.engine.scene.builtin.Text2DRenderer;
 import io.github.lionarius.engine.util.Closeable;
 import io.github.lionarius.engine.util.TimeUtil;
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.joml.Vector2i;
-import org.joml.Vector4f;
-import org.lwjgl.opengl.GL46;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public final class Logibuild implements Closeable {
-    private static final Logger LOGGER = LogManager.getLogger("Logibuild");
+    private static final Logger LOGGER = LoggerFactory.getLogger("Logibuild");
     @Getter
     private static Logibuild instance;
 
@@ -48,12 +43,10 @@ public final class Logibuild implements Closeable {
     private final KeybindHandler keybindHandler = new KeybindHandler(this.inputHandler);
     @Getter
     private final EngineRenderer engineRenderer = new EngineRenderer(this.resourceManager);
-    private final ImGuiLayer imGuiLayer = new ImGuiLayer(this.window);
+    private final ImGuiLayer imGuiLayer;
 
     @Getter
-    private final SceneManager sceneManager = new SceneManager();
-
-    private final Framebuffer framebuffer;
+    private final SceneManager sceneManager;
 
     public Logibuild(String[] args) {
         if (instance != null)
@@ -64,7 +57,6 @@ public final class Logibuild implements Closeable {
 //        this.window.setVSync(false);
 
         this.inputHandler.init(true);
-        this.imGuiLayer.init();
 
         this.resourceManager.register(Shader.class, new ShaderLoader());
         this.resourceManager.register(Texture.class, new TextureLoader());
@@ -72,8 +64,9 @@ public final class Logibuild implements Closeable {
 
         this.engineRenderer.init();
 
-        this.framebuffer = new Framebuffer(this.window.getWidth(), this.window.getHeight());
-        this.framebuffer.init();
+        this.sceneManager = new SceneManager();
+        this.imGuiLayer = new ImGuiLayer(this.window, this.sceneManager, this.engineRenderer);
+        this.imGuiLayer.init();
     }
 
     public void run() {
@@ -81,7 +74,8 @@ public final class Logibuild implements Closeable {
         double currentTime = TimeUtil.getApplicationTime();
         double dt = -1.0;
 
-        this.sceneManager.transitionTo(this.setupInitialScene());
+        var scene = this.setupInitialScene();
+        this.sceneManager.transitionTo(scene);
 
         while (!this.window.shouldClose()) {
             if (dt >= 0) {
@@ -115,32 +109,13 @@ public final class Logibuild implements Closeable {
         this.imGuiLayer.beginFrame();
         this.imGuiLayer.begin();
 
-        ImGui.showDemoWindow();
-
-        ImGui.begin("Scene");
-        var viewportSize = ImGui.getContentRegionAvail();
-        GL46.glViewport(0, 0, (int) viewportSize.x, (int) viewportSize.y);
-        this.sceneManager.getSceneCamera().setFrameSize(new Vector2i((int) viewportSize.x, (int) viewportSize.y));
-        this.framebuffer.resize((int) viewportSize.x, (int) viewportSize.y);
-        ImGui.image(this.framebuffer.getTexture().getId(), this.framebuffer.getWidth(), this.framebuffer.getHeight(), 0, 1, 1, 0);
-        ImGui.end();
-
-        ImGui.begin("Hierarchy");
-        this.sceneManager.getCurrentScene().imguiHierarchy();
-        ImGui.end();
-
-        ImGui.begin("Properties");
-        var selected = this.sceneManager.getCurrentScene().getSelectedGameObject();
-        if (selected != null)
-            selected.imgui();
-        ImGui.end();
+        this.imGuiLayer.draw();
 
         this.imGuiLayer.end();
         this.imGuiLayer.endFrame();
     }
 
     private void render(double delta) {
-        this.framebuffer.bind();
         this.engineRenderer.beginFrame();
 
         this.sceneManager.render(delta);
@@ -151,8 +126,6 @@ public final class Logibuild implements Closeable {
         else
             this.engineRenderer.endFrame(sceneCamera.getProjection(), sceneCamera.getView());
 
-        this.framebuffer.unbind();
-
         this.engineRenderer.clear();
         this.imGuiLayer.render();
     }
@@ -161,7 +134,7 @@ public final class Logibuild implements Closeable {
         var scene = new Scene();
 
         var camera = new GameObject(List.of(
-                new OrthoCamera(new Vector2i(0)),
+                new OrthoCamera(),
                 new SimpleMovement()
         ));
         camera.setName("MainCamera");
@@ -169,7 +142,7 @@ public final class Logibuild implements Closeable {
 
         var testObject2 = new GameObject();
         {
-            var textComponent = new Text2DRenderer("Hello world!", new Vector4f(1));
+            var textComponent = new Text2DRenderer();
             testObject2.addComponent(textComponent);
             textComponent.setFont(this.resourceManager.get(Font.class, "font/atlas/rubik"));
             var transform = testObject2.getTransform();
@@ -181,7 +154,7 @@ public final class Logibuild implements Closeable {
                 new FpsDisplay()
         ));
         {
-            var textComponent = new Text2DRenderer("", new Vector4f(0, 1, 0, 1));
+            var textComponent = new Text2DRenderer();
             textComponent.setFont(this.resourceManager.get(Font.class, "font/atlas/cascadia"));
             fpsDisplay.addComponent(textComponent);
             var transform = fpsDisplay.getTransform();
@@ -190,7 +163,7 @@ public final class Logibuild implements Closeable {
 
         }
 
-        var testObject = new GameObject(List.of(new Box2DRenderer(new Vector4f(1))));
+        var testObject = new GameObject(List.of(new Box2DRenderer()));
         {
             var transformComponent = testObject.getTransform();
             transformComponent.setSize(1000, 1000, 0);

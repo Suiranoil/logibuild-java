@@ -122,6 +122,10 @@ public class InputHandler implements Updatable {
         }
     }
 
+    @Override
+    public void editorUpdate(double delta) {
+    }
+
     public boolean isMousePressed(int button) {
         if (InputHandler.isMouseNotInBound(button))
             return false;

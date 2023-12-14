@@ -1,10 +1,11 @@
-package io.github.lionarius.engine.editor;
+package io.github.lionarius.engine.editor.imgui;
 
 import imgui.internal.ImGui;
 import imgui.type.ImString;
 import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.resource.Resource;
 import lombok.experimental.UtilityClass;
+import org.joml.Math;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -31,7 +32,7 @@ public class ImGuiUtil {
         return text;
     }
 
-    public int dragInt(String label, int value) {
+    public int dragInt(String label, int value, float min, float max) {
         ImGui.pushID(label);
 
         int[] out = {value};
@@ -39,14 +40,19 @@ public class ImGuiUtil {
         ImGui.alignTextToFramePadding();
         ImGui.text(label);
         ImGui.sameLine();
-        ImGui.dragInt("##" + label, out);
+        ImGui.dragInt("##" + label, out, getIntSpeed(value), min, max);
 
         ImGui.popID();
 
         return out[0];
     }
 
-    public float dragFloat(String label, float value) {
+    private static float getIntSpeed(int value) {
+        return Math.min((Math.abs(value / 100.0f) + 0.25f), 100.0f);
+    }
+
+
+    public float dragFloat(String label, float value, float min, float max) {
         ImGui.pushID(label);
 
         float[] out = {value};
@@ -54,11 +60,15 @@ public class ImGuiUtil {
         ImGui.alignTextToFramePadding();
         ImGui.text(label);
         ImGui.sameLine();
-        ImGui.dragFloat("##" + label, out);
+        ImGui.dragFloat("##" + label, out, getFloatSpeed(value), min, max);
 
         ImGui.popID();
 
         return out[0];
+    }
+
+    private static float getFloatSpeed(float value) {
+        return Math.min(((value * value / 10000.0f) + 0.005f), 100.0f);
     }
 
     public void dragFloat2(String label, Vector2f value) {
@@ -69,6 +79,7 @@ public class ImGuiUtil {
         ImGui.alignTextToFramePadding();
         ImGui.text(label);
         ImGui.sameLine();
+        // getFloatSpeed(Math.max(value.x(), value.y()))
         ImGui.dragFloat2("##" + label, out);
         value.set(out);
 
@@ -83,6 +94,7 @@ public class ImGuiUtil {
         ImGui.alignTextToFramePadding();
         ImGui.text(label);
         ImGui.sameLine();
+        // getFloatSpeed(Math.max(Math.max(value.x(), value.y()), value.z()))
         ImGui.dragFloat3("##" + label, out);
         value.set(out);
 
@@ -106,11 +118,13 @@ public class ImGuiUtil {
         ImGui.popID();
     }
 
-    public <T extends Resource> Resource inputResource(String label, Resource value) {
-        var name = value.getResourceName();
+    public <T extends Resource> Resource inputResource(String label, Resource value, Class<T> clazz) {
+        var name = "";
+        if (value != null)
+            name = value.getResourceName();
         var newName = ImGuiUtil.inputText(label, name);
         if (!Objects.equals(newName, name)) {
-            var newResource = Logibuild.getInstance().getResourceManager().get(value.getClass(), newName);
+            var newResource = Logibuild.getInstance().getResourceManager().get(clazz, newName);
             if (newResource != null)
                 return newResource;
         }

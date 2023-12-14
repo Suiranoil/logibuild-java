@@ -2,16 +2,19 @@ package io.github.lionarius.engine.scene.builtin;
 
 import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.InputHandler;
+import io.github.lionarius.engine.editor.property.Min;
+import io.github.lionarius.engine.editor.property.SerializeField;
 import io.github.lionarius.engine.scene.Component;
-import lombok.RequiredArgsConstructor;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-@RequiredArgsConstructor
 public class SimpleMovement extends Component {
-    private final InputHandler inputHandler = Logibuild.getInstance().getInputHandler();
+    private transient final InputHandler inputHandler = Logibuild.getInstance().getInputHandler();
+    @SerializeField @Min(0)
     private float movementSpeed = 800.0f;
+    @SerializeField @Min(0)
     private float rotationSpeed = 90.0f;
+    @SerializeField
     private Transform transform;
 
     @Override

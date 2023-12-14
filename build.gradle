@@ -18,12 +18,16 @@ ext {
 
 dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'org.danilopianini:gson-extras:1.2.0'
     implementation 'org.javatuples:javatuples:1.2'
+    implementation 'org.reflections:reflections:0.10.2'
 
-    // Log4j
+    // slf4j
+    implementation 'org.fusesource.jansi:jansi:2.4.1'
     implementation 'org.apache.logging.log4j:log4j-api:2.22.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.22.0'
-    implementation 'org.fusesource.jansi:jansi:2.4.1'
+    implementation 'org.apache.logging.log4j:log4j-slf4j2-impl:2.22.0'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.30'

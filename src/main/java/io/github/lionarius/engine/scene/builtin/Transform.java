@@ -1,18 +1,21 @@
 package io.github.lionarius.engine.scene.builtin;
 
+import io.github.lionarius.engine.editor.property.SerializeField;
 import io.github.lionarius.engine.scene.Component;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 @Getter
-@NoArgsConstructor
 public class Transform extends Component {
+    @SerializeField
     private final Vector3f position = new Vector3f();
+    @SerializeField
     private final Quaternionf rotation = new Quaternionf();
+    @SerializeField
     private final Vector3f scale = new Vector3f(1);
+    @SerializeField
     private final Vector3f size = new Vector3f();
 
     public void setPosition(float x, float y, float z) {

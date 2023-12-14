@@ -1,9 +1,8 @@
 package io.github.lionarius.engine.scene;
 
-import imgui.ImGui;
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
-import io.github.lionarius.engine.editor.ImGuiUtil;
+import io.github.lionarius.engine.scene.builtin.Camera;
 import io.github.lionarius.engine.scene.builtin.Transform;
 import io.github.lionarius.engine.util.AddRemoveQueue;
 import lombok.AccessLevel;
@@ -13,16 +12,20 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public final class GameObject implements Updatable, Renderable {
+    @Getter
+    private final UUID uuid = UUID.randomUUID();
+    @Getter @Setter(AccessLevel.PROTECTED)
+    private Scene scene = null;
+    private final AddRemoveQueue<Component> componentQueue = new AddRemoveQueue<>();
+
     @Getter @Setter
     private String name = "GameObject";
-    private final List<Component> components = new ArrayList<>();
-    @Getter @Setter(AccessLevel.PROTECTED)
-    private transient Scene scene = null;
     @Getter
-    private transient final Transform transform;
-    private transient final AddRemoveQueue<Component> componentQueue = new AddRemoveQueue<>();
+    private Transform transform;
+    private final List<Component> components = new ArrayList<>();
 
     public GameObject() {
         this.transform = new Transform();
@@ -46,6 +49,24 @@ public final class GameObject implements Updatable, Renderable {
             this.addComponent(component);
     }
 
+    public static void fillComponents(@NonNull GameObject gameObject, @NonNull Iterable<Component> components) {
+        gameObject.components.clear();
+
+        Transform transform = null;
+        for (var component : components) {
+            if (Transform.class.isAssignableFrom(component.getClass()))
+                transform = (Transform) component;
+
+            gameObject.addComponent(component);
+        }
+
+        if (transform == null)
+            transform = new Transform();
+
+        gameObject.addComponent(transform);
+        gameObject.transform = transform;
+    }
+
     public Iterable<GameObject> getChildren() {
         return this.scene.getHierarchy().getChildren(this);
     }
@@ -60,6 +81,10 @@ public final class GameObject implements Updatable, Renderable {
         return null;
     }
 
+    public Iterable<Component> getComponents() {
+        return this.components;
+    }
+
     public void awake() {
         for (var component : this.components)
             component.onAwake();
@@ -72,11 +97,17 @@ public final class GameObject implements Updatable, Renderable {
 
     @Override
     public void update(double delta) {
-        this.removeQueuedComponents();
-        this.addQueuedComponents();
+        this.removeQueuedComponents(false);
+        this.addQueuedComponents(false);
 
         for (var component : this.components)
             component.onUpdate(delta);
+    }
+
+    @Override
+    public void editorUpdate(double delta) {
+        this.removeQueuedComponents(true);
+        this.addQueuedComponents(true);
     }
 
     @Override
@@ -101,7 +132,7 @@ public final class GameObject implements Updatable, Renderable {
         if (component.getGameObject() != null)
             return;
 
-        if (this.scene == null || !this.scene.isEntered())
+        if (this.scene == null)
             this.processAddComponent(component);
         else
             this.componentQueue.add(component);
@@ -111,35 +142,43 @@ public final class GameObject implements Updatable, Renderable {
         if (component.getGameObject() != this)
             return;
 
-        if (this.scene == null || !this.scene.isEntered())
+        if (this.scene == null)
             this.processRemoveComponent(component);
-        else
+        else if (this.components.contains(component))
             this.componentQueue.remove(component);
     }
 
-    private void addQueuedComponents() {
+    private void addQueuedComponents(boolean isEditor) {
         Component component;
         while ((component = this.componentQueue.pollAdded()) != null) {
-            this.processAddComponent(component);
+            if (this.processAddComponent(component) && !isEditor) {
 
-            component.onAwake();
-            component.onStart();
+                component.onAwake();
+                component.onStart();
+
+                if (this.scene.getMainCamera() == null && Camera.class.isAssignableFrom(component.getClass()))
+                    this.scene.setMainCamera((Camera) component);
+            }
         }
     }
 
-    private void removeQueuedComponents() {
+    private void removeQueuedComponents(boolean isEditor) {
         Component component;
         while ((component = this.componentQueue.pollRemoved()) != null) {
-            component.onDestroy();
+            if (!isEditor) {
+                if (component == this.scene.getMainCamera())
+                    this.scene.setMainCamera(null);
+                component.onDestroy();
+            }
 
             this.processRemoveComponent(component);
         }
     }
 
-    private void processAddComponent(Component component) {
+    private boolean processAddComponent(Component component) {
         for (var c : this.components) {
             if (c.getClass().isNestmateOf(component.getClass()))
-                return;
+                return false;
         }
 //        // Cannot add another transform component
 //        if (Transform.class.isAssignableFrom(component.getClass()) && !this.components.isEmpty())
@@ -147,29 +186,29 @@ public final class GameObject implements Updatable, Renderable {
 
         this.components.add(component);
         component.setGameObject(this);
+
+        return true;
     }
 
-    private void processRemoveComponent(Component component) {
+    private boolean processRemoveComponent(Component component) {
         // Cannot remove base transform component
         if (Transform.class.isAssignableFrom(component.getClass()))
-            return;
+            return false;
 
         this.components.remove(component);
         component.setGameObject(null);
+
+        return true;
     }
 
     public GameObject getParent() {
+        if (this.scene == null)
+            return null;
         return this.scene.getHierarchy().getParent(this);
     }
 
-    public void imgui() {
-        var newName = ImGuiUtil.inputText("Name", this.name);
-        if (!newName.isEmpty())
-            this.name = newName;
-
-        for (var component : this.components) {
-            ImGui.separator();
-            component.imgui();
-        }
+    @Override
+    public int hashCode() {
+        return this.uuid.hashCode();
     }
 }

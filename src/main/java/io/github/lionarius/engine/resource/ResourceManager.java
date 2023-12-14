@@ -3,8 +3,8 @@ package io.github.lionarius.engine.resource;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class ResourceManager {
-    private static final Logger LOGGER = LogManager.getLogger("ResourceLoader");
+    private static final Logger LOGGER = LoggerFactory.getLogger("ResourceLoader");
 
     @NonNull
     private final String folder;
@@ -35,7 +35,7 @@ public class ResourceManager {
         return this.get(clazz, folder, name, null);
     }
 
-    private  <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name, Object parameters) {
+    private <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name, Object parameters) {
         var data = this.getAssetData(clazz);
         File file;
         if (folder.isEmpty())
@@ -53,7 +53,7 @@ public class ResourceManager {
             asset.setResourceName(name);
             return asset;
         } catch (IOException e) {
-            LOGGER.error("Could not load resource {}", name);
+            LOGGER.warn("Could not load resource {}", name);
             return null;
         }
     }

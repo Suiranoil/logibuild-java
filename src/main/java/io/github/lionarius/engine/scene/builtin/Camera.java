@@ -1,16 +1,19 @@
 package io.github.lionarius.engine.scene.builtin;
 
+import io.github.lionarius.engine.scene.CameraObject;
 import io.github.lionarius.engine.scene.Component;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.joml.Matrix4fc;
 import org.joml.Vector2fc;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-@RequiredArgsConstructor
-public abstract class Camera extends Component {
+public abstract class Camera extends Component implements CameraObject {
     @NonNull @Getter @Setter
-    private Vector2i frameSize;
+    private Vector2i frameSize = new Vector2i(0);
     @Getter(AccessLevel.PROTECTED)
     private Transform transform;
 

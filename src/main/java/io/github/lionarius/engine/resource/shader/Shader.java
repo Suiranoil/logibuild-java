@@ -6,11 +6,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class Shader extends OpenGLObject implements Resource {
     @Getter @Setter
     private String resourceName;
 
-    private static final Logger LOGGER = LogManager.getLogger("Shader");
+    private static final Logger LOGGER = LoggerFactory.getLogger("Shader");
     private final String vertexSource;
     private final String fragmentSource;
     private final Map<String, Integer> uniforms = new HashMap<>();

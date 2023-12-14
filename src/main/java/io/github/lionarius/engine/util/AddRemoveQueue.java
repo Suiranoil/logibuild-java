@@ -12,7 +12,7 @@ public class AddRemoveQueue<T> {
     }
 
     public void remove(T object) {
-        this.removed.remove(object);
+        this.removed.add(object);
     }
 
     public T pollAdded() {
