@@ -11,6 +11,7 @@ import io.github.lionarius.engine.scene.Component;
 import io.github.lionarius.engine.scene.GameObject;
 import io.github.lionarius.engine.util.ReflectionUtil;
 import lombok.experimental.UtilityClass;
+import org.joml.Quaternionf;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -66,6 +67,8 @@ public class ImGuiComponent {
                         ImGuiUtil.dragFloat3(name, (Vector3f) value);
                     } else if (type.equals(Vector4f.class)) {
                         ImGuiUtil.dragFloat4(name, (Vector4f) value, true);
+                    } else if (type.equals(Quaternionf.class)) {
+                        ImGuiUtil.dragQuaternion(name, (Quaternionf) value);
                     } else if (type.equals(String.class)) {
                         var out = ImGuiUtil.inputText(name, (String) value);
                         field.set(component, out);
@@ -91,9 +94,9 @@ public class ImGuiComponent {
     }
 
     private static void drawComponentField(Component component, Field field, String name, Component value, Class<?> type) throws IllegalAccessException {
-        ImGui.alignTextToFramePadding();
-        ImGui.text(name);
-        ImGui.sameLine();
+//        ImGui.alignTextToFramePadding();
+//        ImGui.text(name);
+//        ImGui.sameLine();
         if (value != null) {
             if (ImGui.button("-"))
                 field.set(component, null);
@@ -103,7 +106,7 @@ public class ImGuiComponent {
         var valueName = "";
         if (value != null)
             valueName = type.getSimpleName();
-        ImGui.inputText("##" + name, new ImString(valueName), ImGuiInputTextFlags.ReadOnly);
+        ImGui.inputText(name, new ImString(valueName), ImGuiInputTextFlags.ReadOnly);
         ImGui.endDisabled();
 
         if (ImGui.beginDragDropTarget()) {

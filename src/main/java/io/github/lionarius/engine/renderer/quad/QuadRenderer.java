@@ -104,7 +104,7 @@ public class QuadRenderer implements Renderer {
 
         this.vertexInstance.setModel(model);
         this.vertexInstance.setColor(r, g, b, a);
-        this.vertexInstance.setTextureId(textureId);
+        this.vertexInstance.setTextureId(textureId + 0.01f); // adding +0.01 fixes interpolation issues
         this.vertexInstance.get(this.buffer);
 
         this.renderedCount += 1;

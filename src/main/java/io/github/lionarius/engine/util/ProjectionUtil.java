@@ -5,6 +5,9 @@ import org.joml.Matrix4f;
 
 @UtilityClass
 public class ProjectionUtil {
+    public static Matrix4f getPerspectiveProjection(float fov, float aspectRatio, float far, float near) {
+        return new Matrix4f().setPerspective((float) Math.toRadians(fov), aspectRatio, near, far);
+    }
 
     public static Matrix4f getOrthoProjection(float left, float right, float top, float bottom, float far, float near) {
         return new Matrix4f().setOrtho(left, right, bottom, top, far, near);

@@ -1,6 +1,8 @@
 package io.github.lionarius.engine.editor.imgui;
 
 import imgui.ImGui;
+import imgui.extension.imguifiledialog.ImGuiFileDialog;
+import imgui.extension.imguifiledialog.flag.ImGuiFileDialogFlags;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -9,6 +11,7 @@ import io.github.lionarius.engine.Window;
 import io.github.lionarius.engine.renderer.EngineRenderer;
 import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.Closeable;
+import io.github.lionarius.engine.util.io.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
@@ -91,12 +94,49 @@ public class ImGuiLayer implements Closeable {
     }
 
     public void draw() {
+//        ImGui.showDemoWindow();
+
+        if (ImGui.beginMainMenuBar()) {
+            ImGuiLayer.drawMainMenu();
+
+            ImGui.endMainMenuBar();
+        }
+
+        if (ImGuiFileDialog.display("open-scene", ImGuiWindowFlags.None | ImGuiWindowFlags.NoDocking, 200, 400, 800, 600)) {
+            if (ImGuiFileDialog.isOk()) {
+                var selection = ImGuiFileDialog.getSelection();
+                var path = selection.values().stream().findFirst();
+                if (path.isPresent()) {
+                    var scene = JsonUtil.loadSceneFromFile(path.get());
+                    if (scene != null)
+                        this.sceneManager.transitionTo(scene);
+                }
+            }
+
+            ImGuiFileDialog.close();
+        }
+
+        if (ImGuiFileDialog.display("save-scene", ImGuiWindowFlags.None | ImGuiWindowFlags.NoDocking, 200, 400, 800, 600)) {
+            if (ImGuiFileDialog.isOk()) {
+                var path = ImGuiFileDialog.getFilePathName();
+                var scene = this.sceneManager.getCurrentScene();
+                if (scene != null) {
+                    JsonUtil.writeSceneToFile(path, scene);
+                }
+            }
+
+            ImGuiFileDialog.close();
+        }
+
         ImGui.begin("Scene");
-        if (ImGui.button("Play")) {
-            if (!this.sceneManager.isPlaying())
-                this.sceneManager.startPlaying();
-            else
+        var playing = this.sceneManager.isPlaying();
+        var name = playing ? "Stop" : "Play";
+        if (ImGui.button(name)) {
+            if (playing)
                 this.sceneManager.stopPlaying();
+            else
+                this.sceneManager.startPlaying();
+
         }
         var viewportSize = ImGui.getContentRegionAvail();
         GL46.glViewport(0, 0, (int) viewportSize.x, (int) viewportSize.y);
@@ -114,10 +154,29 @@ public class ImGuiLayer implements Closeable {
         ImGui.end();
 
         ImGui.begin("Properties");
+        ImGui.pushItemWidth(ImGui.getContentRegionAvailX() * 0.6f);
         var selected = this.sceneManager.getCurrentScene().getSelectedGameObject();
         if (selected != null)
             ImGuiGameObject.drawProperties(selected);
+        ImGui.popItemWidth();
         ImGui.end();
+    }
+
+    private static void drawMainMenu() {
+        if (ImGui.beginMenu("File")) {
+            if (ImGui.menuItem("Open scene...")) {
+                ImGuiFileDialog.openModal("open-scene", "Choose scene", ".json", ".", "", 1, 0, ImGuiFileDialogFlags.DontShowHiddenFiles);
+            }
+            if (ImGui.menuItem("Save scene")) {
+                ImGuiFileDialog.openModal("save-scene", "Save scene", ".json", ".", "", 1, 0, ImGuiFileDialogFlags.DontShowHiddenFiles);
+            }
+
+            if (ImGui.menuItem("Exit")) {
+
+            }
+
+            ImGui.endMenu();
+        }
     }
 
     public void end() {

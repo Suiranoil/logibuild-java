@@ -5,7 +5,7 @@ import java.util.*;
 public class Hierarchy<T> implements Iterable<T> {
     private transient final Queue<Action> queuedActions = new ArrayDeque<>();
     private final Map<T, List<T>> children = new LinkedHashMap<>();
-    private final Map<T, T> parents = new HashMap<>();
+    private transient final Map<T, T> parents = new HashMap<>();
 
     public Hierarchy() {
         this.children.put(null, new ArrayList<>());

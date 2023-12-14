@@ -17,12 +17,13 @@ import io.github.lionarius.engine.scene.GameObject;
 import io.github.lionarius.engine.scene.Scene;
 import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.scene.builtin.Box2DRenderer;
-import io.github.lionarius.engine.scene.builtin.OrthoCamera;
-import io.github.lionarius.engine.scene.builtin.SimpleMovement;
+import io.github.lionarius.engine.scene.builtin.OrthographicCamera;
+import io.github.lionarius.engine.scene.builtin.Simple2DMovement;
 import io.github.lionarius.engine.scene.builtin.Text2DRenderer;
 import io.github.lionarius.engine.util.Closeable;
 import io.github.lionarius.engine.util.TimeUtil;
 import lombok.Getter;
+import org.lwjgl.util.nfd.NativeFileDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,7 @@ public final class Logibuild implements Closeable {
         instance = this;
 
         this.window.init();
+        NativeFileDialog.NFD_Init();
 //        this.window.setVSync(false);
 
         this.inputHandler.init(true);
@@ -95,6 +97,8 @@ public final class Logibuild implements Closeable {
 
     @Override
     public void close() {
+        NativeFileDialog.NFD_Quit();
+
         this.imGuiLayer.close();
         this.engineRenderer.close();
         this.window.close();
@@ -134,8 +138,8 @@ public final class Logibuild implements Closeable {
         var scene = new Scene();
 
         var camera = new GameObject(List.of(
-                new OrthoCamera(),
-                new SimpleMovement()
+                new OrthographicCamera(),
+                new Simple2DMovement()
         ));
         camera.setName("MainCamera");
         camera.getTransform().setPosition(0, 0, -50);

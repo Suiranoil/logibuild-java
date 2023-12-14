@@ -31,12 +31,20 @@ public class Transform extends Component {
     }
 
     public Matrix4f getTransformMatrix() {
-        var matrix = new Matrix4f().translate(this.position).rotate(this.rotation).scale(this.scale);
+        return this.getParentTransformMatrix().mul(this.getLocalTransformMatrix());
+    }
+
+    public Matrix4f getLocalTransformMatrix() {
+        return new Matrix4f().translate(this.position).rotate(this.rotation).scale(this.scale);
+    }
+
+    public Matrix4f getParentTransformMatrix() {
         if (this.getGameObject().getParent() != null) {
             var parentTransform = this.getGameObject().getParent().getTransform();
 
-            parentTransform.getTransformMatrix().mul(matrix, matrix);
+            return parentTransform.getTransformMatrix();
         }
-        return matrix;
+
+        return new Matrix4f();
     }
 }

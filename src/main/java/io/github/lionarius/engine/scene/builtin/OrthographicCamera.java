@@ -6,7 +6,7 @@ import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.joml.Vector3f;
 
-public class OrthoCamera extends Camera {
+public class OrthographicCamera extends Camera {
     @Override
     public Matrix4fc getProjection() {
         return ProjectionUtil.getOrthoProjectionCentered(0, 0, this.getFrameSize().x(), this.getFrameSize().y());

@@ -29,8 +29,9 @@ out vec4 FragColor;
 void main()
 {
     float radius = 4 * dot(i_Position, i_Position);
-    if (radius > 1)
-    discard;
+    if (radius > 1) {
+        discard;
+    }
     float delta = fwidth(radius);
     float opacity = smoothstep(1.0, 1.0 - 2 * delta, radius);
     FragColor = mix(vec4(0), i_Color, opacity);

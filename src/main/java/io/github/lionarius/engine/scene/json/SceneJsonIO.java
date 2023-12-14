@@ -86,9 +86,9 @@ public class SceneJsonIO implements JsonDeserializer<Scene>, JsonSerializer<Scen
 
         scene.getHierarchy().processChanges();
 
-        var selectedGameObject = sceneJson.get("selectedGameObject").getAsString();
+        var selectedGameObject = sceneJson.get("selectedGameObject");
         if (selectedGameObject != null)
-            scene.setSelectedGameObject(objects.get(UUID.fromString(selectedGameObject)));
+            scene.setSelectedGameObject(objects.get(UUID.fromString(selectedGameObject.getAsString())));
 
         return scene;
     }

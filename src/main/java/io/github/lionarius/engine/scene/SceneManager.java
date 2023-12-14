@@ -1,13 +1,11 @@
 package io.github.lionarius.engine.scene;
 
-import com.google.gson.GsonBuilder;
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
 import io.github.lionarius.engine.scene.builtin.Camera;
-import io.github.lionarius.engine.scene.builtin.OrthoCamera;
-import io.github.lionarius.engine.scene.builtin.SimpleMovement;
-import io.github.lionarius.engine.scene.json.GameObjectSerializer;
-import io.github.lionarius.engine.scene.json.SceneJsonIO;
+import io.github.lionarius.engine.scene.builtin.OrthographicCamera;
+import io.github.lionarius.engine.scene.builtin.Simple2DMovement;
+import io.github.lionarius.engine.util.io.JsonUtil;
 import lombok.Getter;
 
 import java.util.List;
@@ -22,7 +20,7 @@ public class SceneManager implements Updatable, Renderable {
     private final CameraObject camera;
 
     public SceneManager() {
-        this.editorCamera = new GameObject(List.of(new SimpleMovement(), new OrthoCamera()));
+        this.editorCamera = new GameObject(List.of(new Simple2DMovement(), new OrthographicCamera()));
         this.camera = this.editorCamera.getComponent(Camera.class);
 
         this.editorCamera.awake();
@@ -74,11 +72,7 @@ public class SceneManager implements Updatable, Renderable {
         if (this.state == SceneManagerState.EDITOR_TO_PLAYING) {
             this.originalScene = this.currentScene;
 
-            var builder = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(GameObject.class, new GameObjectSerializer()).registerTypeAdapter(Scene.class, new SceneJsonIO());
-            var gson = builder.create();
-            var json = gson.toJson(this.currentScene);
-
-            this.queuedScene = gson.fromJson(json, Scene.class);
+            this.queuedScene = JsonUtil.deserializeScene(JsonUtil.serializeScene(this.currentScene));
             this.currentScene.setSelectedGameObject(null);
 
             this.performTransition();
@@ -86,10 +80,13 @@ public class SceneManager implements Updatable, Renderable {
         }
 
         if (this.state == SceneManagerState.PLAYING_TO_EDITOR) {
-            var selectedObject = this.currentScene.getSelectedGameObject().getUuid();
+            var selectedObject = this.currentScene.getSelectedGameObject();
+
             this.currentScene = this.originalScene;
             this.originalScene = null;
-            this.currentScene.setSelectedGameObject(this.currentScene.findByUUID(selectedObject));
+
+            if (selectedObject != null)
+                this.currentScene.setSelectedGameObject(this.currentScene.findByUUID(selectedObject.getUuid()));
 //            this.leaveScene(); // Not sure about that
             this.state = SceneManagerState.EDITOR;
         }

@@ -36,6 +36,7 @@ out vec4 FragColor;
 void main()
 {
     FragColor = i_Color;
-    if (i_TextureId != -1)
-    FragColor *= texture(u_Texture[int(i_TextureId)], i_UV);
+    if (i_TextureId >= 0) {
+        FragColor *= texture(u_Texture[int(i_TextureId)], i_UV);
+    }
 }

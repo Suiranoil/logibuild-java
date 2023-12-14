@@ -8,13 +8,12 @@ import io.github.lionarius.engine.scene.Component;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
-public class SimpleMovement extends Component {
+public class Simple2DMovement extends Component {
     private transient final InputHandler inputHandler = Logibuild.getInstance().getInputHandler();
     @SerializeField @Min(0)
     private float movementSpeed = 800.0f;
     @SerializeField @Min(0)
     private float rotationSpeed = 90.0f;
-    @SerializeField
     private Transform transform;
 
     @Override

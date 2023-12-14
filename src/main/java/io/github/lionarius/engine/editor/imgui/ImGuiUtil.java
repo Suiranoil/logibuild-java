@@ -6,9 +6,7 @@ import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.resource.Resource;
 import lombok.experimental.UtilityClass;
 import org.joml.Math;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 
 import java.util.Objects;
 
@@ -20,10 +18,10 @@ public class ImGuiUtil {
 
         var out = new ImString(text, 256);
 
-        ImGui.alignTextToFramePadding();
-        ImGui.text(label);
-        ImGui.sameLine();
-        if (ImGui.inputText("##" + label, out)) {
+//        ImGui.alignTextToFramePadding();
+//        ImGui.text(label);
+//        ImGui.sameLine();
+        if (ImGui.inputText(label, out)) {
             ImGui.popID();
             return out.get();
         }
@@ -37,10 +35,10 @@ public class ImGuiUtil {
 
         int[] out = {value};
 
-        ImGui.alignTextToFramePadding();
-        ImGui.text(label);
-        ImGui.sameLine();
-        ImGui.dragInt("##" + label, out, getIntSpeed(value), min, max);
+//        ImGui.alignTextToFramePadding();
+//        ImGui.text(label);
+//        ImGui.sameLine();
+        ImGui.dragInt(label, out, getIntSpeed(value), min, max);
 
         ImGui.popID();
 
@@ -57,10 +55,10 @@ public class ImGuiUtil {
 
         float[] out = {value};
 
-        ImGui.alignTextToFramePadding();
-        ImGui.text(label);
-        ImGui.sameLine();
-        ImGui.dragFloat("##" + label, out, getFloatSpeed(value), min, max);
+//        ImGui.alignTextToFramePadding();
+//        ImGui.text(label);
+//        ImGui.sameLine();
+        ImGui.dragFloat(label, out, getFloatSpeed(value), min, max);
 
         ImGui.popID();
 
@@ -76,11 +74,11 @@ public class ImGuiUtil {
 
         float[] out = {value.x(), value.y()};
 
-        ImGui.alignTextToFramePadding();
-        ImGui.text(label);
-        ImGui.sameLine();
+//        ImGui.alignTextToFramePadding();
+//        ImGui.text(label);
+//        ImGui.sameLine();
         // getFloatSpeed(Math.max(value.x(), value.y()))
-        ImGui.dragFloat2("##" + label, out);
+        ImGui.dragFloat2(label, out);
         value.set(out);
 
         ImGui.popID();
@@ -91,11 +89,11 @@ public class ImGuiUtil {
 
         float[] out = {value.x(), value.y(), value.z()};
 
-        ImGui.alignTextToFramePadding();
-        ImGui.text(label);
-        ImGui.sameLine();
+//        ImGui.alignTextToFramePadding();
+//        ImGui.text(label);
+//        ImGui.sameLine();
         // getFloatSpeed(Math.max(Math.max(value.x(), value.y()), value.z()))
-        ImGui.dragFloat3("##" + label, out);
+        ImGui.dragFloat3(label, out);
         value.set(out);
 
         ImGui.popID();
@@ -106,16 +104,27 @@ public class ImGuiUtil {
 
         float[] out = {value.x(), value.y(), value.z(), value.w()};
 
-        ImGui.alignTextToFramePadding();
-        ImGui.text(label);
-        ImGui.sameLine();
+//        ImGui.alignTextToFramePadding();
+//        ImGui.text(label);
+//        ImGui.sameLine();
         if (isColor)
-            ImGui.colorEdit4("##" + label, out);
+            ImGui.colorEdit4(label, out);
         else
-            ImGui.dragFloat4("##" + label, out);
+            ImGui.dragFloat4(label, out);
         value.set(out);
 
         ImGui.popID();
+    }
+
+    public static void dragQuaternion(String label, Quaternionf value) {
+        var rotation = new Vector3f();
+        value.getEulerAnglesXYZ(rotation).mul((float) (180.0f / Math.PI));
+        var prevRotation = new Vector3f(rotation);
+
+        ImGuiUtil.dragFloat3(label, rotation);
+
+        rotation.sub(prevRotation).div((float) (180.0f / Math.PI));
+        value.rotateY(rotation.y()).rotateZ(rotation.z()).rotateX(rotation.x());
     }
 
     public <T extends Resource> Resource inputResource(String label, Resource value, Class<T> clazz) {

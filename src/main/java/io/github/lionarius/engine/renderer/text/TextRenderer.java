@@ -121,7 +121,7 @@ public class TextRenderer implements Renderer {
         this.textVertex.setModel(model);
         this.textVertex.setColor(color.x(), color.y(), color.z(), color.w());
         var unit = this.addOrGetUnitByTexture(font.getAtlasTexture());
-        this.textVertex.setAtlasId(unit);
+        this.textVertex.setAtlasId(unit + 0.01f); // adding +0.01 fixes interpolation issues
 
         var it = new TextGlyphIterator(font, text);
         while (it.hasNext()) {
