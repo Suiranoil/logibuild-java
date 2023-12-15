@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.scene.builtin;
 
+import io.github.lionarius.engine.editor.property.Min;
 import io.github.lionarius.engine.editor.property.MinMax;
 import io.github.lionarius.engine.editor.property.SerializeField;
 import io.github.lionarius.engine.util.ProjectionUtil;
@@ -11,6 +12,10 @@ import org.joml.Vector3f;
 public class PerspectiveCamera extends Camera {
     @SerializeField @MinMax(min = 0.001f, max = 179.999f)
     private float fov = 90.0f;
+    @SerializeField @Min(0.001f)
+    private float far = 10000.0f;
+    @SerializeField @Min(0.001f)
+    private float near = 0.05f;
 
     @Override
     public void onUpdate(double delta) {
@@ -21,7 +26,7 @@ public class PerspectiveCamera extends Camera {
     public Matrix4fc getProjection() {
         var aspect = (float) this.getFrameSize().x() / this.getFrameSize().y();
 //        var aspect = 16.0f / 9.0f;
-        return ProjectionUtil.getPerspectiveProjection(this.fov, aspect, 10000, 0.05f);
+        return ProjectionUtil.getPerspectiveProjection(this.fov, aspect, this.far, this.near);
     }
 
     @Override

@@ -22,7 +22,7 @@ public class TextureLoader implements ResourceLoader<Texture> {
         var channels = channelsBuffer.get();
 
         if (data == null)
-            throw new IOException("Could not load image on path " + filepath);
+            throw new IOException("Could not load texture on path " + filepath);
 
         TextureCreateParameters params;
         if (parameters == null)

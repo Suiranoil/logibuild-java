@@ -1,11 +1,13 @@
 package io.github.lionarius.engine;
 
+import io.github.lionarius.engine.resource.image.Image;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;
 import org.lwjgl.Version;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -17,10 +19,6 @@ import java.io.Closeable;
 public class Window implements Closeable {
     private static final Logger LOGGER = LoggerFactory.getLogger("Window");
     private final Vector2i size = new Vector2i();
-    //    @Getter
-//    private int width;
-//    @Getter
-//    private int height;
     @Getter
     private String title;
     @Getter
@@ -49,6 +47,19 @@ public class Window implements Closeable {
 
     public int getHeight() {
         return this.size.y();
+    }
+
+    public void setIcon(Image image) {
+        var glfwImage = GLFWImage.malloc();
+        glfwImage.set(image.getWidth(), image.getHeight(), image.getData());
+
+        try (var buffer = GLFWImage.malloc(1)) {
+            buffer.put(0, glfwImage);
+            buffer.rewind();
+            GLFW.glfwSetWindowIcon(this.handle, buffer);
+        }
+
+        glfwImage.free();
     }
 
     public void setTitle(String title) {

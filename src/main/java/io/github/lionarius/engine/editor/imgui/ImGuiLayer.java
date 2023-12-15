@@ -64,7 +64,7 @@ public class ImGuiLayer implements Closeable {
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
         ImGui.begin("DockSpace",
                 ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoResize |
-                ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoTitleBar |
+                ImGuiWindowFlags.NoMove |
                 ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoBringToFrontOnFocus |
                 ImGuiWindowFlags.NoNavFocus
         );
@@ -90,17 +90,17 @@ public class ImGuiLayer implements Closeable {
             imgui.internal.ImGui.dockBuilderFinish(dockSpaceId.get());
         }
 
-        ImGui.end();
-    }
-
-    public void draw() {
-//        ImGui.showDemoWindow();
-
         if (ImGui.beginMainMenuBar()) {
             ImGuiLayer.drawMainMenu();
 
             ImGui.endMainMenuBar();
         }
+
+        ImGui.end();
+    }
+
+    public void draw() {
+//        ImGui.showDemoWindow();
 
         if (ImGuiFileDialog.display("open-scene", ImGuiWindowFlags.None | ImGuiWindowFlags.NoDocking, 200, 400, 800, 600)) {
             if (ImGuiFileDialog.isOk()) {

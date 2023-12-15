@@ -55,6 +55,11 @@ public class EngineRenderer implements Renderer {
         this.framebuffer.bind();
     }
 
+    public void endEmptyFrame() {
+        this.clear();
+        this.framebuffer.unbind();
+    }
+
     @Override
     public void endFrame(Matrix4fc projection, Matrix4fc view) {
         this.clear();

@@ -1,6 +1,5 @@
 package io.github.lionarius;
 
-import io.github.lionarius.client.component.FpsDisplay;
 import io.github.lionarius.engine.InputHandler;
 import io.github.lionarius.engine.Window;
 import io.github.lionarius.engine.editor.imgui.ImGuiLayer;
@@ -9,25 +8,19 @@ import io.github.lionarius.engine.renderer.EngineRenderer;
 import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.resource.font.Font;
 import io.github.lionarius.engine.resource.font.FontLoader;
+import io.github.lionarius.engine.resource.image.Image;
+import io.github.lionarius.engine.resource.image.ImageLoader;
 import io.github.lionarius.engine.resource.shader.Shader;
 import io.github.lionarius.engine.resource.shader.ShaderLoader;
 import io.github.lionarius.engine.resource.texture.Texture;
 import io.github.lionarius.engine.resource.texture.TextureLoader;
-import io.github.lionarius.engine.scene.GameObject;
 import io.github.lionarius.engine.scene.Scene;
 import io.github.lionarius.engine.scene.SceneManager;
-import io.github.lionarius.engine.scene.builtin.Box2DRenderer;
-import io.github.lionarius.engine.scene.builtin.OrthographicCamera;
-import io.github.lionarius.engine.scene.builtin.Simple2DMovement;
-import io.github.lionarius.engine.scene.builtin.Text2DRenderer;
 import io.github.lionarius.engine.util.Closeable;
 import io.github.lionarius.engine.util.TimeUtil;
 import lombok.Getter;
-import org.lwjgl.util.nfd.NativeFileDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public final class Logibuild implements Closeable {
     private static final Logger LOGGER = LoggerFactory.getLogger("Logibuild");
@@ -55,7 +48,6 @@ public final class Logibuild implements Closeable {
         instance = this;
 
         this.window.init();
-        NativeFileDialog.NFD_Init();
 //        this.window.setVSync(false);
 
         this.inputHandler.init(true);
@@ -63,12 +55,15 @@ public final class Logibuild implements Closeable {
         this.resourceManager.register(Shader.class, new ShaderLoader());
         this.resourceManager.register(Texture.class, new TextureLoader());
         this.resourceManager.register(Font.class, new FontLoader(this.resourceManager));
+        this.resourceManager.register(Image.class, new ImageLoader());
 
         this.engineRenderer.init();
 
         this.sceneManager = new SceneManager();
         this.imGuiLayer = new ImGuiLayer(this.window, this.sceneManager, this.engineRenderer);
         this.imGuiLayer.init();
+
+        this.window.setIcon(this.resourceManager.get(Image.class, "icon.png"));
     }
 
     public void run() {
@@ -76,8 +71,7 @@ public final class Logibuild implements Closeable {
         double currentTime = TimeUtil.getApplicationTime();
         double dt = -1.0;
 
-        var scene = this.setupInitialScene();
-        this.sceneManager.transitionTo(scene);
+        this.sceneManager.transitionTo(new Scene());
 
         while (!this.window.shouldClose()) {
             if (dt >= 0) {
@@ -97,8 +91,6 @@ public final class Logibuild implements Closeable {
 
     @Override
     public void close() {
-        NativeFileDialog.NFD_Quit();
-
         this.imGuiLayer.close();
         this.engineRenderer.close();
         this.window.close();
@@ -125,65 +117,14 @@ public final class Logibuild implements Closeable {
         this.sceneManager.render(delta);
 
         var sceneCamera = this.sceneManager.getSceneCamera();
-        if (sceneCamera == null)
+        if (sceneCamera == null) {
             LOGGER.warn("Scene does not have a camera!");
+            this.engineRenderer.endEmptyFrame();
+        }
         else
             this.engineRenderer.endFrame(sceneCamera.getProjection(), sceneCamera.getView());
 
         this.engineRenderer.clear();
         this.imGuiLayer.render();
-    }
-
-    private Scene setupInitialScene() {
-        var scene = new Scene();
-
-        var camera = new GameObject(List.of(
-                new OrthographicCamera(),
-                new Simple2DMovement()
-        ));
-        camera.setName("MainCamera");
-        camera.getTransform().setPosition(0, 0, -50);
-
-        var testObject2 = new GameObject();
-        {
-            var textComponent = new Text2DRenderer();
-            testObject2.addComponent(textComponent);
-            textComponent.setFont(this.resourceManager.get(Font.class, "font/atlas/rubik"));
-            var transform = testObject2.getTransform();
-            transform.setPosition(0, 0, -1);
-            transform.getSize().set(0, 100, 0);
-        }
-
-        var fpsDisplay = new GameObject(List.of(
-                new FpsDisplay()
-        ));
-        {
-            var textComponent = new Text2DRenderer();
-            textComponent.setFont(this.resourceManager.get(Font.class, "font/atlas/cascadia"));
-            fpsDisplay.addComponent(textComponent);
-            var transform = fpsDisplay.getTransform();
-            transform.setPosition(-600, -300, 0);
-            transform.getSize().set(0, 100, 0);
-
-        }
-
-        var testObject = new GameObject(List.of(new Box2DRenderer()));
-        {
-            var transformComponent = testObject.getTransform();
-            transformComponent.setSize(1000, 1000, 0);
-
-            var box = testObject.getComponent(Box2DRenderer.class);
-            assert box != null;
-            box.setTexture(this.resourceManager.get(Texture.class, "font/atlas/cascadia.atlas.png"));
-        }
-
-        scene.addGameObject(testObject);
-        scene.addGameObject(testObject2);
-        scene.addGameObject(camera);
-        scene.addGameObject(fpsDisplay);
-
-        camera.addChild(fpsDisplay);
-
-        return scene;
     }
 }
