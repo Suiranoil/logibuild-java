@@ -144,9 +144,6 @@ public class QuadRenderer implements Renderer {
     }
 
     private int addOrGetUnitByTexture(Texture texture) {
-        if (!this.textureUnits.containsKey(texture))
-            this.textureUnits.put(texture, this.textureUnits.size());
-
-        return this.textureUnits.get(texture);
+        return this.textureUnits.computeIfAbsent(texture, t -> this.textureUnits.size());
     }
 }

@@ -42,10 +42,8 @@ public class SceneManager implements Updatable, Renderable {
     }
 
     public CameraObject getSceneCamera() {
-        if (this.state == SceneManagerState.PLAYING) {
-            if (this.currentScene != null)
-                return this.currentScene.getMainCamera();
-        }
+        if (this.state == SceneManagerState.PLAYING && (this.currentScene != null))
+            return this.currentScene.getMainCamera();
 
         return this.camera;
     }

@@ -11,7 +11,7 @@ import lombok.Setter;
 import org.joml.Vector4f;
 
 public class Text2DRenderer extends Component {
-    private transient final TextRenderer renderer = Logibuild.getInstance().getEngineRenderer().getTextRenderer();
+    private final transient TextRenderer renderer = Logibuild.getInstance().getEngineRenderer().getTextRenderer();
 
     @NonNull @Getter @Setter
     @SerializeField

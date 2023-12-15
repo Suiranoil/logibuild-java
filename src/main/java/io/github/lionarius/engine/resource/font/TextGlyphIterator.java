@@ -53,9 +53,9 @@ public class TextGlyphIterator implements Iterator<TextGlyphIterator.NextGlyph> 
 
 
         if (this.prevCodePoint >= 0) {
-            var kerning = this.font.getKerning().get(Pair.with(this.prevCodePoint, codePoint));
-            if (kerning != null)
-                this.kerning.add(kerning.advance(), 0);
+            var codePointKerning = this.font.getKerning().get(Pair.with(this.prevCodePoint, codePoint));
+            if (codePointKerning != null)
+                this.kerning.add(codePointKerning.advance(), 0);
         }
 
 

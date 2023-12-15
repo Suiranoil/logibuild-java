@@ -3,9 +3,9 @@ package io.github.lionarius.engine.scene;
 import java.util.*;
 
 public class Hierarchy<T> implements Iterable<T> {
-    private transient final Queue<Action> queuedActions = new ArrayDeque<>();
+    private final transient Queue<Action> queuedActions = new ArrayDeque<>();
     private final Map<T, List<T>> children = new LinkedHashMap<>();
-    private transient final Map<T, T> parents = new HashMap<>();
+    private final transient Map<T, T> parents = new HashMap<>();
 
     public Hierarchy() {
         this.children.put(null, new ArrayList<>());
@@ -42,7 +42,6 @@ public class Hierarchy<T> implements Iterable<T> {
 
         if (this.isInHierarchy(child, parent))
             return;
-//            throw new IllegalArgumentException("Tried to set parent for child which is already in hierarchy of child");
 
         this.queuedActions.add(() -> {
             this.children.get(this.getParent(child)).remove(child);

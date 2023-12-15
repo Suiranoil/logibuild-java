@@ -33,4 +33,9 @@ public abstract class Component {
     public final int hashCode() {
         return this.uuid.hashCode();
     }
+
+    @Override
+    public final boolean equals(Object obj) {
+        return obj instanceof Component c && this.uuid.equals((c).uuid);
+    }
 }

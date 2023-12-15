@@ -84,30 +84,6 @@ public class TextRenderer implements Renderer {
         this.textureUnits.clear();
     }
 
-//    public void renderText(String text, Matrix4f model, float height, Vector4fc color) {
-//        model.scale(height / this.defaultFont.getMetrics().lineHeight());
-//
-//        this.renderText(text, this.defaultFont, model, height, color);
-//    }
-//
-//    public void renderText(String text, Vector3fc position, Quaternionfc quaternion, float height, Vector4fc color) {
-//        var model = new Matrix4f().translate(position).rotate(quaternion).scale(height / this.defaultFont.getMetrics().lineHeight());
-//
-//        this.renderText(text, this.defaultFont, position, quaternion, height, color);
-//    }
-//
-//    public void renderText(String text, Font font, Matrix4f model, float height, Vector4fc color) {
-//        model.scale(height / this.defaultFont.getMetrics().lineHeight());
-//
-//        this.renderText(text, font, model, color);
-//    }
-//
-//    public void renderText(String text, Font font, Vector3fc position, Quaternionfc quaternion, float height, Vector4fc color) {
-//        var model = new Matrix4f().translate(position).rotate(quaternion).scale(height / this.defaultFont.getMetrics().lineHeight());
-//
-//        this.renderText(text, font, model, color);
-//    }
-
     public void renderText(String text, Matrix4f model, float height, Vector4fc color) {
         this.renderText(text, this.defaultFont, model, height, color);
     }
@@ -184,9 +160,6 @@ public class TextRenderer implements Renderer {
     }
 
     private int addOrGetUnitByTexture(Texture texture) {
-        if (!this.textureUnits.containsKey(texture))
-            this.textureUnits.put(texture, this.textureUnits.size());
-
-        return this.textureUnits.get(texture);
+        return this.textureUnits.computeIfAbsent(texture, t -> this.textureUnits.size());
     }
 }

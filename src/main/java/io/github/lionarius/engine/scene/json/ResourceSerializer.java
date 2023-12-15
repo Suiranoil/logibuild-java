@@ -22,8 +22,7 @@ public class ResourceSerializer implements JsonSerializer<Resource>, JsonDeseria
     public Resource deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         var obj = json.getAsJsonObject();
         var type = ReflectionUtil.getResourceClass(obj.get("type").getAsString());
-        var resource = Logibuild.getInstance().getResourceManager().get(type, obj.get("name").getAsString());
 
-        return resource;
+        return Logibuild.getInstance().getResourceManager().get(type, obj.get("name").getAsString());
     }
 }

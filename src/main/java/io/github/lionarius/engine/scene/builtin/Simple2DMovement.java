@@ -9,7 +9,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 public class Simple2DMovement extends Component {
-    private transient final InputHandler inputHandler = Logibuild.getInstance().getInputHandler();
+    private final transient InputHandler inputHandler = Logibuild.getInstance().getInputHandler();
     @SerializeField @Min(0)
     private float movementSpeed = 800.0f;
     @SerializeField @Min(0)

@@ -20,7 +20,6 @@ public class Texture extends OpenGLObject implements Resource {
     private boolean initialized = false;
     private boolean dynamic = false;
     private int format;
-//    private TextureLoadParameters parameters;
 
     public Texture(int width, int height) {
         this.width = width;
@@ -49,7 +48,6 @@ public class Texture extends OpenGLObject implements Resource {
         this.initialized = true;
         this.dynamic = dynamic;
         this.format = format;
-//        this.parameters = parameters;
     }
 
     public void uploadPixels(int format, @NonNull ByteBuffer pixels) {

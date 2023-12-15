@@ -65,21 +65,21 @@ public class ComponentSerializerTypeAdapter extends TypeAdapter<Component> {
         JsonObject obj = this.gson.fromJson(in, JsonObject.class);
         var type = ReflectionUtil.getComponentClass(obj.get("type").getAsString());
 
-        List<Pair<UUID, Field>> wiring = new ArrayList<>();
+        List<Pair<UUID, Field>> componentWiring = new ArrayList<>();
         var fields = ReflectionUtil.getSerializableComponentFields(type);
         for (var field : fields) {
             if (Component.class.isAssignableFrom(field.getType())) {
-                if (this.wiring != null && obj.has(field.getName())) {
+                if (obj.has(field.getName())) {
                     var uuid = this.gson.fromJson(obj.get(field.getName()), UUID.class);
-                    wiring.add(Pair.with(uuid, field));
+                    componentWiring.add(Pair.with(uuid, field));
                 }
                 obj.remove(field.getName());
             }
         }
 
         var component = this.gson.fromJson(obj, type);
-        if (!wiring.isEmpty())
-            this.wiring.put(component.getUuid(), wiring);
+        if (!componentWiring.isEmpty() && this.wiring != null)
+            this.wiring.put(component.getUuid(), componentWiring);
 
         return component;
     }

@@ -100,8 +100,6 @@ public class ImGuiLayer implements Closeable {
     }
 
     public void draw() {
-//        ImGui.showDemoWindow();
-
         if (ImGuiFileDialog.display("open-scene", ImGuiWindowFlags.None | ImGuiWindowFlags.NoDocking, 200, 400, 800, 600)) {
             if (ImGuiFileDialog.isOk()) {
                 var selection = ImGuiFileDialog.getSelection();

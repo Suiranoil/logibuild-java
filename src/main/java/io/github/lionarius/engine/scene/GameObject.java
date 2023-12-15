@@ -180,9 +180,6 @@ public final class GameObject implements Updatable, Renderable {
             if (c.getClass().isNestmateOf(component.getClass()))
                 return false;
         }
-//        // Cannot add another transform component
-//        if (Transform.class.isAssignableFrom(component.getClass()) && !this.components.isEmpty())
-//            return;
 
         this.components.add(component);
         component.setGameObject(this);
@@ -210,5 +207,10 @@ public final class GameObject implements Updatable, Renderable {
     @Override
     public int hashCode() {
         return this.uuid.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof GameObject g && this.uuid.equals(g.uuid);
     }
 }

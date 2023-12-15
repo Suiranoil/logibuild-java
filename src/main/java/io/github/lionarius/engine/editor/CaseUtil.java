@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 @UtilityClass
 public class CaseUtil {
-    private static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]{2,})|([A-Z]|[0-9]+)");
+    private static final Pattern UPPERCASE_LETTER = Pattern.compile("([A-Z]{2,})|([A-Z]|\\d+)");
 
     public static String toSentenceCase(String camelCaseString) {
         return camelCaseString.substring(0, 1).toUpperCase()

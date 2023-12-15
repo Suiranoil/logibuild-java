@@ -18,9 +18,6 @@ public class ImGuiUtil {
 
         var out = new ImString(text, 256);
 
-//        ImGui.alignTextToFramePadding();
-//        ImGui.text(label);
-//        ImGui.sameLine();
         if (ImGui.inputText(label, out)) {
             ImGui.popID();
             return out.get();
@@ -35,9 +32,6 @@ public class ImGuiUtil {
 
         int[] out = {value};
 
-//        ImGui.alignTextToFramePadding();
-//        ImGui.text(label);
-//        ImGui.sameLine();
         ImGui.dragInt(label, out, getIntSpeed(value), min, max);
 
         ImGui.popID();
@@ -55,9 +49,6 @@ public class ImGuiUtil {
 
         float[] out = {value};
 
-//        ImGui.alignTextToFramePadding();
-//        ImGui.text(label);
-//        ImGui.sameLine();
         ImGui.dragFloat(label, out, getFloatSpeed(value), min, max);
 
         ImGui.popID();
@@ -74,10 +65,6 @@ public class ImGuiUtil {
 
         float[] out = {value.x(), value.y()};
 
-//        ImGui.alignTextToFramePadding();
-//        ImGui.text(label);
-//        ImGui.sameLine();
-        // getFloatSpeed(Math.max(value.x(), value.y()))
         ImGui.dragFloat2(label, out);
         value.set(out);
 
@@ -89,10 +76,6 @@ public class ImGuiUtil {
 
         float[] out = {value.x(), value.y(), value.z()};
 
-//        ImGui.alignTextToFramePadding();
-//        ImGui.text(label);
-//        ImGui.sameLine();
-        // getFloatSpeed(Math.max(Math.max(value.x(), value.y()), value.z()))
         ImGui.dragFloat3(label, out);
         value.set(out);
 
@@ -104,9 +87,6 @@ public class ImGuiUtil {
 
         float[] out = {value.x(), value.y(), value.z(), value.w()};
 
-//        ImGui.alignTextToFramePadding();
-//        ImGui.text(label);
-//        ImGui.sameLine();
         if (isColor)
             ImGui.colorEdit4(label, out);
         else
@@ -127,7 +107,7 @@ public class ImGuiUtil {
         value.rotateY(rotation.y()).rotateZ(rotation.z()).rotateX(rotation.x());
     }
 
-    public <T extends Resource> Resource inputResource(String label, Resource value, Class<T> clazz) {
+    public static <T extends Resource> Resource inputResource(String label, Resource value, Class<T> clazz) {
         var name = "";
         if (value != null)
             name = value.getResourceName();

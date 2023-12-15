@@ -43,9 +43,9 @@ public final class Logibuild implements Closeable {
     private final SceneManager sceneManager;
 
     public Logibuild(String[] args) {
-        if (instance != null)
+        if (Logibuild.instance != null)
             throw new IllegalStateException("Cannot create more than one game instance");
-        instance = this;
+        Logibuild.instance = this;
 
         this.window.init();
 //        this.window.setVSync(false);
@@ -77,8 +77,6 @@ public final class Logibuild implements Closeable {
             if (dt >= 0) {
                 this.update(dt);
                 this.render(dt);
-
-//                LOGGER.info("FPS {}", 1 / dt);
             }
 
             this.window.update();
@@ -120,8 +118,7 @@ public final class Logibuild implements Closeable {
         if (sceneCamera == null) {
             LOGGER.warn("Scene does not have a camera!");
             this.engineRenderer.endEmptyFrame();
-        }
-        else
+        } else
             this.engineRenderer.endFrame(sceneCamera.getProjection(), sceneCamera.getView());
 
         this.engineRenderer.clear();

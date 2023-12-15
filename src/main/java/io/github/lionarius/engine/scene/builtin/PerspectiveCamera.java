@@ -32,7 +32,6 @@ public class PerspectiveCamera extends Camera {
     @Override
     public Matrix4fc getView() {
         var transform = this.getTransform();
-        var viewPos = new Vector3f(1);
         var forward = new Vector3f(0, 0, 1);
         var top = new Vector3f(0, -1, 0);
         forward.rotate(transform.getRotation()).add(transform.getPosition());
@@ -42,8 +41,6 @@ public class PerspectiveCamera extends Camera {
                 forward,
                 top
         );
-//        return new Matrix4f().lookAlong(forward, top).mul(this.getTransform().getTransformMatrix()).invert();
-//        return this.getTransform().getTransformMatrix().invertAffine();
     }
 
     @Override
