@@ -5,6 +5,7 @@ import io.github.lionarius.engine.Updatable;
 import io.github.lionarius.engine.scene.builtin.Camera;
 import io.github.lionarius.engine.scene.builtin.Transform;
 import io.github.lionarius.engine.util.AddRemoveQueue;
+import io.github.lionarius.engine.util.ReflectionUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -177,12 +178,9 @@ public final class GameObject implements Updatable, Renderable {
 
     private boolean processAddComponent(Component component) {
         for (var c : this.components) {
-            if (c.getClass().isNestmateOf(component.getClass()))
+            if (ReflectionUtil.shareAncestor(component.getClass(), c.getClass(), Component.class))
                 return false;
         }
-//        // Cannot add another transform component
-//        if (Transform.class.isAssignableFrom(component.getClass()) && !this.components.isEmpty())
-//            return;
 
         this.components.add(component);
         component.setGameObject(this);

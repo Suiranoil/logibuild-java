@@ -3,6 +3,7 @@ package io.github.lionarius.engine.util;
 import io.github.lionarius.engine.editor.property.SerializeField;
 import io.github.lionarius.engine.resource.Resource;
 import io.github.lionarius.engine.scene.Component;
+import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import org.reflections.ReflectionUtils;
 import org.reflections.Reflections;
@@ -40,6 +41,25 @@ public class ReflectionUtil {
         for (var clazz : allResources) {
             ALL_RESOURCES.put(clazz.getSimpleName(), clazz);
         }
+    }
+
+    public static boolean shareAncestor(Class<?> clazz1, Class<?> clazz2) {
+        return ReflectionUtil.shareAncestor(clazz1, clazz2, Object.class);
+    }
+
+    public static boolean shareAncestor(@NonNull Class<?> clazz1, @NonNull Class<?> clazz2, @NonNull Class<?> stopClazz) {
+        if (clazz1.isAssignableFrom(clazz2))
+            return true;
+
+        if (clazz2.isAssignableFrom(clazz1))
+            return true;
+
+        var super1 = clazz1.getSuperclass();
+
+        if (super1 == stopClazz)
+            return false;
+
+        return ReflectionUtil.shareAncestor(super1, clazz2, stopClazz);
     }
 
     public static Iterable<Field> getSerializableComponentFields(Class<? extends Component> clazz) {
