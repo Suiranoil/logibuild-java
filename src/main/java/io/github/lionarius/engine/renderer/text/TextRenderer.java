@@ -1,6 +1,7 @@
 package io.github.lionarius.engine.renderer.text;
 
 import io.github.lionarius.engine.renderer.Renderer;
+import io.github.lionarius.engine.renderer.TextureUnitMap;
 import io.github.lionarius.engine.renderer.buffer.BufferUsage;
 import io.github.lionarius.engine.renderer.buffer.IndexBuffer;
 import io.github.lionarius.engine.renderer.buffer.VertexArray;
@@ -9,7 +10,6 @@ import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.resource.font.Font;
 import io.github.lionarius.engine.resource.font.TextGlyphIterator;
 import io.github.lionarius.engine.resource.shader.Shader;
-import io.github.lionarius.engine.resource.texture.Texture;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
@@ -19,8 +19,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 public class TextRenderer implements Renderer {
@@ -34,7 +32,7 @@ public class TextRenderer implements Renderer {
     @NonNull
     private final Font defaultFont;
     private final TextVertex textVertex = new TextVertex();
-    private final Map<Texture, Integer> textureUnits = new HashMap<>();
+    private final TextureUnitMap textureUnitMap = new TextureUnitMap(16);
 
     private int renderedCharsCount;
     private Shader shader;
@@ -81,7 +79,7 @@ public class TextRenderer implements Renderer {
     public void beginFrame() {
         this.renderedCharsCount = 0;
         this.buffer.position(0);
-        this.textureUnits.clear();
+        this.textureUnitMap.reset();
     }
 
     public void renderText(String text, Matrix4f model, float height, Vector4fc color) {
@@ -96,7 +94,7 @@ public class TextRenderer implements Renderer {
 
         this.textVertex.setModel(model);
         this.textVertex.setColor(color.x(), color.y(), color.z(), color.w());
-        var unit = this.addOrGetUnitByTexture(font.getAtlasTexture());
+        var unit = this.textureUnitMap.getUnit(font.getAtlasTexture()).orElseThrow();
         this.textVertex.setAtlasId(unit + 0.01f); // adding +0.01 fixes interpolation issues
 
         var it = new TextGlyphIterator(font, text);
@@ -136,7 +134,7 @@ public class TextRenderer implements Renderer {
         this.vao.bind();
 
         var samplers = new int[16];
-        for (var textureUnit : this.textureUnits.entrySet()) {
+        for (var textureUnit : this.textureUnitMap) {
             var unit = textureUnit.getValue();
             textureUnit.getKey().bindUnit(unit);
             samplers[unit] = unit;
@@ -157,9 +155,5 @@ public class TextRenderer implements Renderer {
         this.vao.close();
         this.vbo.close();
         this.ibo.close();
-    }
-
-    private int addOrGetUnitByTexture(Texture texture) {
-        return this.textureUnits.computeIfAbsent(texture, t -> this.textureUnits.size());
     }
 }

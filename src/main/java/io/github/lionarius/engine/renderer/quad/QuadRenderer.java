@@ -1,6 +1,7 @@
 package io.github.lionarius.engine.renderer.quad;
 
 import io.github.lionarius.engine.renderer.Renderer;
+import io.github.lionarius.engine.renderer.TextureUnitMap;
 import io.github.lionarius.engine.renderer.buffer.BufferUsage;
 import io.github.lionarius.engine.renderer.buffer.IndexBuffer;
 import io.github.lionarius.engine.renderer.buffer.VertexArray;
@@ -16,8 +17,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 public class QuadRenderer implements Renderer {
@@ -28,7 +27,7 @@ public class QuadRenderer implements Renderer {
     @NonNull
     private final ResourceManager resourceManager;
     private final QuadVertexInstance vertexInstance = new QuadVertexInstance();
-    private final Map<Texture, Integer> textureUnits = new HashMap<>();
+    private final TextureUnitMap textureUnitMap = new TextureUnitMap(16);
 
     private int renderedCount;
     private Shader shader;
@@ -71,6 +70,7 @@ public class QuadRenderer implements Renderer {
     public void beginFrame() {
         this.renderedCount = 0;
         this.buffer.position(0);
+        this.textureUnitMap.reset();
     }
 
     public void renderQuad(Vector3fc position, Quaternionfc quaternion, Vector3fc scale, Vector3fc size, Vector4fc color, Texture texture) {
@@ -100,7 +100,7 @@ public class QuadRenderer implements Renderer {
 
         var textureId = -1;
         if (texture != null)
-            textureId = this.addOrGetUnitByTexture(texture);
+            textureId = this.textureUnitMap.getUnit(texture).orElseThrow();
 
         this.vertexInstance.setModel(model);
         this.vertexInstance.setColor(r, g, b, a);
@@ -119,7 +119,7 @@ public class QuadRenderer implements Renderer {
         this.instanceVbo.uploadData(bufferSlice);
 
         var samplers = new int[16];
-        for (var textureUnit : this.textureUnits.entrySet()) {
+        for (var textureUnit : this.textureUnitMap) {
             var unit = textureUnit.getValue();
             textureUnit.getKey().bindUnit(unit);
             samplers[unit] = unit;
@@ -141,9 +141,5 @@ public class QuadRenderer implements Renderer {
         this.commonVbo.close();
         this.instanceVbo.close();
         this.ibo.close();
-    }
-
-    private int addOrGetUnitByTexture(Texture texture) {
-        return this.textureUnits.computeIfAbsent(texture, t -> this.textureUnits.size());
     }
 }
