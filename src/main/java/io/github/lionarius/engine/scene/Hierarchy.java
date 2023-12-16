@@ -1,5 +1,7 @@
 package io.github.lionarius.engine.scene;
 
+import lombok.NonNull;
+
 import java.util.*;
 
 public class Hierarchy<T> implements Iterable<T> {
@@ -80,7 +82,7 @@ public class Hierarchy<T> implements Iterable<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public @NonNull Iterator<T> iterator() {
         return this.children.keySet().stream().skip(1).iterator();
     }
 
