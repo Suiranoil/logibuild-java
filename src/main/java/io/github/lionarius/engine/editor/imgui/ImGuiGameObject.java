@@ -34,17 +34,16 @@ public class ImGuiGameObject {
             var allComponents = ReflectionUtil.getAllComponentClasses();
             for (var component : allComponents) {
                 var name = component.getSimpleName();
-                if (filter.passFilter(name))
-                    if (ImGui.selectable(name)) {
-                        try {
-                            var obj = (Component) component.getConstructor().newInstance();
-                            gameObject.addComponent(obj);
+                if (filter.passFilter(name) && ImGui.selectable(name)) {
+                    try {
+                        var obj = (Component) component.getConstructor().newInstance();
+                        gameObject.addComponent(obj);
 
-                        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
-                                 InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
+                    } catch (NoSuchMethodException | InstantiationException | IllegalAccessException |
+                             InvocationTargetException e) {
+                        e.printStackTrace();
                     }
+                }
             }
             ImGui.endPopup();
         }

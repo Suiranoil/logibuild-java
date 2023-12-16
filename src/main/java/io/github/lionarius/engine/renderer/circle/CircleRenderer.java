@@ -10,11 +10,11 @@ import io.github.lionarius.engine.resource.shader.Shader;
 import io.github.lionarius.engine.util.BufferUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.joml.Math;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
 
-import java.lang.Math;
 import java.nio.ByteBuffer;
 
 @RequiredArgsConstructor
@@ -47,8 +47,8 @@ public class CircleRenderer implements Renderer {
 
         var vertices = new CircleVertexCommon[]{
                 new CircleVertexCommon(new Vector3f(0.5f, 1.5f, 0)),
-                new CircleVertexCommon(new Vector3f((float) (Math.sqrt(3) / 2.0 + 0.5), 0, 0)),
-                new CircleVertexCommon(new Vector3f((float) (-Math.sqrt(3) / 2.0 + 0.5), 0, 0)),
+                new CircleVertexCommon(new Vector3f(Math.sqrt(3) / 2.0f + 0.5f, 0, 0)),
+                new CircleVertexCommon(new Vector3f((-Math.sqrt(3) / 2.0f + 0.5f), 0, 0)),
         };
         var commonData = BufferUtils.createByteBuffer(vertices.length * CircleVertexCommon.getLayout().getStride());
         BufferUtil.objectArrayToBuffer(vertices, commonData);

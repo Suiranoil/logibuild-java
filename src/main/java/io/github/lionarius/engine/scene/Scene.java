@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Scene implements Updatable, Renderable {
     @Getter
     private final Hierarchy<GameObject> hierarchy = new Hierarchy<>();
-    private transient final AddRemoveQueue<GameObject> objectsQueue = new AddRemoveQueue<>();
+    private final transient AddRemoveQueue<GameObject> objectsQueue = new AddRemoveQueue<>();
     @Getter
     private transient boolean isPlaying = false;
     @Getter @Setter(AccessLevel.PROTECTED)

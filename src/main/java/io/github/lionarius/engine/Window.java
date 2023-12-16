@@ -145,10 +145,8 @@ public class Window implements Closeable {
     }
 
     private void initCallbacks() {
-        GLFW.glfwSetFramebufferSizeCallback(this.handle, (window, width, height) -> {
-            this.size.set(width, height);
-
-//            GL46.glViewport(0, 0, width, height);
-        });
+        GLFW.glfwSetFramebufferSizeCallback(this.handle,
+                (window, width, height) -> this.size.set(width, height)
+        );
     }
 }

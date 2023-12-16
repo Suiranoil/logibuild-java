@@ -4,10 +4,7 @@ import io.github.lionarius.engine.editor.property.Min;
 import io.github.lionarius.engine.editor.property.MinMax;
 import io.github.lionarius.engine.editor.property.SerializeField;
 import io.github.lionarius.engine.util.ProjectionUtil;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector2fc;
-import org.joml.Vector3f;
+import org.joml.*;
 
 public class PerspectiveCamera extends Camera {
     @SerializeField @MinMax(min = 0.001f, max = 179.999f)
@@ -31,19 +28,16 @@ public class PerspectiveCamera extends Camera {
 
     @Override
     public Matrix4fc getView() {
-        var transform = this.getTransform();
-        var viewPos = new Vector3f(1);
-        var forward = new Vector3f(0, 0, 1);
-        var top = new Vector3f(0, -1, 0);
-        forward.rotate(transform.getRotation()).add(transform.getPosition());
-        top.rotate(transform.getRotation());
+        var transformMatrix = this.getTransform().getTransformMatrix();
+        var forward = new Vector4f(0, 0, 1, 1).mulProject(transformMatrix);
+        var eye = new Vector4f().mulProject(transformMatrix);
+        var top = new Vector4f(0, -1, 0, 1).mulProject(transformMatrix).sub(eye).normalize();
+
         return new Matrix4f().setLookAt(
-                transform.getPosition(),
-                forward,
-                top
+                eye.x(), eye.y(), eye.z(),
+                forward.x(), forward.y(), forward.z(),
+                top.x(), top.y(), top.z()
         );
-//        return new Matrix4f().lookAlong(forward, top).mul(this.getTransform().getTransformMatrix()).invert();
-//        return this.getTransform().getTransformMatrix().invertAffine();
     }
 
     @Override

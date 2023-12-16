@@ -209,4 +209,9 @@ public final class GameObject implements Updatable, Renderable {
     public int hashCode() {
         return this.uuid.hashCode();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof GameObject g && this.uuid.equals(g.uuid);
+    }
 }

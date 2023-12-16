@@ -1,9 +1,0 @@
-
-j
-java:S2095-"OUse try-with-resources or close this "GLFWErrorCallback" in a "finally" clause.(àâç”ûÿÿÿÿ
-E	java:S106-"+Replace this use of System.err by a logger.(àâç”ûÿÿÿÿ
-Q	java:S1255"<This block of commented-out lines of code should be removed.(‚Ó„
-T
-java:S1117H"9Rename "width" which hides the field declared at line 14.(éØ°ëùÿÿÿÿ
-U
-java:S1117H":Rename "height" which hides the field declared at line 16.(éØ°ëùÿÿÿÿ

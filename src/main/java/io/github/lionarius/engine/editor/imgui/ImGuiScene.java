@@ -51,13 +51,12 @@ public class ImGuiScene {
             ImGui.endPopup();
         }
 
-        if (gameObject != null) {
-            if (ImGui.beginDragDropSource()) {
+        if (gameObject != null && ImGui.beginDragDropSource()) {
                 ImGui.setDragDropPayload("game_object", gameObject);
                 ImGui.text(gameObject.getName());
 
                 ImGui.endDragDropSource();
-            }
+
         }
 
         if (ImGui.beginDragDropTarget()) {

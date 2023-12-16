@@ -62,9 +62,7 @@ public class SceneJsonIO implements JsonDeserializer<Scene>, JsonSerializer<Scen
         var components = deserializeComponents(sceneJson.getAsJsonObject("components"));
         var objects = deserializeGameObjects(sceneJson.getAsJsonObject("gameObjects"), components, context);
 
-        var scene = deserializeScene(sceneJson, objects, context);
-
-        return scene;
+        return deserializeScene(sceneJson, objects, context);
     }
 
     private static Scene deserializeScene(JsonObject sceneJson, Map<UUID, GameObject> objects, JsonDeserializationContext context) {

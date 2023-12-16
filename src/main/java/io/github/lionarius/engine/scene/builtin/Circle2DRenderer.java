@@ -10,7 +10,7 @@ import lombok.Setter;
 import org.joml.Vector4f;
 
 public class Circle2DRenderer extends Component {
-    private transient final CircleRenderer renderer = Logibuild.getInstance().getEngineRenderer().getCircleRenderer();
+    private final transient CircleRenderer renderer = Logibuild.getInstance().getEngineRenderer().getCircleRenderer();
 
     @NonNull @Getter @Setter
     @SerializeField

@@ -11,7 +11,7 @@ import lombok.Setter;
 import org.joml.Vector4f;
 
 public class Box2DRenderer extends Component {
-    private transient final QuadRenderer renderer = Logibuild.getInstance().getEngineRenderer().getQuadRenderer();
+    private final transient QuadRenderer renderer = Logibuild.getInstance().getEngineRenderer().getQuadRenderer();
 
     @NonNull @Getter @Setter
     @SerializeField

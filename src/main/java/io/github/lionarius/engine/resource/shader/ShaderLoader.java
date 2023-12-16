@@ -13,22 +13,22 @@ public class ShaderLoader implements ResourceLoader<Shader> {
     public Shader loadFromFile(String name, String filepath, Object parameters) throws IOException {
         StringBuilder vertexSource = new StringBuilder();
         StringBuilder fragmentSource = new StringBuilder();
-        var reader = Files.newBufferedReader(Path.of(filepath));
+        try (var reader = Files.newBufferedReader(Path.of(filepath))) {
+            String line;
+            String currentSource = "";
+            while ((line = reader.readLine()) != null) {
+                var matcher = TYPE_REGEX.matcher(line);
+                if (matcher.matches()) {
+                    currentSource = matcher.group("type");
+                    continue;
+                }
 
-        String line;
-        String currentSource = "";
-        while ((line = reader.readLine()) != null) {
-            var matcher = TYPE_REGEX.matcher(line);
-            if (matcher.matches()) {
-                currentSource = matcher.group("type");
-                continue;
-            }
-
-            switch (currentSource) {
-                case "vertex" -> vertexSource.append(line).append("\n");
-                case "fragment" -> fragmentSource.append(line).append("\n");
-                default -> {
-                    assert false : "Unknown shader type " + currentSource;
+                switch (currentSource) {
+                    case "vertex" -> vertexSource.append(line).append("\n");
+                    case "fragment" -> fragmentSource.append(line).append("\n");
+                    default -> {
+                        assert false : "Unknown shader type " + currentSource;
+                    }
                 }
             }
         }

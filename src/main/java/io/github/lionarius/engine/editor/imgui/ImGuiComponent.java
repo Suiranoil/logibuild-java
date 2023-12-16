@@ -76,9 +76,9 @@ public class ImGuiComponent {
                         var out = ImGuiUtil.inputResource(name, (Resource) value, (Class<? extends Resource>) type);
                         field.set(component, out);
                     } else if (Component.class.isAssignableFrom(type)) {
-                        drawComponentField(component, field, name, (Component) value, type);
+                        drawComponentField(component, field, name, (Component) value, (Class<? extends Component>) type);
                     } else if (type.isEnum()) {
-
+                        // TODO: serialize enums
                     }
 
                     if (isPrivate)
@@ -93,10 +93,7 @@ public class ImGuiComponent {
         ImGui.popID();
     }
 
-    private static void drawComponentField(Component component, Field field, String name, Component value, Class<?> type) throws IllegalAccessException {
-//        ImGui.alignTextToFramePadding();
-//        ImGui.text(name);
-//        ImGui.sameLine();
+    private static <T extends Component> void drawComponentField(Component component, Field field, String name, Component value, Class<T> type) throws IllegalAccessException {
         if (value != null) {
             if (ImGui.button("-"))
                 field.set(component, null);
@@ -132,7 +129,7 @@ public class ImGuiComponent {
 
         if (ImGui.isMouseDoubleClicked(0)) {
             if (value != null)
-                component.getGameObject().getScene().setSelectedGameObject(((Component) value).getGameObject());
+                component.getGameObject().getScene().setSelectedGameObject(value.getGameObject());
         }
     }
 
