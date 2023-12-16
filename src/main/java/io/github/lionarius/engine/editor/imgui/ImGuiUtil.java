@@ -114,7 +114,7 @@ public class ImGuiUtil {
         var newName = ImGuiUtil.inputText(label, name);
         if (!Objects.equals(newName, name)) {
             var newResource = Logibuild.getInstance().getResourceManager().get(clazz, newName);
-            if (newResource != null)
+            if (newResource != null || newName.isEmpty())
                 return newResource;
         }
 
