@@ -28,10 +28,10 @@ public class ImGuiScene {
         if (isLeaf)
             flags |= ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen;
 
-        var id = "root";
+        var id = 0;
         var label = "Root";
         if (gameObject != null) {
-            id = gameObject.toString();
+            id = gameObject.getUuid().hashCode();
             label = gameObject.getName();
         }
 

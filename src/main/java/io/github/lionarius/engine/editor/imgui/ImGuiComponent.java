@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 @UtilityClass
 public class ImGuiComponent {
     public static void drawProperties(Component component) {
-        ImGui.pushID(component.toString());
+        ImGui.pushID(component.getUuid().hashCode());
         try {
             if (ImGuiComponent.drawHeader(component)) {
                 ImGui.indent();
