@@ -11,11 +11,11 @@ public class GameObjectSerializer implements JsonSerializer<GameObject> {
         var object = new JsonObject();
         object.add("name", context.serialize(src.getName()));
         object.add("uuid", context.serialize(src.getUuid()));
+
         var components = new JsonArray();
         object.add("components", components);
-        for (var component : src.getComponents()) {
+        for (var component : src.getComponents())
             components.add(context.serialize(component.getUuid()));
-        }
 
         return object;
     }

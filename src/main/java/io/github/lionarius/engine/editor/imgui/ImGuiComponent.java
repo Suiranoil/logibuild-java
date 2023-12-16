@@ -16,7 +16,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 
 @UtilityClass
 public class ImGuiComponent {
@@ -26,7 +25,8 @@ public class ImGuiComponent {
             if (ImGuiComponent.drawHeader(component)) {
                 ImGui.indent();
                 var fields = ReflectionUtil.getSerializableComponentFields(component.getClass());
-                for (var field : fields) {
+                for (var fieldData : fields) {
+                    var field = fieldData.field();
                     var minAnnotation = field.getAnnotation(Min.class);
                     var minMaxAnnotation = field.getAnnotation(MinMax.class);
                     var min = -Float.MAX_VALUE;
@@ -38,50 +38,52 @@ public class ImGuiComponent {
                         max = minMaxAnnotation.max();
                     }
 
-                    var isPrivate = Modifier.isPrivate(field.getModifiers());
-                    if (isPrivate)
-                        field.setAccessible(true);
-
                     var type = field.getType();
-                    var name = CaseUtil.toSentenceCase(field.getName());
+                    var name = fieldData.name();
                     var value = field.get(component);
 
-                    if (type.equals(boolean.class)) {
-                        var val = (boolean) value;
-                        if (ImGui.checkbox(name, val))
-                            field.set(component, !val);
-                    } else if (type.equals(int.class)) {
-                        var out = ImGuiUtil.dragInt(name, (int) value, min, max);
-                        field.set(component, out);
-                    } else if (type.equals(float.class)) {
-                        var out = ImGuiUtil.dragFloat(name, (float) value, min, max);
-                        field.set(component, out);
-                    } else if (type.equals(double.class)) {
-                        var val = (Double) value;
-                        var out = ImGuiUtil.dragFloat(name, val.floatValue(), min, max);
-                        field.set(component, (double) out);
-                    } else if (type.equals(Vector2f.class)) {
-                        ImGuiUtil.dragFloat2(name, (Vector2f) value);
-                    } else if (type.equals(Vector3f.class)) {
-                        ImGuiUtil.dragFloat3(name, (Vector3f) value);
-                    } else if (type.equals(Vector4f.class)) {
-                        ImGuiUtil.dragFloat4(name, (Vector4f) value, true);
-                    } else if (type.equals(Quaternionf.class)) {
-                        ImGuiUtil.dragQuaternion(name, (Quaternionf) value);
-                    } else if (type.equals(String.class)) {
-                        var out = ImGuiUtil.inputText(name, (String) value);
-                        field.set(component, out);
-                    } else if (Resource.class.isAssignableFrom(type)) {
-                        var out = ImGuiUtil.inputResource(name, (Resource) value, (Class<? extends Resource>) type);
-                        field.set(component, out);
-                    } else if (Component.class.isAssignableFrom(type)) {
-                        drawComponentField(component, field, name, (Component) value, (Class<? extends Component>) type);
-                    } else if (type.isEnum()) {
-                        // TODO: serialize enums
-                    }
+                    switch (value) {
+                        case Boolean v -> {
+                            if (ImGui.checkbox(name, v))
+                                field.set(component, !v);
+                        }
+                        case Integer v -> {
+                            var out = ImGuiUtil.dragInt(name, v, min, max);
+                            field.set(component, out);
+                        }
+                        case Float v -> {
+                            var out = ImGuiUtil.dragFloat(name, v, min, max);
+                            field.set(component, out);
+                        }
+                        case Double v -> {
+                            var out = ImGuiUtil.dragFloat(name, v.floatValue(), min, max);
+                            field.set(component, (double) out);
+                        }
+                        case String v -> {
+                            var out = ImGuiUtil.inputText(name, v);
+                            field.set(component, out);
+                        }
+                        case Vector2f v -> ImGuiUtil.dragFloat2(name, v);
+                        case Vector3f v -> ImGuiUtil.dragFloat3(name, v);
+                        case Vector4f v -> ImGuiUtil.dragFloat4(name, v, true);
+                        case Quaternionf v -> ImGuiUtil.dragQuaternion(name, v);
+                        case null, default -> {
+                            if (type.isEnum()) {
+                                // TODO: serialize enums
+                            } else if (Resource.class.isAssignableFrom(type)) {
+                                var r = (Resource) value;
 
-                    if (isPrivate)
-                        field.setAccessible(false);
+                                //noinspection unchecked
+                                var out = ImGuiUtil.inputResource(name, r, (Class<? extends Resource>) type);
+                                field.set(component, out);
+                            } else if (Component.class.isAssignableFrom(type)) {
+                                var c = (Component) value;
+
+                                //noinspection unchecked
+                                drawComponentField(c, field, name, c, (Class<? extends Component>) type);
+                            }
+                        }
+                    }
                 }
                 ImGui.unindent();
             }
@@ -92,7 +94,8 @@ public class ImGuiComponent {
         ImGui.popID();
     }
 
-    private static <T extends Component> void drawComponentField(Component component, Field field, String name, Component value, Class<T> type) throws IllegalAccessException {
+    private static <T extends Component> void drawComponentField(Component component, Field field, String
+            name, Component value, Class<T> type) throws IllegalAccessException {
         if (value != null) {
             if (ImGui.button("-"))
                 field.set(component, null);
@@ -133,13 +136,15 @@ public class ImGuiComponent {
     }
 
     private static boolean drawHeader(Component component) {
-        ImGui.beginTable("##header", 3, ImGuiTableFlags.SizingFixedFit);
+//        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 4);
+        ImGui.pushStyleVar(ImGuiStyleVar.CellPadding, 2, 4);
+        ImGui.beginTable("header", 3, ImGuiTableFlags.SizingFixedFit);
+
         ImGui.tableSetupColumn("##enable", ImGuiTableColumnFlags.NoHeaderWidth, 0);
         ImGui.tableSetupColumn("##name", ImGuiTableColumnFlags.WidthStretch, 0);
         ImGui.tableSetupColumn("##close", ImGuiTableColumnFlags.NoHeaderWidth, 0);
 
         ImGui.tableNextColumn();
-        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 4);
         ImGui.checkbox("##enabled", true);
 
         ImGui.tableNextColumn();
@@ -155,9 +160,10 @@ public class ImGuiComponent {
         if (ImGui.button("X")) {
             component.getGameObject().removeComponent(component);
         }
-        ImGui.popStyleVar();
 
         ImGui.endTable();
+        ImGui.popStyleVar();
+
         return open;
     }
 }

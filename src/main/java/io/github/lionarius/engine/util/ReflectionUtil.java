@@ -19,7 +19,7 @@ import java.util.Map;
 @UtilityClass
 public class ReflectionUtil {
     private static final Map<String, Class<? extends Component>> ALL_COMPONENTS = new HashMap<>();
-    private static final Map<Class<? extends Component>, List<Field>> COMPONENT_SERIALIZABLE_FIELDS = new HashMap<>();
+    private static final Map<Class<? extends Component>, List<SerializableFieldData>> COMPONENT_SERIALIZABLE_FIELDS = new HashMap<>();
     private static final Map<String, Class<? extends Resource>> ALL_RESOURCES = new HashMap<>();
     private static final Reflections REFLECTIONS = new Reflections("io.github.lionarius");
 
@@ -33,18 +33,22 @@ public class ReflectionUtil {
         );
         for (var clazz : allComponents) {
             ALL_COMPONENTS.put(clazz.getSimpleName(), clazz);
-            COMPONENT_SERIALIZABLE_FIELDS.put(clazz, getAllSerializableFields(clazz));
+            COMPONENT_SERIALIZABLE_FIELDS.put(
+                    clazz,
+                    ReflectionUtil.getAllSerializableFields(clazz)
+                            .stream()
+                            .map(field -> {
+                                        if (!ReflectionUtil.isAccessible(field))
+                                            field.setAccessible(true);
+                                        return new SerializableFieldData(field, CaseUtil.toSentenceCase(field.getName()));
+                                    }
+                            ).toList());
         }
 
-        //noinspection unchecked
         var allResources = REFLECTIONS.getSubTypesOf(Resource.class);
         for (var clazz : allResources) {
             ALL_RESOURCES.put(clazz.getSimpleName(), clazz);
         }
-    }
-
-    public static boolean shareAncestor(Class<?> clazz1, Class<?> clazz2) {
-        return ReflectionUtil.shareAncestor(clazz1, clazz2, Object.class);
     }
 
     public static boolean shareAncestor(@NonNull Class<?> clazz1, @NonNull Class<?> clazz2, @NonNull Class<?> stopClazz) {
@@ -62,19 +66,8 @@ public class ReflectionUtil {
         return ReflectionUtil.shareAncestor(super1, clazz2, stopClazz);
     }
 
-    public static Iterable<Field> getSerializableComponentFields(Class<? extends Component> clazz) {
+    public static Iterable<SerializableFieldData> getSerializableComponentFields(@NonNull Class<? extends Component> clazz) {
         return COMPONENT_SERIALIZABLE_FIELDS.get(clazz);
-    }
-
-    private static List<Field> getAllSerializableFields(Class<? extends Component> clazz) {
-        List<Field> fields = new ArrayList<>();
-        var classFields = ReflectionUtils.get(ReflectionUtils.Fields.of(clazz));
-        for (var field : classFields) {
-            if (field.isAnnotationPresent(SerializeField.class) || Modifier.isPublic(field.getModifiers()))
-                fields.add(field);
-        }
-
-        return fields;
     }
 
     public static Iterable<Class<? extends Component>> getAllComponentClasses() {
@@ -89,14 +82,13 @@ public class ReflectionUtil {
         return ALL_COMPONENTS.get(name);
     }
 
-    @SuppressWarnings("unchecked")
     public static Class<? extends Resource> getResourceClass(String name) {
         return ALL_RESOURCES.get(name);
     }
 
-    public static void setField(Field field, Object object, Object value) {
+    public static void setField(@NonNull Field field, @NonNull Object object, Object value) {
         try {
-            var isPrivate = Modifier.isPrivate(field.getModifiers());
+            var isPrivate = !ReflectionUtil.isAccessible(field);
 
             if (isPrivate)
                 field.setAccessible(true);
@@ -108,5 +100,29 @@ public class ReflectionUtil {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static boolean isAccessible(@NonNull Field field) {
+        return !Modifier.isPublic(field.getModifiers())
+               && !Modifier.isPublic(field.getDeclaringClass().getModifiers());
+    }
+
+    private static boolean isSerializable(Field field) {
+        return (field.isAnnotationPresent(SerializeField.class) || Modifier.isPublic(field.getModifiers()))
+               && !Modifier.isStatic(field.getModifiers());
+    }
+
+    private static List<Field> getAllSerializableFields(@NonNull Class<? extends Component> clazz) {
+        List<Field> fields = new ArrayList<>();
+        var classFields = ReflectionUtils.get(ReflectionUtils.Fields.of(clazz));
+        for (var field : classFields) {
+            if (ReflectionUtil.isSerializable(field))
+                fields.add(field);
+        }
+
+        return fields;
+    }
+
+    public record SerializableFieldData(Field field, String name) {
     }
 }
