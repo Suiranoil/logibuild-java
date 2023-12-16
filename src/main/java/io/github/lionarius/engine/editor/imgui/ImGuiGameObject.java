@@ -33,6 +33,9 @@ public class ImGuiGameObject {
 
             var allComponents = ReflectionUtil.getAllComponentClasses();
             for (var component : allComponents) {
+                if (!gameObject.canAddComponent(component))
+                    continue;
+
                 var name = component.getSimpleName();
                 if (filter.passFilter(name) && ImGui.selectable(name)) {
                     try {

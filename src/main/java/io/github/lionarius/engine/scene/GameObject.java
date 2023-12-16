@@ -177,13 +177,20 @@ public final class GameObject implements Updatable, Renderable {
     }
 
     private boolean processAddComponent(Component component) {
-        for (var c : this.components) {
-            if (ReflectionUtil.shareAncestor(component.getClass(), c.getClass(), Component.class))
-                return false;
-        }
+        if (!this.canAddComponent(component.getClass()))
+            return false;
 
         this.components.add(component);
         component.setGameObject(this);
+
+        return true;
+    }
+
+    public <T extends Component> boolean canAddComponent(Class<T> clazz) {
+        for (var component : this.components) {
+            if (ReflectionUtil.shareAncestor(clazz, component.getClass(), Component.class))
+                return false;
+        }
 
         return true;
     }
