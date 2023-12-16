@@ -47,15 +47,19 @@ public class ResourceManager {
         if (data.getCache().containsKey(path))
             return data.getCache().get(path);
 
+        T resource = null;
         try {
-            var asset = data.getLoader().loadFromFile(name, path, parameters);
-            data.getCache().put(path, asset);
-            asset.setResourceName(name);
-            return asset;
-        } catch (IOException e) {
-            LOGGER.warn("Could not load resource {}", name);
-            return null;
+            resource = data.getLoader().loadFromFile(name, path, parameters);
+        } catch (Exception ignored) {
         }
+
+        if (resource != null) {
+            data.getCache().put(path, resource);
+            resource.setResourceName(name);
+        } else
+            LOGGER.warn("Could not load resource {}", name);
+
+        return resource;
     }
 
     public <T extends Resource> void invalidate(@NonNull Class<T> clazz, @NonNull String name) {
