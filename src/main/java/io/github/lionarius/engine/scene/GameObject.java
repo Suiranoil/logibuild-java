@@ -166,13 +166,14 @@ public final class GameObject implements Updatable, Renderable {
     private void removeQueuedComponents(boolean isEditor) {
         Component component;
         while ((component = this.componentQueue.pollRemoved()) != null) {
-            if (!isEditor) {
-                if (component == this.scene.getMainCamera())
-                    this.scene.setMainCamera(null);
+            if (this.processRemoveComponent(component)) {
+                if (!isEditor) {
+                    if (component == this.scene.getMainCamera())
+                        this.scene.setMainCamera(null);
+                }
+
                 component.onDestroy();
             }
-
-            this.processRemoveComponent(component);
         }
     }
 
