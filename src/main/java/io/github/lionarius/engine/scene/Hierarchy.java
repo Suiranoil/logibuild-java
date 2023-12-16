@@ -29,7 +29,10 @@ public class Hierarchy<T> implements Iterable<T> {
             this.remove(child);
 
         this.queuedActions.add(() -> {
+            var parent = this.parents.get(object);
             this.parents.remove(object);
+            this.children.get(parent).remove(object);
+
             this.children.remove(object);
         });
     }

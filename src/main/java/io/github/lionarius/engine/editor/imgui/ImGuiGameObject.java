@@ -22,7 +22,7 @@ public class ImGuiGameObject {
             ImGuiComponent.drawProperties(component);
         }
         ImGui.separator();
-        if (ImGui.button("Add component"))
+        if (ImGuiUtil.buttonAligned("Add component", 0.5f))
             ImGui.openPopup("add_component");
 
         var filter = new ImGuiTextFilter();

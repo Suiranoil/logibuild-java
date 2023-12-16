@@ -96,6 +96,10 @@ public class Scene implements Updatable, Renderable {
         else
             this.processRemoveGameObject(gameObject);
 
+        if (this.selectedGameObject != null) {
+            if (this.hierarchy.isInHierarchy(gameObject, this.selectedGameObject))
+                this.selectedGameObject = null;
+        }
         this.hierarchy.remove(gameObject);
     }
 

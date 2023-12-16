@@ -26,7 +26,7 @@ public class ImGuiScene {
         if (selected)
             flags |= ImGuiTreeNodeFlags.Selected;
         if (isLeaf)
-            flags |= ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen;
+            flags |= ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen | ImGuiTreeNodeFlags.Bullet;
 
         var id = 0;
         var label = "Root";
@@ -40,10 +40,16 @@ public class ImGuiScene {
         var open = ImGui.treeNodeEx("item", flags, label) && !isLeaf;
 
         if (ImGui.beginPopupContextItem()) {
-            if (ImGui.button("Create object")) {
+            if (ImGui.selectable("Create object")) {
                 var object = new GameObject();
                 scene.addGameObject(object);
                 scene.getHierarchy().addChild(gameObject, object);
+
+                ImGui.closeCurrentPopup();
+            }
+
+            if (gameObject != null && ImGui.selectable("Delete object")) {
+                scene.removeGameObject(gameObject);
 
                 ImGui.closeCurrentPopup();
             }
@@ -52,10 +58,10 @@ public class ImGuiScene {
         }
 
         if (gameObject != null && ImGui.beginDragDropSource()) {
-                ImGui.setDragDropPayload("game_object", gameObject);
-                ImGui.text(gameObject.getName());
+            ImGui.setDragDropPayload("game_object", gameObject);
+            ImGui.text(gameObject.getName());
 
-                ImGui.endDragDropSource();
+            ImGui.endDragDropSource();
 
         }
 

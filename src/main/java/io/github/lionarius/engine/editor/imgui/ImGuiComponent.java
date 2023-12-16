@@ -10,10 +10,7 @@ import io.github.lionarius.engine.scene.Component;
 import io.github.lionarius.engine.scene.GameObject;
 import io.github.lionarius.engine.util.ReflectionUtil;
 import lombok.experimental.UtilityClass;
-import org.joml.Quaternionf;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
+import org.joml.*;
 
 import java.lang.reflect.Field;
 
@@ -63,6 +60,8 @@ public class ImGuiComponent {
                             var out = ImGuiUtil.inputText(name, v);
                             field.set(component, out);
                         }
+                        case Vector2i v -> ImGuiUtil.dragInt2(name, v);
+                        case Vector3i v -> ImGuiUtil.dragInt3(name, v);
                         case Vector2f v -> ImGuiUtil.dragFloat2(name, v);
                         case Vector3f v -> ImGuiUtil.dragFloat3(name, v);
                         case Vector4f v -> ImGuiUtil.dragFloat4(name, v, true);
@@ -137,7 +136,7 @@ public class ImGuiComponent {
 
     private static boolean drawHeader(Component component) {
 //        ImGui.pushStyleVar(ImGuiStyleVar.ItemSpacing, 0, 4);
-        ImGui.pushStyleVar(ImGuiStyleVar.CellPadding, 2, 4);
+        ImGui.pushStyleVar(ImGuiStyleVar.CellPadding, 3, 0);
         ImGui.beginTable("header", 3, ImGuiTableFlags.SizingFixedFit);
 
         ImGui.tableSetupColumn("##enable", ImGuiTableColumnFlags.NoHeaderWidth, 0);

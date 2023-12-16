@@ -14,29 +14,34 @@ import java.util.Objects;
 public class ImGuiUtil {
 
     public String inputText(String label, String text) {
-        ImGui.pushID(label);
-
         var out = new ImString(text, 256);
 
-        if (ImGui.inputText(label, out)) {
-            ImGui.popID();
+        if (ImGui.inputText(label, out))
             return out.get();
-        }
-        ImGui.popID();
 
         return text;
     }
 
     public int dragInt(String label, int value, float min, float max) {
-        ImGui.pushID(label);
-
         int[] out = {value};
 
         ImGui.dragInt(label, out, getIntSpeed(value), min, max);
 
-        ImGui.popID();
-
         return out[0];
+    }
+
+    public void dragInt2(String label, Vector2i value) {
+        int[] out = {value.x(), value.y()};
+
+        ImGui.dragInt2(label, out);
+        value.set(out);
+    }
+
+    public void dragInt3(String label, Vector3i value) {
+        int[] out = {value.x(), value.y(), value.z()};
+
+        ImGui.dragInt3(label, out);
+        value.set(out);
     }
 
     private static float getIntSpeed(int value) {
@@ -45,13 +50,9 @@ public class ImGuiUtil {
 
 
     public float dragFloat(String label, float value, float min, float max) {
-        ImGui.pushID(label);
-
         float[] out = {value};
 
         ImGui.dragFloat(label, out, getFloatSpeed(value), min, max);
-
-        ImGui.popID();
 
         return out[0];
     }
@@ -61,30 +62,20 @@ public class ImGuiUtil {
     }
 
     public void dragFloat2(String label, Vector2f value) {
-        ImGui.pushID(label);
-
         float[] out = {value.x(), value.y()};
 
         ImGui.dragFloat2(label, out);
         value.set(out);
-
-        ImGui.popID();
     }
 
     public void dragFloat3(String label, Vector3f value) {
-        ImGui.pushID(label);
-
         float[] out = {value.x(), value.y(), value.z()};
 
         ImGui.dragFloat3(label, out);
         value.set(out);
-
-        ImGui.popID();
     }
 
     public void dragFloat4(String label, Vector4f value, boolean isColor) {
-        ImGui.pushID(label);
-
         float[] out = {value.x(), value.y(), value.z(), value.w()};
 
         if (isColor)
@@ -92,8 +83,6 @@ public class ImGuiUtil {
         else
             ImGui.dragFloat4(label, out);
         value.set(out);
-
-        ImGui.popID();
     }
 
     public static void dragQuaternion(String label, Quaternionf value) {
@@ -119,5 +108,18 @@ public class ImGuiUtil {
         }
 
         return value;
+    }
+
+    public static boolean buttonAligned(String label, float alignment) {
+        var style = ImGui.getStyle();
+
+        float size = ImGui.calcTextSize(label).x + style.getFramePadding().x * 2.0f;
+        float avail = ImGui.getContentRegionAvail().x;
+
+        float off = (avail - size) * alignment;
+        if (off > 0.0f)
+            ImGui.setCursorPosX(ImGui.getCursorPosX() + off);
+
+        return ImGui.button(label);
     }
 }

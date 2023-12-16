@@ -36,6 +36,6 @@ public abstract class Component {
 
     @Override
     public final boolean equals(Object obj) {
-        return obj instanceof Component c && this.uuid.equals((c).uuid);
+        return obj instanceof Component c && this.uuid.equals(c.uuid);
     }
 }
