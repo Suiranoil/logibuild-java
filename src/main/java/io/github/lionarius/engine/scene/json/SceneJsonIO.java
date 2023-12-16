@@ -99,6 +99,9 @@ public class SceneJsonIO implements JsonDeserializer<Scene>, JsonSerializer<Scen
         for (var entry : componentsJson.entrySet()) {
             var uuid = UUID.fromString(entry.getKey());
             var component = COMPONENT_GSON.fromJson(entry.getValue().getAsJsonObject(), Component.class);
+            if (component == null)
+                continue;
+
             components.put(uuid, component);
         }
         COMPONENT_TYPE_ADAPTER.setWiring(null);
@@ -128,6 +131,8 @@ public class SceneJsonIO implements JsonDeserializer<Scene>, JsonSerializer<Scen
             value.remove("components");
 
             var object = (GameObject) context.deserialize(value, GameObject.class);
+            if (object == null)
+                continue;
 
             var wiredComponents = Arrays.stream(wiredComponentsUUIDs).map(components::get).toList();
 

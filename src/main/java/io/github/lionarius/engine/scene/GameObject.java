@@ -55,6 +55,9 @@ public final class GameObject implements Updatable, Renderable {
 
         Transform transform = null;
         for (var component : components) {
+            if (component == null)
+                continue;
+
             if (Transform.class.isAssignableFrom(component.getClass()))
                 transform = (Transform) component;
 

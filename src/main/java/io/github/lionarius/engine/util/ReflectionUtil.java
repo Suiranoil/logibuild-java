@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.util;
 
+import io.github.lionarius.engine.editor.property.HideComponent;
 import io.github.lionarius.engine.editor.property.SerializeField;
 import io.github.lionarius.engine.resource.Resource;
 import io.github.lionarius.engine.scene.Component;
@@ -32,6 +33,9 @@ public class ReflectionUtil {
                         .map(clazz -> (Class<? extends Component>) clazz)
         );
         for (var clazz : allComponents) {
+            if (clazz.isAnnotationPresent(HideComponent.class))
+                continue;
+
             ALL_COMPONENTS.put(clazz.getSimpleName(), clazz);
             COMPONENT_SERIALIZABLE_FIELDS.put(
                     clazz,
