@@ -3,7 +3,6 @@ package io.github.lionarius.engine.editor.imgui;
 import imgui.ImGui;
 import imgui.flag.*;
 import imgui.type.ImString;
-import io.github.lionarius.engine.editor.CaseUtil;
 import io.github.lionarius.engine.editor.property.Min;
 import io.github.lionarius.engine.editor.property.MinMax;
 import io.github.lionarius.engine.resource.Resource;
