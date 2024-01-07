@@ -22,7 +22,7 @@ public class TextureUnitMap implements Iterable<Map.Entry<Texture, Integer>> {
         if (this.textureUnits.size() >= this.capacity)
             return Optional.empty();
 
-        return Optional.of(this.textureUnits.computeIfAbsent(texture, _ -> this.textureUnits.size()));
+        return Optional.of(this.textureUnits.computeIfAbsent(texture, v -> this.textureUnits.size()));
     }
 
     public void reset() {
