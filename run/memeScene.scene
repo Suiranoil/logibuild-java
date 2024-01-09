@@ -1,0 +1,247 @@
+{
+  "components": {
+    "de250121-bb3f-415c-a38f-8b0de3e98d43": {
+      "type": "Transform",
+      "uuid": "de250121-bb3f-415c-a38f-8b0de3e98d43",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 1.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "size": {
+        "x": 1.0,
+        "y": 0.751,
+        "z": 0.0
+      }
+    },
+    "67a84a26-b1bf-460d-8b8c-d3d86afd047f": {
+      "type": "Box2DRenderer",
+      "uuid": "67a84a26-b1bf-460d-8b8c-d3d86afd047f",
+      "color": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0,
+        "w": 1.0
+      },
+      "texture": {
+        "type": "Texture",
+        "name": "texture/cat.jpg"
+      }
+    },
+    "f94e546f-ff0b-483f-a616-a22fa3cef379": {
+      "type": "Transform",
+      "uuid": "f94e546f-ff0b-483f-a616-a22fa3cef379",
+      "position": {
+        "x": 0.017,
+        "y": 0.558,
+        "z": -1.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 1.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "size": {
+        "x": 0.0,
+        "y": 0.100,
+        "z": 0.0
+      }
+    },
+    "850a0a5f-1c14-4565-b749-24054d4ec52d": {
+      "type": "Text2DRenderer",
+      "uuid": "850a0a5f-1c14-4565-b749-24054d4ec52d",
+      "text": "I killed 1k people",
+      "color": {
+        "x": 0.0,
+        "y": 0.08450699,
+        "z": 1.0,
+        "w": 1.0
+      },
+      "font": {
+        "type": "Font",
+        "name": "font/atlas/minecraft"
+      }
+    },
+    "fd293b2f-10b8-43b7-949d-64893cee60d7": {
+      "type": "Transform",
+      "uuid": "fd293b2f-10b8-43b7-949d-64893cee60d7",
+      "position": {
+        "x": 0.68733374,
+        "y": 0.49966016,
+        "z": -666.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0015527233,
+        "w": 0.99999714
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "size": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      }
+    },
+    "37473d54-cac5-4852-a48b-71d323a9f857": {
+      "type": "Simple2DMovement",
+      "uuid": "37473d54-cac5-4852-a48b-71d323a9f857",
+      "movementSpeed": 0.8000,
+      "rotationSpeed": 90.0
+    },
+    "57789641-4744-4274-9760-beb22a6e34b4": {
+      "type": "PerspectiveCamera",
+      "uuid": "57789641-4744-4274-9760-beb22a6e34b4",
+      "fov": 90.0,
+      "far": 10000.0,
+      "near": 0.05
+    },
+    "77edda06-4933-4e3b-a101-b9cb5cf0b46a": {
+      "type": "Transform",
+      "uuid": "77edda06-4933-4e3b-a101-b9cb5cf0b46a",
+      "position": {
+        "x": -0.043,
+        "y": -0.113,
+        "z": -1.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 1.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "size": {
+        "x": 0.0,
+        "y": 0.257,
+        "z": 0.0
+      }
+    },
+    "2ad4902d-dc2e-4cae-9346-c24f2f7a9bc4": {
+      "type": "Text2DRenderer",
+      "uuid": "2ad4902d-dc2e-4cae-9346-c24f2f7a9bc4",
+      "text": "Hello everynyan",
+      "color": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 1.0
+      },
+      "font": {
+        "type": "Font",
+        "name": "font/atlas/whisper"
+      }
+    },
+    "5653a20a-c18f-413f-84d4-51ebb171704c": {
+      "type": "Transform",
+      "uuid": "5653a20a-c18f-413f-84d4-51ebb171704c",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.202
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 1.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "size": {
+        "x": 0.3220,
+        "y": 0.3340,
+        "z": 0.0
+      }
+    }
+  },
+  "gameObjects": {
+    "ec84412e-9373-4762-a514-eb43a1c0c444": {
+      "name": "Atlas",
+      "uuid": "ec84412e-9373-4762-a514-eb43a1c0c444",
+      "components": [
+        "de250121-bb3f-415c-a38f-8b0de3e98d43",
+        "67a84a26-b1bf-460d-8b8c-d3d86afd047f"
+      ]
+    },
+    "24e5c467-187d-426b-b8dd-6ae24b8963be": {
+      "name": "Some text",
+      "uuid": "24e5c467-187d-426b-b8dd-6ae24b8963be",
+      "components": [
+        "f94e546f-ff0b-483f-a616-a22fa3cef379",
+        "850a0a5f-1c14-4565-b749-24054d4ec52d"
+      ]
+    },
+    "24e555f1-0e7b-4cd3-9990-fc11d15f223f": {
+      "name": "MainCamera",
+      "uuid": "24e555f1-0e7b-4cd3-9990-fc11d15f223f",
+      "components": [
+        "fd293b2f-10b8-43b7-949d-64893cee60d7",
+        "37473d54-cac5-4852-a48b-71d323a9f857",
+        "57789641-4744-4274-9760-beb22a6e34b4"
+      ]
+    },
+    "3f74fbe2-5f28-434b-be47-2fe93136cb34": {
+      "name": "FPS display",
+      "uuid": "3f74fbe2-5f28-434b-be47-2fe93136cb34",
+      "components": [
+        "77edda06-4933-4e3b-a101-b9cb5cf0b46a",
+        "2ad4902d-dc2e-4cae-9346-c24f2f7a9bc4"
+      ]
+    },
+    "281fa599-2ea7-44d3-8e08-3380688f544d": {
+      "name": "GameObject",
+      "uuid": "281fa599-2ea7-44d3-8e08-3380688f544d",
+      "components": [
+        "5653a20a-c18f-413f-84d4-51ebb171704c"
+      ]
+    }
+  },
+  "hierarchy": {
+    "children": {
+      "null": [
+        "ec84412e-9373-4762-a514-eb43a1c0c444",
+        "24e555f1-0e7b-4cd3-9990-fc11d15f223f"
+      ],
+      "ec84412e-9373-4762-a514-eb43a1c0c444": [
+        "3f74fbe2-5f28-434b-be47-2fe93136cb34",
+        "24e5c467-187d-426b-b8dd-6ae24b8963be"
+      ],
+      "24e5c467-187d-426b-b8dd-6ae24b8963be": [],
+      "24e555f1-0e7b-4cd3-9990-fc11d15f223f": [
+        "281fa599-2ea7-44d3-8e08-3380688f544d"
+      ],
+      "3f74fbe2-5f28-434b-be47-2fe93136cb34": [],
+      "281fa599-2ea7-44d3-8e08-3380688f544d": []
+    }
+  },
+  "selectedGameObject": "24e5c467-187d-426b-b8dd-6ae24b8963be"
+}

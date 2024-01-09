@@ -14,8 +14,8 @@ import org.lwjgl.opengl.GL46;
 import java.io.File;
 
 public class ImGuiViewport {
-    private static final Texture PLAY_ICON = Logibuild.getInstance().getResourceManager().get(Texture.class, "icons/play.png", TextureCreateParameters.SMOOTH);
-    private static final Texture STOP_ICON = Logibuild.getInstance().getResourceManager().get(Texture.class, "icons/stop.png", TextureCreateParameters.SMOOTH);
+    private static final Texture PLAY_ICON = Logibuild.getInstance().getInternalResourceManager().get(Texture.class, "icons/play.png", TextureCreateParameters.SMOOTH);
+    private static final Texture STOP_ICON = Logibuild.getInstance().getInternalResourceManager().get(Texture.class, "icons/stop.png", TextureCreateParameters.SMOOTH);
 
     private final SceneManager sceneManager = Logibuild.getInstance().getSceneManager();
     private final EngineRenderer engineRenderer = Logibuild.getInstance().getEngineRenderer();

@@ -24,7 +24,7 @@ public class ImGuiLayer implements Closeable {
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final Window window;
     private final SceneManager sceneManager = Logibuild.getInstance().getSceneManager();
-    private final ResourceManager resourceManager = Logibuild.getInstance().getResourceManager();
+    private final ResourceManager resourceManager = Logibuild.getInstance().getWorkspaceResourceManager();
 
     private ImGuiViewport viewport;
     private ImGuiExplorer explorer;
@@ -41,7 +41,7 @@ public class ImGuiLayer implements Closeable {
         this.imGuiImplGlfw.init(this.window.getHandle(), true);
         this.imGuiImplGl3.init("#version 460 core");
 
-        this.explorer = new ImGuiExplorer(Logibuild.getInstance().getResourceManager().getResourceFolder());
+        this.explorer = new ImGuiExplorer(Logibuild.getInstance().getWorkspaceResourceManager().getResourceFolder());
         this.viewport = new ImGuiViewport();
     }
 

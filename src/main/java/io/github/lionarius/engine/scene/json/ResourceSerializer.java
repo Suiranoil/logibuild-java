@@ -34,6 +34,6 @@ public class ResourceSerializer implements JsonSerializer<Resource>, JsonDeseria
             return null;
         }
 
-        return Logibuild.getInstance().getResourceManager().get(clazz, name);
+        return Logibuild.getInstance().getWorkspaceResourceManager().get(clazz, name);
     }
 }

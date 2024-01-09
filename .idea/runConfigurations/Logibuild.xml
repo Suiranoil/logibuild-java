@@ -4,6 +4,7 @@
     <option name="MAIN_CLASS_NAME" value="io.github.lionarius.Main" />
     <module name="logibuild.main" />
     <option name="VM_PARAMETERS" value="-Dlog4j.skipJansi=false" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

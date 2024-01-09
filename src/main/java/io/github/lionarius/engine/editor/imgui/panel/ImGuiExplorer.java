@@ -67,10 +67,10 @@ public class ImGuiExplorer {
     }
 
 
-    private static final Texture FILE_ICON = Logibuild.getInstance().getResourceManager().get(Texture.class, "icons/explorer/file.png", TextureCreateParameters.SMOOTH);
-    private static final Texture FOLDER_ICON = Logibuild.getInstance().getResourceManager().get(Texture.class, "icons/explorer/folder.png", TextureCreateParameters.SMOOTH);
-    private static final Texture SCENE_ICON = Logibuild.getInstance().getResourceManager().get(Texture.class, "icons/explorer/scene.png", TextureCreateParameters.SMOOTH);
-    private static final Texture IMAGE_ICON = Logibuild.getInstance().getResourceManager().get(Texture.class, "icons/explorer/image.png", TextureCreateParameters.SMOOTH);
+    private static final Texture FILE_ICON = Logibuild.getInstance().getInternalResourceManager().get(Texture.class, "icons/explorer/file.png", TextureCreateParameters.SMOOTH);
+    private static final Texture FOLDER_ICON = Logibuild.getInstance().getInternalResourceManager().get(Texture.class, "icons/explorer/folder.png", TextureCreateParameters.SMOOTH);
+    private static final Texture SCENE_ICON = Logibuild.getInstance().getInternalResourceManager().get(Texture.class, "icons/explorer/scene.png", TextureCreateParameters.SMOOTH);
+    private static final Texture IMAGE_ICON = Logibuild.getInstance().getInternalResourceManager().get(Texture.class, "icons/explorer/image.png", TextureCreateParameters.SMOOTH);
 
 
     private static Texture getFileIcon(File file) {

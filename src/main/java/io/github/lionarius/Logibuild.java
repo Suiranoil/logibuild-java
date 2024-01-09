@@ -32,6 +32,8 @@ import org.lwjgl.opengl.GL46;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.FileSystems;
+
 public final class Logibuild implements Closeable {
     private static final Logger LOGGER = LoggerFactory.getLogger("Logibuild");
     @Getter
@@ -40,13 +42,15 @@ public final class Logibuild implements Closeable {
     private final Window window = new Window(1280, 720, "Logibuild");
 
     @Getter
-    private final ResourceManager resourceManager = new ResourceManager(ClassLoader.getSystemResource("assets").getPath());
+    private final ResourceManager internalResourceManager = new ResourceManager(ClassLoader.getSystemResource("assets").getPath());
+    @Getter
+    private final ResourceManager workspaceResourceManager;
     @Getter
     private final InputHandler inputHandler = new InputHandler(this.window);
     @Getter
     private final KeybindHandler keybindHandler = new KeybindHandler(this.inputHandler);
     @Getter
-    private final EngineRenderer engineRenderer = new EngineRenderer(this.resourceManager);
+    private final EngineRenderer engineRenderer = new EngineRenderer(this.internalResourceManager);
     private final ImGuiLayer imGuiLayer;
     private final boolean noEditor;
     private final String noEditorScene;
@@ -60,6 +64,8 @@ public final class Logibuild implements Closeable {
         if (Logibuild.instance != null)
             throw new IllegalStateException("Cannot create more than one game instance");
         Logibuild.instance = this;
+
+        this.workspaceResourceManager = new ResourceManager(FileSystems.getDefault().getPath(".").toString());
 
         var noEditor = false;
         String scenePath = null;
@@ -83,12 +89,19 @@ public final class Logibuild implements Closeable {
 
         this.inputHandler.init(!this.noEditor);
 
-        this.resourceManager.register(Shader.class, new ShaderLoader());
-        this.resourceManager.register(Texture.class, new TextureLoader());
-        this.resourceManager.register(Font.class, new FontLoader(this.resourceManager));
-        this.resourceManager.register(Image.class, new ImageLoader());
-        this.resourceManager.register(Scene.class, new SceneLoader());
-        this.resourceManager.register(Mesh.class, new MeshLoader());
+        this.internalResourceManager.register(Shader.class, new ShaderLoader());
+        this.internalResourceManager.register(Texture.class, new TextureLoader());
+        this.internalResourceManager.register(Font.class, new FontLoader(this.internalResourceManager));
+        this.internalResourceManager.register(Image.class, new ImageLoader());
+        this.internalResourceManager.register(Scene.class, new SceneLoader());
+        this.internalResourceManager.register(Mesh.class, new MeshLoader());
+
+        this.workspaceResourceManager.register(Shader.class, new ShaderLoader());
+        this.workspaceResourceManager.register(Texture.class, new TextureLoader());
+        this.workspaceResourceManager.register(Font.class, new FontLoader(this.workspaceResourceManager));
+        this.workspaceResourceManager.register(Image.class, new ImageLoader());
+        this.workspaceResourceManager.register(Scene.class, new SceneLoader());
+        this.workspaceResourceManager.register(Mesh.class, new MeshLoader());
 
         this.engineRenderer.init();
 
@@ -96,7 +109,7 @@ public final class Logibuild implements Closeable {
         this.imGuiLayer = new ImGuiLayer(this.window);
         this.imGuiLayer.init();
 
-        this.window.setIcon(this.resourceManager.get(Image.class, "icons/icon.png"));
+        this.window.setIcon(this.internalResourceManager.get(Image.class, "icons/icon.png"));
     }
 
     public void run() {
@@ -105,7 +118,7 @@ public final class Logibuild implements Closeable {
         double dt = -1.0;
 
         if (this.noEditor) {
-            this.sceneManager.transitionTo(this.resourceManager.get(Scene.class, this.noEditorScene));
+            this.sceneManager.transitionTo(this.workspaceResourceManager.get(Scene.class, this.noEditorScene));
             this.sceneManager.startPlaying();
         } else
             this.sceneManager.transitionTo(new Scene());
