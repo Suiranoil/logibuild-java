@@ -9,6 +9,14 @@ repositories {
 group = 'io.github.lionarius'
 version = '1.0-SNAPSHOT'
 
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes 'Main-Class': 'io.github.lionarius.Main'
+    }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
 ext {
     lwjglVersion = "3.3.3"
     lwjglNatives = "natives-windows"

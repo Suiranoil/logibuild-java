@@ -43,8 +43,8 @@
       "type": "Transform",
       "uuid": "f94e546f-ff0b-483f-a616-a22fa3cef379",
       "position": {
-        "x": 0.017,
-        "y": 0.558,
+        "x": -0.457,
+        "y": 0.265,
         "z": -1.0
       },
       "rotation": {
@@ -60,7 +60,7 @@
       },
       "size": {
         "x": 0.0,
-        "y": 0.100,
+        "y": 0.1,
         "z": 0.0
       }
     },
@@ -83,7 +83,7 @@
       "type": "Transform",
       "uuid": "fd293b2f-10b8-43b7-949d-64893cee60d7",
       "position": {
-        "x": 0.68733374,
+        "x": 0.68733376,
         "y": 0.49966016,
         "z": -666.0
       },
@@ -107,7 +107,7 @@
     "37473d54-cac5-4852-a48b-71d323a9f857": {
       "type": "Simple2DMovement",
       "uuid": "37473d54-cac5-4852-a48b-71d323a9f857",
-      "movementSpeed": 0.8000,
+      "movementSpeed": 0.8,
       "rotationSpeed": 90.0
     },
     "57789641-4744-4274-9760-beb22a6e34b4": {
@@ -115,14 +115,18 @@
       "uuid": "57789641-4744-4274-9760-beb22a6e34b4",
       "fov": 90.0,
       "far": 10000.0,
-      "near": 0.05
+      "near": 0.05,
+      "frameSize": {
+        "x": 0,
+        "y": 0
+      }
     },
     "77edda06-4933-4e3b-a101-b9cb5cf0b46a": {
       "type": "Transform",
       "uuid": "77edda06-4933-4e3b-a101-b9cb5cf0b46a",
       "position": {
-        "x": -0.043,
-        "y": -0.113,
+        "x": -0.524,
+        "y": -0.452,
         "z": -1.0
       },
       "rotation": {
@@ -177,8 +181,8 @@
         "z": 1.0
       },
       "size": {
-        "x": 0.3220,
-        "y": 0.3340,
+        "x": 0.322,
+        "y": 0.334,
         "z": 0.0
       }
     }
@@ -243,5 +247,5 @@
       "281fa599-2ea7-44d3-8e08-3380688f544d": []
     }
   },
-  "selectedGameObject": "24e5c467-187d-426b-b8dd-6ae24b8963be"
+  "selectedGameObject": "3f74fbe2-5f28-434b-be47-2fe93136cb34"
 }
