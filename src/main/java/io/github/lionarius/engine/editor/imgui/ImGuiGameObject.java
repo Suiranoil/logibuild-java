@@ -12,6 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 @UtilityClass
 public class ImGuiGameObject {
     public static void drawProperties(GameObject gameObject) {
+        ImGui.checkbox("##enabled", true);
+        ImGui.sameLine();
         var newName = ImGuiUtil.inputText("Name", gameObject.getName());
         if (!newName.isEmpty())
             gameObject.setName(newName);

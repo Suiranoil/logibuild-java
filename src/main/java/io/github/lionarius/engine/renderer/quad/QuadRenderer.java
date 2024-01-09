@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.renderer.quad;
 
+import io.github.lionarius.engine.renderer.RenderCamera;
 import io.github.lionarius.engine.renderer.Renderer;
 import io.github.lionarius.engine.renderer.TextureUnitMap;
 import io.github.lionarius.engine.renderer.buffer.BufferUsage;
@@ -19,7 +20,7 @@ import org.lwjgl.opengl.GL46;
 import java.nio.ByteBuffer;
 
 @RequiredArgsConstructor
-public class QuadRenderer implements Renderer {
+public class QuadRenderer extends Renderer {
     private static final int INDICES_PER_QUAD = 6;
     private static final int INSTANCE_SIZE = QuadVertexInstance.getLayout().getStride();
 
@@ -48,10 +49,10 @@ public class QuadRenderer implements Renderer {
         this.ibo = new IndexBuffer(new int[]{0, 1, 2, 2, 3, 0});
 
         var vertices = new QuadVertexCommon[]{
-                new QuadVertexCommon(new Vector3f(0, 0, 0), new Vector2f(0, 1)),
-                new QuadVertexCommon(new Vector3f(1, 0, 0), new Vector2f(1, 1)),
-                new QuadVertexCommon(new Vector3f(1, 1, 0), new Vector2f(1, 0)),
-                new QuadVertexCommon(new Vector3f(0, 1, 0), new Vector2f(0, 0))
+                new QuadVertexCommon(new Vector3f(-0.5f, -0.5f, 0), new Vector2f(0, 1)),
+                new QuadVertexCommon(new Vector3f(0.5f, -0.5f, 0), new Vector2f(1, 1)),
+                new QuadVertexCommon(new Vector3f(0.5f, 0.5f, 0), new Vector2f(1, 0)),
+                new QuadVertexCommon(new Vector3f(-0.5f, 0.5f, 0), new Vector2f(0, 0))
         };
         var commonData = BufferUtils.createByteBuffer(vertices.length * QuadVertexCommon.getLayout().getStride());
         BufferUtil.objectArrayToBuffer(vertices, commonData);
@@ -67,7 +68,9 @@ public class QuadRenderer implements Renderer {
     }
 
     @Override
-    public void beginFrame() {
+    public void beginFrame(RenderCamera camera) {
+        super.beginFrame(camera);
+
         this.renderedCount = 0;
         this.buffer.position(0);
         this.textureUnitMap.reset();
@@ -111,7 +114,7 @@ public class QuadRenderer implements Renderer {
     }
 
     @Override
-    public void endFrame(Matrix4fc projection, Matrix4fc view) {
+    public void endFrame() {
         if (this.renderedCount <= 0)
             return;
 
@@ -128,8 +131,8 @@ public class QuadRenderer implements Renderer {
         this.vao.bind();
         this.shader.bind();
 
-        this.shader.setUniform("u_Projection", projection);
-        this.shader.setUniform("u_View", view);
+        this.shader.setUniform("u_Projection", this.camera.getProjection());
+        this.shader.setUniform("u_View", this.camera.getView());
         this.shader.setUniform("u_Texture", samplers);
 
         GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, QuadRenderer.INDICES_PER_QUAD * this.renderedCount, GL46.GL_UNSIGNED_INT, 0, this.renderedCount);

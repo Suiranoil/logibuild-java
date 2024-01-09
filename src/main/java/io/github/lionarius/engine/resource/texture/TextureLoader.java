@@ -26,7 +26,7 @@ public class TextureLoader implements ResourceLoader<Texture> {
 
         TextureCreateParameters params;
         if (parameters == null)
-            params = TextureCreateParameters.DEFAULT;
+            params = TextureCreateParameters.PIXELATED;
         else
             params = (TextureCreateParameters) parameters;
 

@@ -5,11 +5,15 @@ import io.github.lionarius.engine.Window;
 import io.github.lionarius.engine.editor.imgui.ImGuiLayer;
 import io.github.lionarius.engine.keybind.KeybindHandler;
 import io.github.lionarius.engine.renderer.EngineRenderer;
+import io.github.lionarius.engine.renderer.ScreenspaceCamera;
 import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.resource.font.Font;
 import io.github.lionarius.engine.resource.font.FontLoader;
 import io.github.lionarius.engine.resource.image.Image;
 import io.github.lionarius.engine.resource.image.ImageLoader;
+import io.github.lionarius.engine.resource.mesh.Mesh;
+import io.github.lionarius.engine.resource.mesh.MeshLoader;
+import io.github.lionarius.engine.resource.scene.SceneLoader;
 import io.github.lionarius.engine.resource.shader.Shader;
 import io.github.lionarius.engine.resource.shader.ShaderLoader;
 import io.github.lionarius.engine.resource.texture.Texture;
@@ -19,6 +23,12 @@ import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.Closeable;
 import io.github.lionarius.engine.util.TimeUtil;
 import lombok.Getter;
+import lombok.Setter;
+import org.joml.Quaternionf;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+import org.lwjgl.opengl.GL46;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +48,9 @@ public final class Logibuild implements Closeable {
     @Getter
     private final EngineRenderer engineRenderer = new EngineRenderer(this.resourceManager);
     private final ImGuiLayer imGuiLayer;
+    private final boolean headless;
+    @Getter @Setter
+    private boolean debugDraw = false;
 
     @Getter
     private final SceneManager sceneManager;
@@ -47,23 +60,37 @@ public final class Logibuild implements Closeable {
             throw new IllegalStateException("Cannot create more than one game instance");
         Logibuild.instance = this;
 
-        this.window.init();
-//        this.window.setVSync(false);
+        boolean headless = false;
+        for (var arg : args) {
+            if (arg.equals("--headless")) {
+                headless = true;
+            } else if (arg.equals("--debug")) {
+                this.debugDraw = true;
+            }
+        }
+        this.headless = headless;
 
-        this.inputHandler.init(true);
+        this.window.init();
+        this.window.setVSync(true);
+
+        this.inputHandler.init(!this.headless);
 
         this.resourceManager.register(Shader.class, new ShaderLoader());
         this.resourceManager.register(Texture.class, new TextureLoader());
         this.resourceManager.register(Font.class, new FontLoader(this.resourceManager));
         this.resourceManager.register(Image.class, new ImageLoader());
+        this.resourceManager.register(Scene.class, new SceneLoader());
+        this.resourceManager.register(Mesh.class, new MeshLoader());
+
+        var a = this.resourceManager.get(Mesh.class, "teapot.obj");
 
         this.engineRenderer.init();
 
         this.sceneManager = new SceneManager();
-        this.imGuiLayer = new ImGuiLayer(this.window, this.sceneManager, this.engineRenderer);
+        this.imGuiLayer = new ImGuiLayer(this.window);
         this.imGuiLayer.init();
 
-        this.window.setIcon(this.resourceManager.get(Image.class, "icon.png"));
+        this.window.setIcon(this.resourceManager.get(Image.class, "icons/icon.png"));
     }
 
     public void run() {
@@ -71,7 +98,11 @@ public final class Logibuild implements Closeable {
         double currentTime = TimeUtil.getApplicationTime();
         double dt = -1.0;
 
-        this.sceneManager.transitionTo(new Scene());
+        if (this.headless) {
+            this.sceneManager.transitionTo(this.resourceManager.get(Scene.class, "asteroids/asteroids.scene"));
+            this.sceneManager.startPlaying();
+        } else
+            this.sceneManager.transitionTo(new Scene());
 
         while (!this.window.shouldClose()) {
             if (dt >= 0) {
@@ -100,28 +131,57 @@ public final class Logibuild implements Closeable {
 
         this.sceneManager.update(delta);
 
-        this.imGuiLayer.beginFrame();
-        this.imGuiLayer.begin();
+        if (!this.headless) {
+            this.imGuiLayer.beginFrame();
+            this.imGuiLayer.begin();
 
-        this.imGuiLayer.draw();
+            this.imGuiLayer.draw();
 
-        this.imGuiLayer.end();
-        this.imGuiLayer.endFrame();
+            this.imGuiLayer.end();
+            this.imGuiLayer.endFrame();
+        } else {
+            var viewportSize = this.window.getSize();
+
+            GL46.glViewport(0, 0, viewportSize.x(), viewportSize.y());
+            var camera = this.sceneManager.getSceneCamera();
+            var framebuffer = this.engineRenderer.getFramebuffer();
+            if (camera != null) {
+                camera.setFrameSize(new Vector2i(viewportSize.x(), viewportSize.y()));
+                framebuffer.resize(viewportSize.x(), viewportSize.y());
+            }
+        }
     }
 
     private void render(double delta) {
-        this.engineRenderer.beginFrame();
+        var sceneCamera = this.sceneManager.getSceneCamera();
+        this.engineRenderer.beginFrame(sceneCamera);
 
         this.sceneManager.render(delta);
 
-        var sceneCamera = this.sceneManager.getSceneCamera();
         if (sceneCamera == null) {
             LOGGER.warn("Scene does not have a camera!");
             this.engineRenderer.endEmptyFrame();
         } else
-            this.engineRenderer.endFrame(sceneCamera.getProjection(), sceneCamera.getView());
+            this.engineRenderer.endFrame();
 
         this.engineRenderer.clear();
-        this.imGuiLayer.render();
+        if (!this.headless)
+            this.imGuiLayer.render();
+        else {
+            this.engineRenderer.beginScreenFrame(new ScreenspaceCamera());
+
+            var framebuffer = this.engineRenderer.getFramebuffer();
+            var quadRenderer = this.engineRenderer.getQuadRenderer();
+            quadRenderer.renderQuad(
+                    new Vector3f(0),
+                    new Quaternionf(),
+                    new Vector3f(1, -1, 1),
+                    new Vector3f(2),
+                    new Vector4f(1),
+                    framebuffer.getTexture()
+            );
+
+            this.engineRenderer.endScreenFrame();
+        }
     }
 }

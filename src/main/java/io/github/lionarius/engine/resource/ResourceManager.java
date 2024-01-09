@@ -18,6 +18,10 @@ public class ResourceManager {
     private final String folder;
     private final Map<Class<?>, ResourceData<?>> resources = new HashMap<>();
 
+    public File getResourceFolder() {
+        return new File(this.folder);
+    }
+
     public <T extends Resource> void register(@NonNull Class<T> clazz, @NonNull ResourceLoader<T> loader) {
         this.resources.put(clazz, new ResourceData<>(loader));
     }
@@ -65,7 +69,7 @@ public class ResourceManager {
         this.invalidate(clazz, this.folder, name);
     }
 
-    public <T extends Resource> void invalidate(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name) {
+    private <T extends Resource> void invalidate(@NonNull Class<T> clazz, @NonNull String folder, @NonNull String name) {
         var data = this.getAssetData(clazz);
         var file = new File(folder, name);
         var path = file.getAbsolutePath();

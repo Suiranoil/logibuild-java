@@ -2,17 +2,24 @@ package io.github.lionarius.engine.scene;
 
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
+import io.github.lionarius.engine.collision.Collision2DUtils;
+import io.github.lionarius.engine.resource.Resource;
 import io.github.lionarius.engine.scene.builtin.Camera;
+import io.github.lionarius.engine.scene.builtin.collision.Collider;
+import io.github.lionarius.engine.scene.builtin.collision.Polygon2DCollider;
 import io.github.lionarius.engine.util.AddRemoveQueue;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Scene implements Updatable, Renderable {
+public class Scene implements Updatable, Renderable, Resource {
+    @Getter @Setter
+    private String resourceName;
     @Getter
     private final Hierarchy<GameObject> hierarchy = new Hierarchy<>();
     private final transient AddRemoveQueue<GameObject> objectsQueue = new AddRemoveQueue<>();
@@ -52,6 +59,37 @@ public class Scene implements Updatable, Renderable {
 
         for (var gameObject : this.hierarchy)
             gameObject.update(delta);
+
+        // TODO: Collisions should not be handled by scene
+        var colliders = this.findAll(Polygon2DCollider.class);
+        var collisions = this.processCollisions2D(colliders);
+        for (var collision : collisions) {
+            var a = collision.getValue0();
+            var b = collision.getValue1();
+            a.getGameObject().collide(b);
+        }
+    }
+
+    private Iterable<Pair<Collider, Collider>> processCollisions2D(Iterable<Polygon2DCollider> colliders) {
+        var collisions = new ArrayList<Pair<Collider, Collider>>();
+
+        for (var a : colliders) {
+            for (var b : colliders) {
+                if (a == b)
+                    continue;
+
+                if (a.getPolygon2D() == null || b.getPolygon2D() == null)
+                    continue;
+
+                if (a.getIgnoreGroup().equals(b.getCollisionGroup()))
+                    continue;
+
+                if (Collision2DUtils.intersect(a.getPolygon2D(), b.getPolygon2D()))
+                    collisions.add(Pair.with(a, b));
+            }
+        }
+
+        return collisions;
     }
 
     @Override
@@ -81,8 +119,8 @@ public class Scene implements Updatable, Renderable {
 
         if (this.isPlaying)
             this.objectsQueue.add(gameObject);
-        else
-            this.processAddGameObject(gameObject);
+
+        this.processAddGameObject(gameObject);
 
         this.hierarchy.add(gameObject);
     }
@@ -162,5 +200,9 @@ public class Scene implements Updatable, Renderable {
 
     private void processRemoveGameObject(GameObject gameObject) {
         gameObject.setScene(null);
+    }
+
+    @Override
+    public void close() {
     }
 }

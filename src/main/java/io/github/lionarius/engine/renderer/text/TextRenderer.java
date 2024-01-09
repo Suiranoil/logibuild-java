@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.renderer.text;
 
+import io.github.lionarius.engine.renderer.RenderCamera;
 import io.github.lionarius.engine.renderer.Renderer;
 import io.github.lionarius.engine.renderer.TextureUnitMap;
 import io.github.lionarius.engine.renderer.buffer.BufferUsage;
@@ -13,7 +14,6 @@ import io.github.lionarius.engine.resource.shader.Shader;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
 import org.joml.Vector4fc;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL46;
@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL46;
 import java.nio.ByteBuffer;
 
 @RequiredArgsConstructor
-public class TextRenderer implements Renderer {
+public class TextRenderer extends Renderer {
     private static final int INDICES_PER_CHAR = 6;
     private static final int VERTICES_PER_CHAR = 4;
     private static final int VERTEX_SIZE = TextVertex.getLayout().getStride();
@@ -76,7 +76,9 @@ public class TextRenderer implements Renderer {
     }
 
     @Override
-    public void beginFrame() {
+    public void beginFrame(RenderCamera camera) {
+        super.beginFrame(camera);
+
         this.renderedCharsCount = 0;
         this.buffer.position(0);
         this.textureUnitMap.reset();
@@ -123,7 +125,7 @@ public class TextRenderer implements Renderer {
     }
 
     @Override
-    public void endFrame(Matrix4fc projection, Matrix4fc view) {
+    public void endFrame() {
         if (this.renderedCharsCount <= 0)
             return;
 
@@ -142,8 +144,8 @@ public class TextRenderer implements Renderer {
 
         this.shader.bind();
 
-        this.shader.setUniform("u_Projection", projection);
-        this.shader.setUniform("u_View", view);
+        this.shader.setUniform("u_Projection", this.camera.getProjection());
+        this.shader.setUniform("u_View", this.camera.getView());
         this.shader.setUniform("u_UnitRange", this.defaultFont.getUnitRange());
         this.shader.setUniform("u_Atlas", samplers);
 

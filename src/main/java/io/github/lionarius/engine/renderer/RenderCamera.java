@@ -1,9 +1,9 @@
-package io.github.lionarius.engine.scene;
+package io.github.lionarius.engine.renderer;
 
 import org.joml.Matrix4fc;
 import org.joml.Vector2i;
 
-public interface CameraObject {
+public interface RenderCamera {
     Matrix4fc getProjection();
 
     Matrix4fc getView();

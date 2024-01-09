@@ -23,7 +23,8 @@ public class Box2DRenderer extends Component {
     @Override
     public void onRender(double delta) {
         var transform = this.getGameObject().getTransform();
-        if (transform != null)
+        if (transform != null) {
             this.renderer.renderQuad(transform.getTransformMatrix(), transform.getSize(), this.color, this.texture);
+        }
     }
 }

@@ -36,8 +36,8 @@ public class Texture extends OpenGLObject implements Resource {
 
         GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_WRAP_S, parameters.getWrap());
         GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_WRAP_T, parameters.getWrap());
-        GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_MIN_FILTER, parameters.getFilter());
-        GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_MAG_FILTER, parameters.getFilter());
+        GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_MIN_FILTER, parameters.getMinFilter());
+        GL46.glTextureParameteri(this.id, GL46.GL_TEXTURE_MAG_FILTER, parameters.getMagFilter());
 
         if (dynamic) {
             this.bind();

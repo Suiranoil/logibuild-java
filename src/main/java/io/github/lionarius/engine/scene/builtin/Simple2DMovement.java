@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFW;
 public class Simple2DMovement extends Component {
     private final transient InputHandler inputHandler = Logibuild.getInstance().getInputHandler();
     @SerializeField @Min(0)
-    private float movementSpeed = 800.0f;
+    private float movementSpeed = 1.0f;
     @SerializeField @Min(0)
     private float rotationSpeed = 90.0f;
     private Transform transform;

@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.renderer.circle;
 
+import io.github.lionarius.engine.renderer.RenderCamera;
 import io.github.lionarius.engine.renderer.Renderer;
 import io.github.lionarius.engine.renderer.buffer.BufferUsage;
 import io.github.lionarius.engine.renderer.buffer.IndexBuffer;
@@ -18,7 +19,7 @@ import org.lwjgl.opengl.GL46;
 import java.nio.ByteBuffer;
 
 @RequiredArgsConstructor
-public class CircleRenderer implements Renderer {
+public class CircleRenderer extends Renderer {
     private static final int INDICES_PER_CIRCLE = 6;
     private static final int INSTANCE_SIZE = CircleVertexInstance.getLayout().getStride();
 
@@ -46,9 +47,9 @@ public class CircleRenderer implements Renderer {
         this.ibo = new IndexBuffer(new int[]{0, 1, 2});
 
         var vertices = new CircleVertexCommon[]{
-                new CircleVertexCommon(new Vector3f(0.5f, 1.5f, 0)),
-                new CircleVertexCommon(new Vector3f(Math.sqrt(3) / 2.0f + 0.5f, 0, 0)),
-                new CircleVertexCommon(new Vector3f((-Math.sqrt(3) / 2.0f + 0.5f), 0, 0)),
+                new CircleVertexCommon(new Vector3f(0, 1.0f, 0)),
+                new CircleVertexCommon(new Vector3f(Math.sqrt(3) / 2.0f, -0.5f, 0)),
+                new CircleVertexCommon(new Vector3f((-Math.sqrt(3) / 2.0f), -0.5f, 0)),
         };
         var commonData = BufferUtils.createByteBuffer(vertices.length * CircleVertexCommon.getLayout().getStride());
         BufferUtil.objectArrayToBuffer(vertices, commonData);
@@ -64,7 +65,9 @@ public class CircleRenderer implements Renderer {
     }
 
     @Override
-    public void beginFrame() {
+    public void beginFrame(RenderCamera camera) {
+        super.beginFrame(camera);
+
         this.renderedCount = 0;
         this.buffer.position(0);
     }
@@ -94,7 +97,7 @@ public class CircleRenderer implements Renderer {
     }
 
     @Override
-    public void endFrame(Matrix4fc projection, Matrix4fc view) {
+    public void endFrame() {
         if (this.renderedCount <= 0)
             return;
 
@@ -104,8 +107,8 @@ public class CircleRenderer implements Renderer {
         this.vao.bind();
         this.shader.bind();
 
-        this.shader.setUniform("u_Projection", projection);
-        this.shader.setUniform("u_View", view);
+        this.shader.setUniform("u_Projection", this.camera.getProjection());
+        this.shader.setUniform("u_View", this.camera.getView());
 
         GL46.glDrawElementsInstanced(GL46.GL_TRIANGLES, CircleRenderer.INDICES_PER_CIRCLE * this.renderedCount, GL46.GL_UNSIGNED_INT, 0, this.renderedCount);
     }

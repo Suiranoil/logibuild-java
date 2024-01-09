@@ -39,4 +39,6 @@ void main()
     if (i_TextureId >= 0) {
         FragColor *= texture(u_Texture[int(i_TextureId)], i_UV);
     }
+    if (FragColor.a == 0)
+    discard;
 }

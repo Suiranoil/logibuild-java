@@ -1,5 +1,6 @@
 package io.github.lionarius.engine.scene;
 
+import io.github.lionarius.engine.scene.builtin.collision.Collider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,12 @@ public abstract class Component {
     }
 
     public void onUpdate(double delta) {
+    }
+
+    public void onEditorUpdate(double delta) {
+    }
+
+    public void onCollide(Collider other) {
     }
 
     public void onRender(double delta) {

@@ -42,6 +42,6 @@ public class PerspectiveCamera extends Camera {
 
     @Override
     public Vector3f screenToWorldPosition(Vector2fc screenPosition) {
-        return new Vector3f(0);
+        return new Vector3f(screenPosition, 0);
     }
 }

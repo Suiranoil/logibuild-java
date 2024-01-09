@@ -6,6 +6,7 @@ import io.github.lionarius.engine.resource.ResourceLoader;
 import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.resource.font.json.FontDeserializer;
 import io.github.lionarius.engine.resource.texture.Texture;
+import io.github.lionarius.engine.resource.texture.TextureCreateParameters;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ public class FontLoader implements ResourceLoader<Font> {
         var metadata = Files.readString(Path.of(filepath + FontLoader.METADATA_EXTENSION));
         try {
             var font = GSON.fromJson(metadata, Font.class);
-            var atlasTexture = this.resourceManager.get(Texture.class, name + FontLoader.ATLAS_EXTENSION);
+            var atlasTexture = this.resourceManager.get(Texture.class, name + FontLoader.ATLAS_EXTENSION, TextureCreateParameters.SMOOTH);
             font.setAtlasTexture(atlasTexture);
             font.init();
 

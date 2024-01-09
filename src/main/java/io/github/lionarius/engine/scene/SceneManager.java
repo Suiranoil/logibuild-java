@@ -2,9 +2,10 @@ package io.github.lionarius.engine.scene;
 
 import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
+import io.github.lionarius.engine.renderer.RenderCamera;
 import io.github.lionarius.engine.scene.builtin.Camera;
+import io.github.lionarius.engine.scene.builtin.EditorCameraControls;
 import io.github.lionarius.engine.scene.builtin.OrthographicCamera;
-import io.github.lionarius.engine.scene.builtin.Simple2DMovement;
 import io.github.lionarius.engine.util.io.JsonUtil;
 import lombok.Getter;
 
@@ -17,14 +18,18 @@ public class SceneManager implements Updatable, Renderable {
     private Scene queuedScene = null;
     private SceneManagerState state = SceneManagerState.EDITOR;
     private final GameObject editorCamera;
-    private final CameraObject camera;
+    private final RenderCamera camera;
 
     public SceneManager() {
-        this.editorCamera = new GameObject(List.of(new Simple2DMovement(), new OrthographicCamera()));
+        this.editorCamera = new GameObject(List.of(new EditorCameraControls(), new OrthographicCamera()));
         this.camera = this.editorCamera.getComponent(Camera.class);
 
         this.editorCamera.awake();
         this.editorCamera.start();
+    }
+
+    public boolean isEditor() {
+        return this.state == SceneManagerState.EDITOR;
     }
 
     public boolean isPlaying() {
@@ -32,16 +37,21 @@ public class SceneManager implements Updatable, Renderable {
     }
 
     public void transitionTo(Scene newScene) {
-        if (this.state == SceneManagerState.PLAYING)
-            this.queuedScene = newScene;
-        else
-            this.currentScene = newScene;
-
         if (newScene != null)
             newScene.verifyIntegrity();
+
+        if (this.state == SceneManagerState.PLAYING)
+            this.queuedScene = newScene;
+        else {
+            var editorCameraTransform = this.editorCamera.getTransform();
+            editorCameraTransform.setPosition(0, 0, 0);
+            editorCameraTransform.setSize(1, 1, 1);
+            editorCameraTransform.getRotation().set(0, 0, 0, 1);
+            this.currentScene = newScene;
+        }
     }
 
-    public CameraObject getSceneCamera() {
+    public RenderCamera getSceneCamera() {
         if (this.state == SceneManagerState.PLAYING && (this.currentScene != null))
             return this.currentScene.getMainCamera();
 

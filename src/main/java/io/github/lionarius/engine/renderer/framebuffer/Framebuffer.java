@@ -25,7 +25,7 @@ public class Framebuffer extends OpenGLObject {
         this.id = GL46.glCreateFramebuffers();
 
         this.texture = new Texture(this.width, this.height);
-        this.texture.init(new TextureCreateParameters(GL46.GL_CLAMP, GL46.GL_LINEAR), GL46.GL_RGB, true);
+        this.texture.init(new TextureCreateParameters(GL46.GL_CLAMP, GL46.GL_LINEAR, GL46.GL_LINEAR), GL46.GL_RGB, true);
         GL46.glNamedFramebufferTexture(this.id, GL46.GL_COLOR_ATTACHMENT0, this.texture.getId(), 0);
 
         this.renderbuffer = new Renderbuffer(this.width, this.height);

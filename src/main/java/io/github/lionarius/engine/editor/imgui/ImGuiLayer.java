@@ -6,24 +6,29 @@ import imgui.extension.imguifiledialog.flag.ImGuiFileDialogFlags;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
+import imgui.type.ImBoolean;
 import imgui.type.ImInt;
+import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.Window;
+import io.github.lionarius.engine.editor.imgui.panel.ImGuiExplorer;
+import io.github.lionarius.engine.editor.imgui.panel.ImGuiViewport;
 import io.github.lionarius.engine.renderer.EngineRenderer;
 import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.Closeable;
 import io.github.lionarius.engine.util.io.JsonUtil;
 import lombok.RequiredArgsConstructor;
-import org.joml.Vector2i;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL46;
 
 @RequiredArgsConstructor
 public class ImGuiLayer implements Closeable {
     private final ImGuiImplGlfw imGuiImplGlfw = new ImGuiImplGlfw();
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final Window window;
-    private final SceneManager sceneManager;
-    private final EngineRenderer engineRenderer;
+    private final SceneManager sceneManager = Logibuild.getInstance().getSceneManager();
+    private final EngineRenderer engineRenderer = Logibuild.getInstance().getEngineRenderer();
+
+    private ImGuiViewport viewport;
+    private ImGuiExplorer explorer;
 
     private boolean isFirstFrame;
 
@@ -36,6 +41,9 @@ public class ImGuiLayer implements Closeable {
 
         this.imGuiImplGlfw.init(this.window.getHandle(), true);
         this.imGuiImplGl3.init("#version 460 core");
+
+        this.explorer = new ImGuiExplorer(Logibuild.getInstance().getResourceManager().getResourceFolder());
+        this.viewport = new ImGuiViewport();
     }
 
     private void configure() {
@@ -62,7 +70,7 @@ public class ImGuiLayer implements Closeable {
 
         ImGui.pushStyleVar(ImGuiStyleVar.WindowBorderSize, 0.0f);
         ImGui.pushStyleVar(ImGuiStyleVar.WindowPadding, 0, 0);
-        ImGui.begin("DockSpace",
+        ImGui.begin("##DockSpace",
                 ImGuiWindowFlags.NoDocking | ImGuiWindowFlags.NoResize |
                 ImGuiWindowFlags.NoMove |
                 ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoBringToFrontOnFocus |
@@ -82,16 +90,18 @@ public class ImGuiLayer implements Closeable {
 
             var rightId = imgui.internal.ImGui.dockBuilderSplitNode(dockSpaceId.get(), ImGuiDir.Right, 0.2f, null, dockSpaceId);
             var leftId = imgui.internal.ImGui.dockBuilderSplitNode(dockSpaceId.get(), ImGuiDir.Left, 0.2f, null, dockSpaceId);
+            var downId = imgui.internal.ImGui.dockBuilderSplitNode(dockSpaceId.get(), ImGuiDir.Down, 0.4f, null, dockSpaceId);
 
-            imgui.internal.ImGui.dockBuilderDockWindow("Scene", dockSpaceId.get());
+            imgui.internal.ImGui.dockBuilderDockWindow("Viewport", dockSpaceId.get());
             imgui.internal.ImGui.dockBuilderDockWindow("Properties", rightId);
             imgui.internal.ImGui.dockBuilderDockWindow("Hierarchy", leftId);
+            imgui.internal.ImGui.dockBuilderDockWindow("Explorer", downId);
 
             imgui.internal.ImGui.dockBuilderFinish(dockSpaceId.get());
         }
 
         if (ImGui.beginMainMenuBar()) {
-            ImGuiLayer.drawMainMenu();
+            this.drawMainMenu();
 
             ImGui.endMainMenuBar();
         }
@@ -100,6 +110,8 @@ public class ImGuiLayer implements Closeable {
     }
 
     public void draw() {
+//        ImGui.showDemoWindow();
+
         if (ImGuiFileDialog.display("open-scene", ImGuiWindowFlags.None | ImGuiWindowFlags.NoDocking, 200, 400, 800, 600)) {
             if (ImGuiFileDialog.isOk()) {
                 var selection = ImGuiFileDialog.getSelection();
@@ -126,52 +138,55 @@ public class ImGuiLayer implements Closeable {
             ImGuiFileDialog.close();
         }
 
-        ImGui.begin("Scene");
-        var playing = this.sceneManager.isPlaying();
-        var name = playing ? "Stop" : "Play";
-        if (ImGui.button(name)) {
-            if (playing)
-                this.sceneManager.stopPlaying();
-            else
-                this.sceneManager.startPlaying();
+        if (this.sceneManager.isPlaying())
+            ImGui.getStyle().setAlpha(1f);
 
-        }
-        var viewportSize = ImGui.getContentRegionAvail();
-        GL46.glViewport(0, 0, (int) viewportSize.x, (int) viewportSize.y);
-        var camera = this.sceneManager.getSceneCamera();
-        var framebuffer = this.engineRenderer.getFramebuffer();
-        if (camera != null) {
-            camera.setFrameSize(new Vector2i((int) viewportSize.x, (int) viewportSize.y));
-            framebuffer.resize((int) viewportSize.x, (int) viewportSize.y);
-            ImGui.image(framebuffer.getTexture().getId(), framebuffer.getWidth(), framebuffer.getHeight(), 0, 1, 1, 0);
-        }
+        ImGui.begin("Viewport");
+        this.viewport.drawViewport();
         ImGui.end();
+
+        if (this.sceneManager.isPlaying())
+            ImGui.getStyle().setAlpha(0.5f);
+        else
+            ImGui.getStyle().setAlpha(1f);
 
         ImGui.begin("Hierarchy");
         ImGuiScene.drawHierarchyTree(this.sceneManager.getCurrentScene());
         ImGui.end();
 
         ImGui.begin("Properties");
-        ImGui.pushItemWidth(ImGui.getContentRegionAvailX() * 0.6f);
+        ImGui.pushItemWidth(ImGui.getContentRegionAvailX() * 0.55f);
         var selected = this.sceneManager.getCurrentScene().getSelectedGameObject();
         if (selected != null)
             ImGuiGameObject.drawProperties(selected);
         ImGui.popItemWidth();
         ImGui.end();
+
+        ImGui.begin("Explorer");
+        this.explorer.drawExplorer();
+        ImGui.end();
     }
 
-    private static void drawMainMenu() {
+    private void drawMainMenu() {
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("Open scene...")) {
-                ImGuiFileDialog.openModal("open-scene", "Choose scene", ".json", ".", "", 1, 0, ImGuiFileDialogFlags.DontShowHiddenFiles);
+                ImGuiFileDialog.openModal("open-scene", "Choose scene", ".scene", ".", "", 1, 0, ImGuiFileDialogFlags.DontShowHiddenFiles);
             }
             if (ImGui.menuItem("Save scene")) {
-                ImGuiFileDialog.openModal("save-scene", "Save scene", ".json", ".", "", 1, 0, ImGuiFileDialogFlags.DontShowHiddenFiles);
+                ImGuiFileDialog.openModal("save-scene", "Save scene", ".scene", ".", "", 1, 0, ImGuiFileDialogFlags.DontShowHiddenFiles);
             }
 
             if (ImGui.menuItem("Exit")) {
 
             }
+
+            ImGui.endMenu();
+        }
+
+        if (ImGui.beginMenu("Window")) {
+            var enabled = new ImBoolean(Logibuild.getInstance().isDebugDraw());
+            ImGui.menuItem("Debug Draw", "", enabled);
+            Logibuild.getInstance().setDebugDraw(enabled.get());
 
             ImGui.endMenu();
         }
@@ -227,6 +242,7 @@ public class ImGuiLayer implements Closeable {
         style.setGrabRounding(3);
         style.setLogSliderDeadzone(4);
         style.setTabRounding(4);
+        style.setColorButtonPosition(ImGuiDir.Left);
 
         style.setColor(ImGuiCol.Text, 1.00f, 1.00f, 1.00f, 1.00f);
         style.setColor(ImGuiCol.TextDisabled, 0.50f, 0.50f, 0.50f, 1.00f);

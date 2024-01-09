@@ -20,8 +20,8 @@
         "z": 1.0
       },
       "size": {
-        "x": 1000.0,
-        "y": 1000.0,
+        "x": 1.0,
+        "y": 1.0,
         "z": 0.0
       }
     },
@@ -43,9 +43,9 @@
       "type": "Transform",
       "uuid": "f94e546f-ff0b-483f-a616-a22fa3cef379",
       "position": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": -1.0
+        "x": -0.42,
+        "y": -0.61,
+        "z": -0.06
       },
       "rotation": {
         "x": 0.0,
@@ -60,7 +60,7 @@
       },
       "size": {
         "x": 0.0,
-        "y": 100.0,
+        "y": 0.1,
         "z": 0.0
       }
     },
@@ -83,15 +83,15 @@
       "type": "Transform",
       "uuid": "fd293b2f-10b8-43b7-949d-64893cee60d7",
       "position": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": 0.1404026,
+        "y": 0.05570593,
         "z": -50.0
       },
       "rotation": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0,
-        "w": 1.0
+        "z": 0.018133132,
+        "w": 0.9998
       },
       "scale": {
         "x": 1.0,
@@ -106,21 +106,23 @@
     },
     "f1262ab2-324d-45bc-aae6-36a98b26c40a": {
       "type": "OrthographicCamera",
-      "uuid": "f1262ab2-324d-45bc-aae6-36a98b26c40a"
+      "uuid": "f1262ab2-324d-45bc-aae6-36a98b26c40a",
+      "size": 1.0,
+      "mainAxis": "Y"
     },
     "37473d54-cac5-4852-a48b-71d323a9f857": {
       "type": "Simple2DMovement",
       "uuid": "37473d54-cac5-4852-a48b-71d323a9f857",
-      "movementSpeed": 800.0,
+      "movementSpeed": 1.0,
       "rotationSpeed": 90.0
     },
     "77edda06-4933-4e3b-a101-b9cb5cf0b46a": {
       "type": "Transform",
       "uuid": "77edda06-4933-4e3b-a101-b9cb5cf0b46a",
       "position": {
-        "x": -600.0,
-        "y": -300.0,
-        "z": 0.0
+        "x": -0.0,
+        "y": -0.0,
+        "z": -0.0
       },
       "rotation": {
         "x": 0.0,
@@ -135,19 +137,19 @@
       },
       "size": {
         "x": 0.0,
-        "y": 100.0,
+        "y": 0.09,
         "z": 0.0
       }
     },
     "f5e95d56-212b-48ea-bec1-1cdf40267cf3": {
       "type": "FpsDisplay",
       "uuid": "f5e95d56-212b-48ea-bec1-1cdf40267cf3",
-      "updateTime": 0.025
+      "updateTime": 0.02500000037252903
     },
     "2ad4902d-dc2e-4cae-9346-c24f2f7a9bc4": {
       "type": "Text2DRenderer",
       "uuid": "2ad4902d-dc2e-4cae-9346-c24f2f7a9bc4",
-      "text": "",
+      "text": "1336.720 FPS",
       "color": {
         "x": 1.0,
         "y": 1.0,
@@ -209,9 +211,7 @@
         "3f74fbe2-5f28-434b-be47-2fe93136cb34"
       ],
       "3f74fbe2-5f28-434b-be47-2fe93136cb34": []
-    },
-    "parents": {
-      "3f74fbe2-5f28-434b-be47-2fe93136cb34": "24e555f1-0e7b-4cd3-9990-fc11d15f223f"
     }
-  }
+  },
+  "selectedGameObject": "3f74fbe2-5f28-434b-be47-2fe93136cb34"
 }

@@ -12,7 +12,7 @@ layout (location = 1) out vec4 o_Color;
 
 void main()
 {
-    o_Position = a_Position.xy - vec2(0.5f);
+    o_Position = a_Position.xy;
     o_Color = a_Color;
 
     gl_Position = u_Projection * u_View * a_Model * a_Position;

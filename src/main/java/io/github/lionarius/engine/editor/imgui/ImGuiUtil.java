@@ -33,14 +33,14 @@ public class ImGuiUtil {
     public void dragInt2(String label, Vector2i value) {
         int[] out = {value.x(), value.y()};
 
-        ImGui.dragInt2(label, out);
+        ImGui.dragInt2(label, out, getIntSpeed((int) value.length()));
         value.set(out);
     }
 
     public void dragInt3(String label, Vector3i value) {
         int[] out = {value.x(), value.y(), value.z()};
 
-        ImGui.dragInt3(label, out);
+        ImGui.dragInt3(label, out, getIntSpeed((int) value.length()));
         value.set(out);
     }
 
@@ -64,14 +64,14 @@ public class ImGuiUtil {
     public void dragFloat2(String label, Vector2f value) {
         float[] out = {value.x(), value.y()};
 
-        ImGui.dragFloat2(label, out);
+        ImGui.dragFloat2(label, out, getFloatSpeed(value.length()));
         value.set(out);
     }
 
     public void dragFloat3(String label, Vector3f value) {
         float[] out = {value.x(), value.y(), value.z()};
 
-        ImGui.dragFloat3(label, out);
+        ImGui.dragFloat3(label, out, getFloatSpeed(value.length()));
         value.set(out);
     }
 
@@ -81,7 +81,7 @@ public class ImGuiUtil {
         if (isColor)
             ImGui.colorEdit4(label, out);
         else
-            ImGui.dragFloat4(label, out);
+            ImGui.dragFloat4(label, out, getFloatSpeed(value.length()));
         value.set(out);
     }
 
@@ -90,7 +90,9 @@ public class ImGuiUtil {
         value.getEulerAnglesXYZ(rotation).mul((float) (180.0f / Math.PI));
         var prevRotation = new Vector3f(rotation);
 
-        ImGuiUtil.dragFloat3(label, rotation);
+        float[] out = {rotation.x(), rotation.y(), rotation.z()};
+        ImGui.dragFloat3(label, out);
+        rotation.set(out);
 
         rotation.sub(prevRotation).div((float) (180.0f / Math.PI));
         value.rotateY(rotation.y()).rotateZ(rotation.z()).rotateX(rotation.x());
@@ -110,15 +112,19 @@ public class ImGuiUtil {
         return value;
     }
 
-    public static boolean buttonAligned(String label, float alignment) {
+    public static void prepareButtonAligned(float width, float alignment) {
         var style = ImGui.getStyle();
 
-        float size = ImGui.calcTextSize(label).x + style.getFramePadding().x * 2.0f;
+        float size = width + style.getFramePadding().x * 2.0f;
         float avail = ImGui.getContentRegionAvail().x;
 
         float off = (avail - size) * alignment;
         if (off > 0.0f)
             ImGui.setCursorPosX(ImGui.getCursorPosX() + off);
+    }
+
+    public static boolean buttonAligned(String label, float alignment) {
+        ImGuiUtil.prepareButtonAligned(ImGui.calcTextSize(label).x, alignment);
 
         return ImGui.button(label);
     }

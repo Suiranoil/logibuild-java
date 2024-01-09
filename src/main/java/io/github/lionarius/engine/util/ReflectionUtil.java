@@ -107,8 +107,8 @@ public class ReflectionUtil {
     }
 
     public static boolean isAccessible(@NonNull Field field) {
-        return !Modifier.isPublic(field.getModifiers())
-               && !Modifier.isPublic(field.getDeclaringClass().getModifiers());
+        return field.isAccessible() || (!Modifier.isPublic(field.getModifiers())
+                                        && !Modifier.isPublic(field.getDeclaringClass().getModifiers()));
     }
 
     private static boolean isSerializable(Field field) {

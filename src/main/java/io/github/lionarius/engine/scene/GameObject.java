@@ -4,6 +4,7 @@ import io.github.lionarius.engine.Renderable;
 import io.github.lionarius.engine.Updatable;
 import io.github.lionarius.engine.scene.builtin.Camera;
 import io.github.lionarius.engine.scene.builtin.Transform;
+import io.github.lionarius.engine.scene.builtin.collision.Collider;
 import io.github.lionarius.engine.util.AddRemoveQueue;
 import io.github.lionarius.engine.util.ReflectionUtil;
 import lombok.AccessLevel;
@@ -89,12 +90,12 @@ public final class GameObject implements Updatable, Renderable {
         return this.components;
     }
 
-    public void awake() {
+    protected void awake() {
         for (var component : this.components)
             component.onAwake();
     }
 
-    public void start() {
+    protected void start() {
         for (var component : this.components)
             component.onStart();
     }
@@ -112,6 +113,14 @@ public final class GameObject implements Updatable, Renderable {
     public void editorUpdate(double delta) {
         this.removeQueuedComponents(true);
         this.addQueuedComponents(true);
+
+        for (var component : this.components)
+            component.onEditorUpdate(delta);
+    }
+
+    public void collide(Collider other) {
+        for (var component : this.components)
+            component.onCollide(other);
     }
 
     @Override
@@ -120,7 +129,7 @@ public final class GameObject implements Updatable, Renderable {
             component.onRender(delta);
     }
 
-    public void destroy() {
+    protected void destroy() {
         for (var component : this.components)
             component.onDestroy();
     }

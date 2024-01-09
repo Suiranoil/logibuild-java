@@ -1,6 +1,7 @@
 package io.github.lionarius.engine.scene.builtin;
 
-import io.github.lionarius.engine.scene.CameraObject;
+import io.github.lionarius.engine.editor.property.SerializeField;
+import io.github.lionarius.engine.renderer.RenderCamera;
 import io.github.lionarius.engine.scene.Component;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,8 +11,8 @@ import org.joml.Vector2fc;
 import org.joml.Vector2i;
 import org.joml.Vector3f;
 
-public abstract class Camera extends Component implements CameraObject {
-    @NonNull @Getter @Setter
+public abstract class Camera extends Component implements RenderCamera {
+    @NonNull @Getter @Setter @SerializeField
     private Vector2i frameSize = new Vector2i(0);
     @Getter(AccessLevel.PROTECTED)
     private Transform transform;
