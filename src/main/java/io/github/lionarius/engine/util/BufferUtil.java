@@ -4,6 +4,8 @@ import lombok.experimental.UtilityClass;
 import org.joml.Vector2fc;
 import org.joml.Vector3fc;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -52,6 +54,23 @@ public final class BufferUtil {
             buffer.position(position);
         }
 
+        return buffer;
+    }
+
+    public static PointerBuffer stringArrayToPointerBuffer(String[] strings) {
+        if (strings == null)
+            return null;
+
+        var buffer = BufferUtils.createPointerBuffer(strings.length);
+        for (var string : strings) {
+            var bytes = string.getBytes();
+            var stringBuffer = BufferUtils.createByteBuffer(bytes.length + 1);
+            stringBuffer.put(bytes);
+            stringBuffer.put((byte) 0);
+            stringBuffer.flip();
+            buffer.put(MemoryUtil.memAddress(stringBuffer));
+        }
+        buffer.flip();
         return buffer;
     }
 }

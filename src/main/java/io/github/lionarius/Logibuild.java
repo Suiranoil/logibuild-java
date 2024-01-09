@@ -82,8 +82,6 @@ public final class Logibuild implements Closeable {
         this.resourceManager.register(Scene.class, new SceneLoader());
         this.resourceManager.register(Mesh.class, new MeshLoader());
 
-        var a = this.resourceManager.get(Mesh.class, "teapot.obj");
-
         this.engineRenderer.init();
 
         this.sceneManager = new SceneManager();

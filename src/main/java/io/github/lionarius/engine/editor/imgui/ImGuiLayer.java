@@ -1,8 +1,6 @@
 package io.github.lionarius.engine.editor.imgui;
 
 import imgui.ImGui;
-import imgui.extension.imguifiledialog.ImGuiFileDialog;
-import imgui.extension.imguifiledialog.flag.ImGuiFileDialogFlags;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -12,9 +10,10 @@ import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.Window;
 import io.github.lionarius.engine.editor.imgui.panel.ImGuiExplorer;
 import io.github.lionarius.engine.editor.imgui.panel.ImGuiViewport;
-import io.github.lionarius.engine.renderer.EngineRenderer;
+import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.Closeable;
+import io.github.lionarius.engine.util.io.FileDialogUtil;
 import io.github.lionarius.engine.util.io.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import org.lwjgl.glfw.GLFW;
@@ -25,7 +24,7 @@ public class ImGuiLayer implements Closeable {
     private final ImGuiImplGl3 imGuiImplGl3 = new ImGuiImplGl3();
     private final Window window;
     private final SceneManager sceneManager = Logibuild.getInstance().getSceneManager();
-    private final EngineRenderer engineRenderer = Logibuild.getInstance().getEngineRenderer();
+    private final ResourceManager resourceManager = Logibuild.getInstance().getResourceManager();
 
     private ImGuiViewport viewport;
     private ImGuiExplorer explorer;
@@ -112,32 +111,6 @@ public class ImGuiLayer implements Closeable {
     public void draw() {
 //        ImGui.showDemoWindow();
 
-        if (ImGuiFileDialog.display("open-scene", ImGuiWindowFlags.None | ImGuiWindowFlags.NoDocking, 200, 400, 800, 600)) {
-            if (ImGuiFileDialog.isOk()) {
-                var selection = ImGuiFileDialog.getSelection();
-                var path = selection.values().stream().findFirst();
-                if (path.isPresent()) {
-                    var scene = JsonUtil.loadSceneFromFile(path.get());
-                    if (scene != null)
-                        this.sceneManager.transitionTo(scene);
-                }
-            }
-
-            ImGuiFileDialog.close();
-        }
-
-        if (ImGuiFileDialog.display("save-scene", ImGuiWindowFlags.None | ImGuiWindowFlags.NoDocking, 200, 400, 800, 600)) {
-            if (ImGuiFileDialog.isOk()) {
-                var path = ImGuiFileDialog.getFilePathName();
-                var scene = this.sceneManager.getCurrentScene();
-                if (scene != null) {
-                    JsonUtil.writeSceneToFile(path, scene);
-                }
-            }
-
-            ImGuiFileDialog.close();
-        }
-
         if (this.sceneManager.isPlaying())
             ImGui.getStyle().setAlpha(1f);
 
@@ -170,10 +143,24 @@ public class ImGuiLayer implements Closeable {
     private void drawMainMenu() {
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("Open scene...")) {
-                ImGuiFileDialog.openModal("open-scene", "Choose scene", ".scene", ".", "", 1, 0, ImGuiFileDialogFlags.DontShowHiddenFiles);
+                var paths = FileDialogUtil.openFileDialog("Choose scene", this.resourceManager.getResourceFolder(), new String[]{"*.scene"}, "Scene (.scene)", false);
+                if (paths != null) {
+                    var file = paths[0];
+                    if (file.exists()) {
+                        var scene = JsonUtil.loadSceneFromFile(file.getAbsolutePath());
+                        if (scene != null)
+                            this.sceneManager.transitionTo(scene);
+                    }
+                }
             }
             if (ImGui.menuItem("Save scene")) {
-                ImGuiFileDialog.openModal("save-scene", "Save scene", ".scene", ".", "", 1, 0, ImGuiFileDialogFlags.DontShowHiddenFiles);
+                var file = FileDialogUtil.saveFileDialog("Save scene", this.resourceManager.getResourceFolder(), "untitled", new String[]{"*.scene"}, "Scene (.scene)");
+                if (file != null) {
+                    var scene = this.sceneManager.getCurrentScene();
+                    if (scene != null) {
+                        JsonUtil.writeSceneToFile(file.getAbsolutePath(), scene);
+                    }
+                }
             }
 
             if (ImGui.menuItem("Exit")) {
