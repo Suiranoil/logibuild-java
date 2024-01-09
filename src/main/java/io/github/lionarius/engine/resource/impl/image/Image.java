@@ -21,7 +21,7 @@ public class Image implements Resource {
     private final int channels;
     private ByteBuffer data;
 
-    public void init(ByteBuffer data) {
+    protected void init(ByteBuffer data) {
         this.data = BufferUtils.createByteBuffer(this.width * this.height * this.channels);
         this.data.put(data);
         this.data.rewind();

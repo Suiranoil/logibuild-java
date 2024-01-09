@@ -13,6 +13,7 @@ import io.github.lionarius.engine.Window;
 import io.github.lionarius.engine.editor.imgui.panel.ImGuiExplorer;
 import io.github.lionarius.engine.editor.imgui.panel.ImGuiViewport;
 import io.github.lionarius.engine.resource.ResourceManager;
+import io.github.lionarius.engine.resource.impl.raw.RawData;
 import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.Closeable;
 import io.github.lionarius.engine.util.buffer.BufferUtil;
@@ -60,7 +61,7 @@ public class ImGuiLayer implements Closeable {
 
     private void loadDefaultFont(ImGuiIO io) {
         var internalResourceManager = Logibuild.getInstance().getInternalResourceManager();
-        var font = BufferUtil.bufferToByteArray(internalResourceManager.getRaw("font/Roboto-Medium.ttf"));
+        var font = BufferUtil.bufferToByteArray(internalResourceManager.get(RawData.class, "font/Roboto-Medium.ttf").getData());
 
         var config = new ImFontConfig();
         config.setFontDataOwnedByAtlas(false);

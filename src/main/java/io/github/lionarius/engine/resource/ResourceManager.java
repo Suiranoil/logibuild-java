@@ -1,7 +1,6 @@
 package io.github.lionarius.engine.resource;
 
 import io.github.lionarius.engine.resource.stream.ResourceStreamProvider;
-import io.github.lionarius.engine.util.io.StreamUtil;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,18 +25,6 @@ public class ResourceManager {
 
     public <T extends Resource> void register(@NonNull Class<T> clazz, @NonNull ResourceLoader<T> loader) {
         this.resources.put(clazz, new ResourceData<>(loader));
-    }
-
-    public ByteBuffer getRaw(@NonNull String name) {
-        ByteBuffer data = null;
-
-        try (var stream = this.streamProvider.getStream(name)) {
-            data = StreamUtil.readStreamToBuffer(stream);
-        } catch (IOException e) {
-            LOGGER.error(e.toString());
-        }
-
-        return data;
     }
 
     public <T extends Resource> T get(@NonNull Class<T> clazz, @NonNull String name) {

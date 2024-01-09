@@ -13,6 +13,8 @@ import io.github.lionarius.engine.resource.impl.image.Image;
 import io.github.lionarius.engine.resource.impl.image.ImageLoader;
 import io.github.lionarius.engine.resource.impl.mesh.Mesh;
 import io.github.lionarius.engine.resource.impl.mesh.MeshLoader;
+import io.github.lionarius.engine.resource.impl.raw.RawData;
+import io.github.lionarius.engine.resource.impl.raw.RawDataLoader;
 import io.github.lionarius.engine.resource.impl.scene.SceneLoader;
 import io.github.lionarius.engine.resource.impl.shader.Shader;
 import io.github.lionarius.engine.resource.impl.shader.ShaderLoader;
@@ -67,8 +69,6 @@ public final class Logibuild implements Closeable {
             throw new IllegalStateException("Cannot create more than one game instance");
         Logibuild.instance = this;
 
-        this.workspaceResourceManager = new ResourceManager(new FilesystemStreamProvider(FileSystems.getDefault().getPath(".").toString()));
-
         var noEditor = false;
         String scenePath = null;
         for (var arg : args) {
@@ -91,19 +91,9 @@ public final class Logibuild implements Closeable {
 
         this.inputHandler.init(!this.noEditor);
 
-        this.internalResourceManager.register(Shader.class, new ShaderLoader());
-        this.internalResourceManager.register(Texture.class, new TextureLoader());
-        this.internalResourceManager.register(Font.class, new FontLoader(this.internalResourceManager));
-        this.internalResourceManager.register(Image.class, new ImageLoader());
-        this.internalResourceManager.register(Scene.class, new SceneLoader());
-        this.internalResourceManager.register(Mesh.class, new MeshLoader());
-
-        this.workspaceResourceManager.register(Shader.class, new ShaderLoader());
-        this.workspaceResourceManager.register(Texture.class, new TextureLoader());
-        this.workspaceResourceManager.register(Font.class, new FontLoader(this.workspaceResourceManager));
-        this.workspaceResourceManager.register(Image.class, new ImageLoader());
-        this.workspaceResourceManager.register(Scene.class, new SceneLoader());
-        this.workspaceResourceManager.register(Mesh.class, new MeshLoader());
+        this.workspaceResourceManager = new ResourceManager(new FilesystemStreamProvider(FileSystems.getDefault().getPath(".").toString()));
+        this.registerAllResourceManagerLoaders(this.internalResourceManager);
+        this.registerAllResourceManagerLoaders(this.workspaceResourceManager);
 
         this.engineRenderer.init();
 
@@ -112,6 +102,16 @@ public final class Logibuild implements Closeable {
         this.imGuiLayer.init();
 
         this.window.setIcon(this.internalResourceManager.get(Image.class, "icons/icon.png"));
+    }
+
+    private void registerAllResourceManagerLoaders(ResourceManager resourceManager) {
+        resourceManager.register(Shader.class, new ShaderLoader());
+        resourceManager.register(Texture.class, new TextureLoader());
+        resourceManager.register(Font.class, new FontLoader(resourceManager));
+        resourceManager.register(Image.class, new ImageLoader());
+        resourceManager.register(Scene.class, new SceneLoader());
+        resourceManager.register(RawData.class, new RawDataLoader());
+        resourceManager.register(Mesh.class, new MeshLoader());
     }
 
     public void run() {
