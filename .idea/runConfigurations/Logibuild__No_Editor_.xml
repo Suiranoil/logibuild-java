@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Logibuild (No Editor)" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="temurin-19" />
+    <option name="MAIN_CLASS_NAME" value="io.github.lionarius.Main" />
+    <module name="logibuild.main" />
+    <option name="PROGRAM_PARAMETERS" value="--noEditor" />
+    <option name="VM_PARAMETERS" value="-Dlog4j.skipJansi=false" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
