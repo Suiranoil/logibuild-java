@@ -2,7 +2,7 @@
   <configuration default="false" name="Logibuild Assert (No Editor)" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="io.github.lionarius.Main" />
     <module name="logibuild.main" />
-    <option name="PROGRAM_PARAMETERS" value="--noEditor" />
+    <option name="PROGRAM_PARAMETERS" value="--noEditor --scene=asteroids/asteroids.scene" />
     <option name="VM_PARAMETERS" value="-Dlog4j.skipJansi=false -ea" />
     <method v="2">
       <option name="Make" enabled="true" />

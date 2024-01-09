@@ -49,6 +49,7 @@ public final class Logibuild implements Closeable {
     private final EngineRenderer engineRenderer = new EngineRenderer(this.resourceManager);
     private final ImGuiLayer imGuiLayer;
     private final boolean noEditor;
+    private final String noEditorScene;
     @Getter @Setter
     private boolean debugDraw = false;
 
@@ -60,15 +61,22 @@ public final class Logibuild implements Closeable {
             throw new IllegalStateException("Cannot create more than one game instance");
         Logibuild.instance = this;
 
-        boolean noEditor = false;
+        var noEditor = false;
+        String scenePath = null;
         for (var arg : args) {
             if (arg.equals("--noEditor")) {
                 noEditor = true;
             } else if (arg.equals("--debug")) {
                 this.debugDraw = true;
+            } else if (arg.startsWith("--scene=")) {
+                scenePath = arg.substring(8);
             }
         }
         this.noEditor = noEditor;
+        this.noEditorScene = scenePath;
+
+        if (this.noEditor && this.noEditorScene == null)
+            throw new IllegalStateException("Tried to run no editor mode without starting scene");
 
         this.window.init();
         this.window.setVSync(true);
@@ -97,7 +105,7 @@ public final class Logibuild implements Closeable {
         double dt = -1.0;
 
         if (this.noEditor) {
-            this.sceneManager.transitionTo(this.resourceManager.get(Scene.class, "asteroids/asteroids.scene"));
+            this.sceneManager.transitionTo(this.resourceManager.get(Scene.class, this.noEditorScene));
             this.sceneManager.startPlaying();
         } else
             this.sceneManager.transitionTo(new Scene());
