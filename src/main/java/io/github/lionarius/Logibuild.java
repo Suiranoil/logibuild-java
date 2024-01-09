@@ -166,7 +166,7 @@ public final class Logibuild implements Closeable {
         if (!this.noEditor)
             this.imGuiLayer.render();
         else {
-            this.engineRenderer.beginScreenFrame(new ScreenspaceCamera());
+            this.engineRenderer.beginFrame(new ScreenspaceCamera());
 
             var framebuffer = this.engineRenderer.getFramebuffer();
             var quadRenderer = this.engineRenderer.getQuadRenderer();

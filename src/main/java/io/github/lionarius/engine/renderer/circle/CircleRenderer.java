@@ -49,7 +49,7 @@ public class CircleRenderer extends Renderer {
         var vertices = new CircleVertexCommon[]{
                 new CircleVertexCommon(new Vector3f(0, 1.0f, 0)),
                 new CircleVertexCommon(new Vector3f(Math.sqrt(3) / 2.0f, -0.5f, 0)),
-                new CircleVertexCommon(new Vector3f((-Math.sqrt(3) / 2.0f), -0.5f, 0)),
+                new CircleVertexCommon(new Vector3f(-Math.sqrt(3) / 2.0f, -0.5f, 0)),
         };
         var commonData = BufferUtils.createByteBuffer(vertices.length * CircleVertexCommon.getLayout().getStride());
         BufferUtil.objectArrayToBuffer(vertices, commonData);

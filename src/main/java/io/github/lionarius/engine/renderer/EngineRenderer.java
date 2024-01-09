@@ -62,15 +62,12 @@ public class EngineRenderer extends Renderer {
         this.circleRenderer.beginFrame(camera);
         this.textRenderer.beginFrame(camera);
         this.lineRenderer.beginFrame(camera);
-
-        this.framebuffer.bind();
     }
 
-    public void beginScreenFrame(RenderCamera camera) {
-        this.quadRenderer.beginFrame(camera);
-        this.circleRenderer.beginFrame(camera);
-        this.textRenderer.beginFrame(camera);
-        this.lineRenderer.beginFrame(camera);
+    public void endEmptyFrame() {
+        this.framebuffer.bind();
+        this.clear();
+        this.framebuffer.unbind();
     }
 
     public void endScreenFrame() {
@@ -82,14 +79,15 @@ public class EngineRenderer extends Renderer {
         this.lineRenderer.endFrame();
     }
 
-    public void endEmptyFrame() {
-        this.clear();
-        this.framebuffer.unbind();
-    }
-
     @Override
     public void endFrame() {
-        this.endScreenFrame();
+        this.framebuffer.bind();
+        this.clear();
+
+        this.quadRenderer.endFrame();
+        this.circleRenderer.endFrame();
+        this.textRenderer.endFrame();
+        this.lineRenderer.endFrame();
 
         this.framebuffer.unbind();
     }
