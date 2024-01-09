@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.util;
+package io.github.lionarius.engine.util.buffer;
 
 import lombok.experimental.UtilityClass;
 import org.joml.Vector2fc;

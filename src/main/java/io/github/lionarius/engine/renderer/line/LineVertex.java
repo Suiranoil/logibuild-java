@@ -1,8 +1,8 @@
 package io.github.lionarius.engine.renderer.line;
 
 import io.github.lionarius.engine.renderer.buffer.VertexBufferLayout;
-import io.github.lionarius.engine.util.BufferUtil;
-import io.github.lionarius.engine.util.GetToByteBuffer;
+import io.github.lionarius.engine.util.buffer.BufferUtil;
+import io.github.lionarius.engine.util.buffer.GetToByteBuffer;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 

@@ -1,6 +1,6 @@
 package io.github.lionarius.engine.util.io;
 
-import io.github.lionarius.engine.util.BufferUtil;
+import io.github.lionarius.engine.util.buffer.BufferUtil;
 import lombok.experimental.UtilityClass;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 

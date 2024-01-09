@@ -1,8 +1,8 @@
 package io.github.lionarius.engine.renderer.quad;
 
 import io.github.lionarius.engine.renderer.buffer.VertexBufferLayout;
-import io.github.lionarius.engine.util.BufferUtil;
-import io.github.lionarius.engine.util.GetToByteBuffer;
+import io.github.lionarius.engine.util.buffer.BufferUtil;
+import io.github.lionarius.engine.util.buffer.GetToByteBuffer;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.joml.Matrix4f;
