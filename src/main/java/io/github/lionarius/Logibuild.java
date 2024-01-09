@@ -48,7 +48,7 @@ public final class Logibuild implements Closeable {
     @Getter
     private final EngineRenderer engineRenderer = new EngineRenderer(this.resourceManager);
     private final ImGuiLayer imGuiLayer;
-    private final boolean headless;
+    private final boolean noEditor;
     @Getter @Setter
     private boolean debugDraw = false;
 
@@ -60,20 +60,20 @@ public final class Logibuild implements Closeable {
             throw new IllegalStateException("Cannot create more than one game instance");
         Logibuild.instance = this;
 
-        boolean headless = false;
+        boolean noEditor = false;
         for (var arg : args) {
-            if (arg.equals("--headless")) {
-                headless = true;
+            if (arg.equals("--noEditor")) {
+                noEditor = true;
             } else if (arg.equals("--debug")) {
                 this.debugDraw = true;
             }
         }
-        this.headless = headless;
+        this.noEditor = noEditor;
 
         this.window.init();
         this.window.setVSync(true);
 
-        this.inputHandler.init(!this.headless);
+        this.inputHandler.init(!this.noEditor);
 
         this.resourceManager.register(Shader.class, new ShaderLoader());
         this.resourceManager.register(Texture.class, new TextureLoader());
@@ -96,7 +96,7 @@ public final class Logibuild implements Closeable {
         double currentTime = TimeUtil.getApplicationTime();
         double dt = -1.0;
 
-        if (this.headless) {
+        if (this.noEditor) {
             this.sceneManager.transitionTo(this.resourceManager.get(Scene.class, "asteroids/asteroids.scene"));
             this.sceneManager.startPlaying();
         } else
@@ -129,7 +129,7 @@ public final class Logibuild implements Closeable {
 
         this.sceneManager.update(delta);
 
-        if (!this.headless) {
+        if (!this.noEditor) {
             this.imGuiLayer.beginFrame();
             this.imGuiLayer.begin();
 
@@ -163,7 +163,7 @@ public final class Logibuild implements Closeable {
             this.engineRenderer.endFrame();
 
         this.engineRenderer.clear();
-        if (!this.headless)
+        if (!this.noEditor)
             this.imGuiLayer.render();
         else {
             this.engineRenderer.beginScreenFrame(new ScreenspaceCamera());
