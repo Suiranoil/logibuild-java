@@ -46,7 +46,7 @@ public class EngineRenderer extends Renderer {
         this.circleRenderer = new CircleRenderer(8192, this.resourceManager);
         this.circleRenderer.init();
 
-        this.textRenderer = new TextRenderer(8192 * 16, this.resourceManager, this.resourceManager.get(Font.class, "font/atlas/roboto"));
+        this.textRenderer = new TextRenderer(8192 * 16, this.resourceManager, this.resourceManager.get(Font.class, "font/atlas/default"));
         this.textRenderer.init();
 
         this.lineRenderer = new LineRenderer(8192 * 16, this.resourceManager);

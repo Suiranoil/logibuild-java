@@ -61,7 +61,7 @@ public class ImGuiLayer implements Closeable {
 
     private void loadDefaultFont(ImGuiIO io) {
         var internalResourceManager = Logibuild.getInstance().getInternalResourceManager();
-        var font = BufferUtil.bufferToByteArray(internalResourceManager.get(RawData.class, "font/Roboto-Medium.ttf").getData());
+        var font = BufferUtil.bufferToByteArray(internalResourceManager.get(RawData.class, "font/Default.ttf").getData());
 
         var config = new ImFontConfig();
         config.setFontDataOwnedByAtlas(false);
