@@ -3,7 +3,7 @@ package io.github.lionarius.engine.scene.builtin;
 import io.github.lionarius.Logibuild;
 import io.github.lionarius.engine.editor.property.SerializeField;
 import io.github.lionarius.engine.renderer.text.TextRenderer;
-import io.github.lionarius.engine.resource.font.Font;
+import io.github.lionarius.engine.resource.impl.font.Font;
 import io.github.lionarius.engine.scene.Component;
 import lombok.Getter;
 import lombok.NonNull;

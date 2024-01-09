@@ -3,8 +3,8 @@ package io.github.lionarius.engine.editor.imgui.panel;
 import imgui.ImGui;
 import imgui.flag.ImGuiMouseButton;
 import io.github.lionarius.Logibuild;
-import io.github.lionarius.engine.resource.texture.Texture;
-import io.github.lionarius.engine.resource.texture.TextureCreateParameters;
+import io.github.lionarius.engine.resource.impl.texture.Texture;
+import io.github.lionarius.engine.resource.impl.texture.TextureCreateParameters;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

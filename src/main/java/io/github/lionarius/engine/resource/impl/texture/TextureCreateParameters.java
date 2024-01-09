@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.resource.texture;
+package io.github.lionarius.engine.resource.impl.texture;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

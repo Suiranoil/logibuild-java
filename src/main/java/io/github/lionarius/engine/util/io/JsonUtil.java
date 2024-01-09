@@ -7,9 +7,12 @@ import io.github.lionarius.engine.scene.Scene;
 import io.github.lionarius.engine.scene.json.GameObjectSerializer;
 import io.github.lionarius.engine.scene.json.SceneJsonIO;
 import lombok.experimental.UtilityClass;
+import org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 @UtilityClass
@@ -27,6 +30,15 @@ public class JsonUtil {
         try {
             var file = new File(path);
             var val = Files.readString(file.toPath());
+            return deserializeScene(val);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    public static Scene loadSceneFromStream(InputStream stream) {
+        try {
+            var val = IOUtils.toString(stream, StandardCharsets.UTF_8);
             return deserializeScene(val);
         } catch (IOException e) {
             return null;

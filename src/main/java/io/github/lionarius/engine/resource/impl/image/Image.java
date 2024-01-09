@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.resource.image;
+package io.github.lionarius.engine.resource.impl.image;
 
 import io.github.lionarius.engine.resource.Resource;
 import lombok.Getter;

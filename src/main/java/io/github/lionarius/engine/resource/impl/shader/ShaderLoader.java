@@ -1,19 +1,22 @@
-package io.github.lionarius.engine.resource.shader;
+package io.github.lionarius.engine.resource.impl.shader;
 
 import io.github.lionarius.engine.resource.ResourceLoader;
+import io.github.lionarius.engine.resource.stream.ResourceStreamProvider;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class ShaderLoader implements ResourceLoader<Shader> {
     private static final Pattern TYPE_REGEX = Pattern.compile("^//\\s+#type\\s+(?<type>[a-z]+)$");
 
-    public Shader loadFromFile(String name, String filepath, Object parameters) throws IOException {
+    public Shader loadFromFile(String name, ResourceStreamProvider streamProvider, Object parameters) throws IOException {
         StringBuilder vertexSource = new StringBuilder();
         StringBuilder fragmentSource = new StringBuilder();
-        try (var reader = Files.newBufferedReader(Path.of(filepath))) {
+        try (var stream = streamProvider.getStream(name)) {
+            var reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             String line;
             String currentSource = "";
             while ((line = reader.readLine()) != null) {

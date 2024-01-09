@@ -1,11 +1,11 @@
-package io.github.lionarius.engine.resource.font.json;
+package io.github.lionarius.engine.resource.impl.font.json;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
-import io.github.lionarius.engine.resource.font.Font;
-import io.github.lionarius.engine.resource.font.Glyph;
+import io.github.lionarius.engine.resource.impl.font.Font;
+import io.github.lionarius.engine.resource.impl.font.Glyph;
 import org.javatuples.Pair;
 
 import java.lang.reflect.Type;

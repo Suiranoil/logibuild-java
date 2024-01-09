@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.resource.texture;
+package io.github.lionarius.engine.resource.impl.texture;
 
 import io.github.lionarius.engine.renderer.OpenGLObject;
 import io.github.lionarius.engine.resource.Resource;

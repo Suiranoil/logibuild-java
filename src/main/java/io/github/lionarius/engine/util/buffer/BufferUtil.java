@@ -12,6 +12,12 @@ import java.nio.ByteBuffer;
 
 @UtilityClass
 public final class BufferUtil {
+    public static byte[] bufferToByteArray(ByteBuffer buffer) {
+        var array = new byte[buffer.remaining()];
+        buffer.get(array);
+        return array;
+    }
+
     public static void movePosition(Buffer buffer, int offset) {
         var position = buffer.position();
         buffer.position(position + offset);

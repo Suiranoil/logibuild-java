@@ -7,7 +7,7 @@ import io.github.lionarius.engine.InputHandler;
 import io.github.lionarius.engine.editor.property.Min;
 import io.github.lionarius.engine.editor.property.Separator;
 import io.github.lionarius.engine.editor.property.SerializeField;
-import io.github.lionarius.engine.resource.texture.Texture;
+import io.github.lionarius.engine.resource.impl.texture.Texture;
 import io.github.lionarius.engine.scene.Component;
 import io.github.lionarius.engine.scene.GameObject;
 import io.github.lionarius.engine.scene.builtin.Box2DRenderer;

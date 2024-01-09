@@ -6,7 +6,7 @@ import io.github.lionarius.engine.renderer.line.LineRenderer;
 import io.github.lionarius.engine.renderer.quad.QuadRenderer;
 import io.github.lionarius.engine.renderer.text.TextRenderer;
 import io.github.lionarius.engine.resource.ResourceManager;
-import io.github.lionarius.engine.resource.font.Font;
+import io.github.lionarius.engine.resource.impl.font.Font;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
 package io.github.lionarius.engine.renderer.framebuffer;
 
 import io.github.lionarius.engine.renderer.OpenGLObject;
-import io.github.lionarius.engine.resource.texture.Texture;
-import io.github.lionarius.engine.resource.texture.TextureCreateParameters;
+import io.github.lionarius.engine.resource.impl.texture.Texture;
+import io.github.lionarius.engine.resource.impl.texture.TextureCreateParameters;
 import lombok.Getter;
 import org.lwjgl.opengl.GL46;
 

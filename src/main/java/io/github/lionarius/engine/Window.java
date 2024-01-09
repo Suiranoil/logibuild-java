@@ -1,6 +1,6 @@
 package io.github.lionarius.engine;
 
-import io.github.lionarius.engine.resource.image.Image;
+import io.github.lionarius.engine.resource.impl.image.Image;
 import lombok.Getter;
 import org.joml.Vector2i;
 import org.joml.Vector2ic;

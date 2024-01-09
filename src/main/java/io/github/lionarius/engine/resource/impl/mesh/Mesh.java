@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.resource.mesh;
+package io.github.lionarius.engine.resource.impl.mesh;
 
 import io.github.lionarius.engine.resource.Resource;
 import lombok.Getter;

@@ -1,7 +1,7 @@
-package io.github.lionarius.engine.resource.font;
+package io.github.lionarius.engine.resource.impl.font;
 
 import io.github.lionarius.engine.resource.Resource;
-import io.github.lionarius.engine.resource.texture.Texture;
+import io.github.lionarius.engine.resource.impl.texture.Texture;
 import lombok.*;
 import org.javatuples.Pair;
 import org.joml.Vector2f;

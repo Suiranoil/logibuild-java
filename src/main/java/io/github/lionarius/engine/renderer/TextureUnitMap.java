@@ -1,6 +1,6 @@
 package io.github.lionarius.engine.renderer;
 
-import io.github.lionarius.engine.resource.texture.Texture;
+import io.github.lionarius.engine.resource.impl.texture.Texture;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

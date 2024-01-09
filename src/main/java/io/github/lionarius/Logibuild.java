@@ -7,17 +7,19 @@ import io.github.lionarius.engine.keybind.KeybindHandler;
 import io.github.lionarius.engine.renderer.EngineRenderer;
 import io.github.lionarius.engine.renderer.ScreenspaceCamera;
 import io.github.lionarius.engine.resource.ResourceManager;
-import io.github.lionarius.engine.resource.font.Font;
-import io.github.lionarius.engine.resource.font.FontLoader;
-import io.github.lionarius.engine.resource.image.Image;
-import io.github.lionarius.engine.resource.image.ImageLoader;
-import io.github.lionarius.engine.resource.mesh.Mesh;
-import io.github.lionarius.engine.resource.mesh.MeshLoader;
-import io.github.lionarius.engine.resource.scene.SceneLoader;
-import io.github.lionarius.engine.resource.shader.Shader;
-import io.github.lionarius.engine.resource.shader.ShaderLoader;
-import io.github.lionarius.engine.resource.texture.Texture;
-import io.github.lionarius.engine.resource.texture.TextureLoader;
+import io.github.lionarius.engine.resource.impl.font.Font;
+import io.github.lionarius.engine.resource.impl.font.FontLoader;
+import io.github.lionarius.engine.resource.impl.image.Image;
+import io.github.lionarius.engine.resource.impl.image.ImageLoader;
+import io.github.lionarius.engine.resource.impl.mesh.Mesh;
+import io.github.lionarius.engine.resource.impl.mesh.MeshLoader;
+import io.github.lionarius.engine.resource.impl.scene.SceneLoader;
+import io.github.lionarius.engine.resource.impl.shader.Shader;
+import io.github.lionarius.engine.resource.impl.shader.ShaderLoader;
+import io.github.lionarius.engine.resource.impl.texture.Texture;
+import io.github.lionarius.engine.resource.impl.texture.TextureLoader;
+import io.github.lionarius.engine.resource.stream.ClasspathStreamProvider;
+import io.github.lionarius.engine.resource.stream.FilesystemStreamProvider;
 import io.github.lionarius.engine.scene.Scene;
 import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.Closeable;
@@ -42,7 +44,7 @@ public final class Logibuild implements Closeable {
     private final Window window = new Window(1280, 720, "Logibuild");
 
     @Getter
-    private final ResourceManager internalResourceManager = new ResourceManager(ClassLoader.getSystemResource("assets").getPath());
+    private final ResourceManager internalResourceManager = new ResourceManager(new ClasspathStreamProvider("assets/"));
     @Getter
     private final ResourceManager workspaceResourceManager;
     @Getter
@@ -65,7 +67,7 @@ public final class Logibuild implements Closeable {
             throw new IllegalStateException("Cannot create more than one game instance");
         Logibuild.instance = this;
 
-        this.workspaceResourceManager = new ResourceManager(FileSystems.getDefault().getPath(".").toString());
+        this.workspaceResourceManager = new ResourceManager(new FilesystemStreamProvider(FileSystems.getDefault().getPath(".").toString()));
 
         var noEditor = false;
         String scenePath = null;

@@ -7,7 +7,7 @@ import io.github.lionarius.engine.renderer.buffer.IndexBuffer;
 import io.github.lionarius.engine.renderer.buffer.VertexArray;
 import io.github.lionarius.engine.renderer.buffer.VertexBuffer;
 import io.github.lionarius.engine.resource.ResourceManager;
-import io.github.lionarius.engine.resource.shader.Shader;
+import io.github.lionarius.engine.resource.impl.shader.Shader;
 import io.github.lionarius.engine.util.buffer.BufferUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

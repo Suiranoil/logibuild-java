@@ -1,4 +1,4 @@
-package io.github.lionarius.engine.resource.font;
+package io.github.lionarius.engine.resource.impl.font;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

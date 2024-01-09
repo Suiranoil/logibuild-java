@@ -1,6 +1,8 @@
 package io.github.lionarius.engine.editor.imgui;
 
+import imgui.ImFontConfig;
 import imgui.ImGui;
+import imgui.ImGuiIO;
 import imgui.flag.*;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -13,6 +15,7 @@ import io.github.lionarius.engine.editor.imgui.panel.ImGuiViewport;
 import io.github.lionarius.engine.resource.ResourceManager;
 import io.github.lionarius.engine.scene.SceneManager;
 import io.github.lionarius.engine.util.Closeable;
+import io.github.lionarius.engine.util.buffer.BufferUtil;
 import io.github.lionarius.engine.util.io.FileDialogUtil;
 import io.github.lionarius.engine.util.io.JsonUtil;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +55,17 @@ public class ImGuiLayer implements Closeable {
         io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
 
-        io.getFonts().addFontFromFileTTF(ClassLoader.getSystemResource("assets/font/Roboto-Medium.ttf").getFile().substring(1), 16);
+        this.loadDefaultFont(io);
+    }
+
+    private void loadDefaultFont(ImGuiIO io) {
+        var internalResourceManager = Logibuild.getInstance().getInternalResourceManager();
+        var font = BufferUtil.bufferToByteArray(internalResourceManager.getRaw("font/Roboto-Medium.ttf"));
+
+        var config = new ImFontConfig();
+        config.setFontDataOwnedByAtlas(false);
+
+        io.getFonts().addFontFromMemoryTTF(font, 16, config);
         io.getFonts().build();
     }
 
