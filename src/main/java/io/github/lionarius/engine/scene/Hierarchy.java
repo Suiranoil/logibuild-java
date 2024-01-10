@@ -20,9 +20,7 @@ public class Hierarchy<T> implements Iterable<T> {
     }
 
     public void add(T object) {
-        this.queuedActions.add(() -> {
-            this.children.put(object, new ArrayList<>());
-        });
+        this.queuedActions.add(() -> this.children.put(object, new ArrayList<>()));
         this.setParent(object, null);
     }
 

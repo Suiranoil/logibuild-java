@@ -22,12 +22,7 @@ public class ImGuiExplorer {
     }
 
     public void drawExplorer() {
-        if (!this.currentPath.equals(this.rootPath)) {
-            if (ImGui.button("<-"))
-                this.currentPath = this.currentPath.getParentFile();
-            ImGui.sameLine();
-        }
-        ImGui.text(".\\" + this.rootPath.toPath().relativize(this.currentPath.toPath()).toString());
+        this.drawCurrentDirectory();
 
         var panelWidth = ImGui.getContentRegionAvailX();
         var columns = (int) (panelWidth / CELL_SIZE);
@@ -41,29 +36,42 @@ public class ImGuiExplorer {
             if (file.isHidden())
                 continue;
 
-            var icon = ImGuiExplorer.getFileIcon(file);
-
-            ImGui.pushID(file.getName());
-
-            ImGui.imageButton(icon.getId(), THUMBNAIL_SIZE, THUMBNAIL_SIZE, 0, 1, 1, 0);
-
-            if (file.isDirectory()) {
-                if (ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left))
-                    this.currentPath = new File(this.currentPath, file.getName());
-            } else {
-                if (ImGui.beginDragDropSource()) {
-                    ImGui.setDragDropPayload("explorer_file", file);
-                    ImGui.text(file.getName());
-                    ImGui.endDragDropSource();
-                }
-            }
-
-            ImGui.textWrapped(file.getName());
-
-            ImGui.popID();
+            this.drawFile(file);
 
             ImGui.nextColumn();
         }
+    }
+
+    private void drawFile(File file) {
+        var icon = ImGuiExplorer.getFileIcon(file);
+
+        ImGui.pushID(file.getName());
+
+        ImGui.imageButton(icon.getId(), THUMBNAIL_SIZE, THUMBNAIL_SIZE, 0, 1, 1, 0);
+
+        if (file.isDirectory()) {
+            if (ImGui.isItemHovered() && ImGui.isMouseDoubleClicked(ImGuiMouseButton.Left))
+                this.currentPath = new File(this.currentPath, file.getName());
+        } else {
+            if (ImGui.beginDragDropSource()) {
+                ImGui.setDragDropPayload("explorer_file", file);
+                ImGui.text(file.getName());
+                ImGui.endDragDropSource();
+            }
+        }
+
+        ImGui.textWrapped(file.getName());
+
+        ImGui.popID();
+    }
+
+    private void drawCurrentDirectory() {
+        if (!this.currentPath.equals(this.rootPath)) {
+            if (ImGui.button("<-"))
+                this.currentPath = this.currentPath.getParentFile();
+            ImGui.sameLine();
+        }
+        ImGui.text("\\" + this.rootPath.toPath().relativize(this.currentPath.toPath()));
     }
 
 

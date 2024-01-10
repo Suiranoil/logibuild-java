@@ -22,7 +22,7 @@ public class FileDialogUtil {
         var filtersBuffer = BufferUtil.stringArrayToPointerBuffer(filters);
         var selected = TinyFileDialogs.tinyfd_openFileDialog(title, defaultPath.getAbsolutePath() + File.separatorChar, filtersBuffer, fileDescription, multipleSelect);
         if (selected == null)
-            return null;
+            return new File[0];
 
         var paths = selected.split("\\|");
         var result = new File[paths.length];

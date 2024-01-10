@@ -17,7 +17,7 @@ public class ResourceManager {
 
     @NonNull @Getter
     private final ResourceStreamProvider streamProvider;
-    private final Map<Class<?>, ResourceData<?>> resources = new HashMap<>();
+    private final Map<Class<? extends Resource>, ResourceData<? extends Resource>> resources = new HashMap<>();
 
     public File getResourceFolder() {
         return new File(this.streamProvider.getBase());
@@ -52,7 +52,7 @@ public class ResourceManager {
         return resource;
     }
 
-    private <T extends Resource> void invalidate(@NonNull Class<T> clazz, @NonNull String name) {
+    public <T extends Resource> void invalidate(@NonNull Class<T> clazz, @NonNull String name) {
         var data = this.getAssetData(clazz);
 
         var resource = data.getCache().remove(name);

@@ -9,7 +9,8 @@ public class Polygon2D {
     private final Vector3f[] transformedAxis;
 
     public Polygon2D(Vector2fc[] points) {
-        assert points.length >= 2 : "Cannot make a polygon out of 0-1 points";
+        if (points.length < 2)
+            throw new IllegalArgumentException("Cannot make a polygon with less than 2 points");
 
         this.points = new Vector4f[points.length];
         this.transformedPoints = new Vector3f[points.length];

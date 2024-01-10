@@ -9,7 +9,7 @@ public abstract class ResourceStreamProvider {
     @Getter
     private final String base;
 
-    public ResourceStreamProvider(String base) {
+    protected ResourceStreamProvider(String base) {
         this.base = base;
     }
 

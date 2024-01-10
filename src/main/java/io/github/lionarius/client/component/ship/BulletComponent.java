@@ -7,6 +7,7 @@ import io.github.lionarius.engine.scene.builtin.collision.Collider;
 @HideComponent
 public class BulletComponent extends Component {
 
+    @Override
     public void onCollide(Collider other) {
         this.getGameObject().getScene().removeGameObject(this.getGameObject());
     }

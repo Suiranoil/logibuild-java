@@ -5,7 +5,7 @@ import org.joml.Matrix4fc;
 import org.joml.Vector2i;
 
 public class ScreenspaceCamera implements RenderCamera {
-    private final static Matrix4f IDENTITY = new Matrix4f();
+    private static final Matrix4f IDENTITY = new Matrix4f();
 
     @Override
     public Matrix4fc getProjection() {

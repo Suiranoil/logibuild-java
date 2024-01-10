@@ -19,7 +19,7 @@ import java.util.Random;
 public class AsteroidSpawner extends Component {
     private Transform transform;
     private transient double time = 0.0;
-    private transient final Random random = new Random();
+    private final transient Random random = new Random();
 
     @SerializeField
     private Texture asteroidTexture;

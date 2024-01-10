@@ -30,8 +30,8 @@ public class ImGuiLayer implements Closeable {
     private final SceneManager sceneManager = Logibuild.getInstance().getSceneManager();
     private final ResourceManager resourceManager = Logibuild.getInstance().getWorkspaceResourceManager();
 
-    private ImGuiViewport viewport;
-    private ImGuiExplorer explorer;
+    private ImGuiViewport viewportPanel;
+    private ImGuiExplorer explorerPanel;
 
     private boolean isFirstFrame;
 
@@ -45,8 +45,8 @@ public class ImGuiLayer implements Closeable {
         this.imGuiImplGlfw.init(this.window.getHandle(), true);
         this.imGuiImplGl3.init("#version 460 core");
 
-        this.explorer = new ImGuiExplorer(Logibuild.getInstance().getWorkspaceResourceManager().getResourceFolder());
-        this.viewport = new ImGuiViewport();
+        this.explorerPanel = new ImGuiExplorer(Logibuild.getInstance().getWorkspaceResourceManager().getResourceFolder());
+        this.viewportPanel = new ImGuiViewport();
     }
 
     private void configure() {
@@ -62,7 +62,8 @@ public class ImGuiLayer implements Closeable {
     private void loadDefaultFont(ImGuiIO io) {
         var internalResourceManager = Logibuild.getInstance().getInternalResourceManager();
         var font = BufferUtil.bufferToByteArray(internalResourceManager.get(RawData.class, "font/Default.ttf").getData());
-
+        internalResourceManager.invalidate(RawData.class, "font/Default.ttf");
+        
         var config = new ImFontConfig();
         config.setFontDataOwnedByAtlas(false);
 
@@ -129,7 +130,7 @@ public class ImGuiLayer implements Closeable {
             ImGui.getStyle().setAlpha(1f);
 
         ImGui.begin("Viewport");
-        this.viewport.drawViewport();
+        this.viewportPanel.drawViewport();
         ImGui.end();
 
         if (this.sceneManager.isPlaying())
@@ -150,7 +151,7 @@ public class ImGuiLayer implements Closeable {
         ImGui.end();
 
         ImGui.begin("Explorer");
-        this.explorer.drawExplorer();
+        this.explorerPanel.drawExplorer();
         ImGui.end();
     }
 
@@ -158,7 +159,7 @@ public class ImGuiLayer implements Closeable {
         if (ImGui.beginMenu("File")) {
             if (ImGui.menuItem("Open scene...")) {
                 var paths = FileDialogUtil.openFileDialog("Choose scene", this.resourceManager.getResourceFolder(), new String[]{"*.scene"}, "Scene (.scene)", false);
-                if (paths != null) {
+                if (paths.length > 0) {
                     var file = paths[0];
                     if (file.exists()) {
                         var scene = JsonUtil.loadSceneFromFile(file.getAbsolutePath());
